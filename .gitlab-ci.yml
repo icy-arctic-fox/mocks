@@ -11,6 +11,11 @@ spec:
   script:
   - crystal spec
 
+nightly:
+  image: "crystallang/crystal:nightly"
+  script:
+  - crystal spec
+
 format:
   script:  
   - crystal tool format --check
