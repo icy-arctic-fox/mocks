@@ -1,0 +1,26 @@
+image: "crystallang/crystal:latest"
+
+before_script:
+  - shards install
+
+cache:
+  paths:
+  - lib/
+
+spec:
+  script:
+  - crystal spec
+
+format:
+  script:  
+  - crystal tool format --check
+
+pages:
+  stage: deploy
+  script:
+  - crystal docs -o public src/spectator-mocks.cr
+  artifacts:
+    paths:
+    - public
+  only:
+  - master

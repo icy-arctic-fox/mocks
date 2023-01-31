@@ -1,0 +1,14 @@
+name: spectator-mocks
+version: 0.1.0
+
+authors:
+  - Michael Miller <icy.arctic.fox@gmail.com>
+
+crystal: 1.7.2
+
+license: MIT
+
+development_dependencies:
+  ameba:
+    github: crystal-ameba/ameba
+    version: ~> 1.4.0
