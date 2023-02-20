@@ -1,0 +1,59 @@
+require "./arguments"
+
+module Spectator::Mocks
+  # Arguments matched against to determine if a stub should be used or a call had expected arguments.
+  #
+  # The *Positional* type parameter must be a `Tuple`.
+  # The *KeywordArguments* type parameter must be a `NamedTuple`.
+  class ArgumentsPattern(Positional, KeywordArguments)
+    # Positional arguments.
+    getter positional : Positional
+
+    # Keyword arguments.
+    getter kwargs : KeywordArguments
+
+    # Creates a pattern to match against arguments passed to a method.
+    def initialize(@positional : Positional, @kwargs : KeywordArguments)
+      {% raise "Positional arguments must be a Tuple" unless Positional <= Tuple %}
+      {% raise "KeywordArguments must be a NamedTuple" unless KeywordArguments <= NamedTuple %}
+    end
+
+    # Creates an empty set of arguments to match against.
+    # Matching against this indicates no arguments were passed.
+    def self.none : ArgumentsPattern
+      ArgumentsPattern.new(Tuple.new, NamedTuple.new)
+    end
+
+    # Returns a value that matches against any and all arguments.
+    def self.any : ArgumentsPattern?
+      nil.as(ArgumentsPattern?)
+    end
+
+    # Retrieves the positional argument at the specified index.
+    def [](index : Int)
+      raise NotImplementedError.new("ArgumentsPattern#[]")
+    end
+
+    # Retrieves a keyword argument with the specified name.
+    def [](arg : Symbol)
+      raise NotImplementedError.new("ArgumentsPattern#[]")
+    end
+
+    # Generates the string representation of the argument pattern.
+    def to_s(io : IO) : Nil
+      raise NotImplementedError.new("ArgumentsPattern#to_s")
+    end
+
+    # Returns the arguments as-if they were passed to a method.
+    def to_args : Arguments
+      raise NotImplementedError.new("ArgumentsPattern#to_args")
+    end
+
+    def_equals_and_hash @positional, @kwargs
+
+    # Checks if arguments passed to a method match those specified by this pattern.
+    def ===(arguments : Arguments) : Bool
+      raise NotImplementedError.new("ArgumentsPattern#===")
+    end
+  end
+end
