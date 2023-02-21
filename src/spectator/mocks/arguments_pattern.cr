@@ -39,16 +39,6 @@ module Spectator::Mocks
       nil.as(AbstractArgumentsPattern?)
     end
 
-    # Retrieves the positional argument at the specified index.
-    def [](index : Int)
-      raise NotImplementedError.new("ArgumentsPattern#[]")
-    end
-
-    # Retrieves a keyword argument with the specified name.
-    def [](arg : Symbol)
-      raise NotImplementedError.new("ArgumentsPattern#[]")
-    end
-
     # Generates the string representation of the argument pattern.
     def to_s(io : IO) : Nil
       raise NotImplementedError.new("ArgumentsPattern#to_s")
