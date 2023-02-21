@@ -23,6 +23,11 @@ module Spectator::Mocks
       {% raise "KeywordArguments must be a NamedTuple" unless KeywordArguments <= NamedTuple %}
     end
 
+    # Creates a pattern to match against arguments written as a normal parameter list.
+    def self.build(*args, **kwargs) : AbstractArgumentsPattern
+      new(args, kwargs)
+    end
+
     # Creates an empty set of arguments to match against.
     # Matching against this indicates no arguments were passed.
     def self.none : AbstractArgumentsPattern
