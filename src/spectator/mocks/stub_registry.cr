@@ -1,3 +1,4 @@
+require "string_pool"
 require "./call"
 require "./stub"
 

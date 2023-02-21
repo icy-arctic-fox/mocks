@@ -20,7 +20,7 @@ module Spectator::Mocks
     # *args* are the arguments passed to the method call.
     # A block must be passed that invokes the original method or fallback behavior.
     # The type returned by the block is used to derive the type returned by this method.
-    abstract def call(args : Arguments, & : -> T) : T forall T
+    abstract def call(args : Arguments, & : -> _)
 
     # Checks if the stub can be used for a method call.
     def ===(call : Call) : Bool

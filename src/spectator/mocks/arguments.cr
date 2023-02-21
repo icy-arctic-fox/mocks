@@ -22,7 +22,7 @@ module Spectator::Mocks
     # Creates arguments as they would be available when passed to a method.
     def initialize(@args : Args, @splat_name : Symbol?, @splat : Splat, @kwargs : DoubleSplat)
       {% raise "Positional arguments (generic type Args) must be a NamedTuple" unless Args <= NamedTuple %}
-      {% raise "Splat arguments (generic type Splat) must be a Tuple or Nil" unless Splat <= Tuple || Splat <= Nil %}
+      {% raise "Splat arguments (generic type Splat) must be a Tuple or Nil" unless Splat <= Tuple || Splat == Nil %}
       {% raise "Keyword arguments (generic type DoubleSplat) must be a NamedTuple" unless DoubleSplat <= NamedTuple %}
     end
 
