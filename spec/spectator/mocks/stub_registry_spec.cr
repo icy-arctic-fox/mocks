@@ -372,7 +372,7 @@ describe Spectator::Mocks::StubRegistry do
         registry.add_stub(object2, stub2)
         registry.clear_stubs(object1)
         registry.find_stub(object1, call).should be_nil
-        registry.find_stub(object2, call).should be(stub1)
+        registry.find_stub(object2, call).should be(stub2)
       end
     end
 

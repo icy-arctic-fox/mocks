@@ -24,7 +24,10 @@ module Spectator::Mocks
 
     # Checks if the stub can be used for a method call.
     def ===(call : Call) : Bool
-      raise NotImplementedError.new("Stub#===")
+      return false unless method_name == call.method_name
+      return true unless args = self.args # Match any arguments.
+
+      args === call.arguments
     end
   end
 end
