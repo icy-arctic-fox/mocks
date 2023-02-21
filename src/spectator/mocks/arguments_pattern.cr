@@ -1,11 +1,16 @@
 require "./arguments"
 
 module Spectator::Mocks
+  # Base type that all generic argument pattern types inherit from.
+  # This allows storing all variations of generic implementations.
+  abstract class AbstractArgumentsPattern
+  end
+
   # Arguments matched against to determine if a stub should be used or a call had expected arguments.
   #
   # The *Positional* type parameter must be a `Tuple`.
   # The *KeywordArguments* type parameter must be a `NamedTuple`.
-  class ArgumentsPattern(Positional, KeywordArguments)
+  class ArgumentsPattern(Positional, KeywordArguments) < AbstractArgumentsPattern
     # Positional arguments.
     getter positional : Positional
 
@@ -20,13 +25,13 @@ module Spectator::Mocks
 
     # Creates an empty set of arguments to match against.
     # Matching against this indicates no arguments were passed.
-    def self.none : ArgumentsPattern
-      ArgumentsPattern.new(Tuple.new, NamedTuple.new)
+    def self.none : AbstractArgumentsPattern
+      ArgumentsPattern.new(Tuple.new, NamedTuple.new).as(AbstractArgumentsPattern)
     end
 
     # Returns a value that matches against any and all arguments.
-    def self.any : ArgumentsPattern?
-      nil.as(ArgumentsPattern?)
+    def self.any : AbstractArgumentsPattern?
+      nil.as(AbstractArgumentsPattern?)
     end
 
     # Retrieves the positional argument at the specified index.

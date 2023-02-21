@@ -7,10 +7,10 @@ module Spectator::Mocks
     getter method_name : Symbol
 
     # Arguments passed to the method.
-    getter arguments : Arguments
+    getter arguments : AbstractArguments
 
     # Creates the method call.
-    def initialize(@method_name : Symbol, @arguments : Arguments)
+    def initialize(@method_name : Symbol, @arguments : AbstractArguments = Arguments.none)
     end
 
     # Produces the string representation of the method call.

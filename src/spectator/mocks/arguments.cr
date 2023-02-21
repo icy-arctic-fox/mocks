@@ -1,10 +1,15 @@
 module Spectator::Mocks
+  # Base type that all generic argument types inherit from.
+  # This allows storing all variations of generic implementations.
+  abstract class AbstractArguments
+  end
+
   # Stores arguments passed by a method call.
   #
   # *Args* must be a `NamedTuple` type representing the standard arguments.
   # *Splat* must be a `Tuple` type representing the extra positional arguments.
   # *DoubleSplat* must be a `NamedTuple` type representing extra keyword arguments.
-  class Arguments(Args, Splat, DoubleSplat)
+  class Arguments(Args, Splat, DoubleSplat) < AbstractArguments
     # Named tuple containing the positional arguments in order.
     getter args : Args
 
@@ -27,8 +32,8 @@ module Spectator::Mocks
     end
 
     # Creates an empty set of arguments.
-    def self.none : Arguments
-      Arguments.new(NamedTuple.new, nil, nil, NamedTuple.new)
+    def self.none : AbstractArguments
+      Arguments.new(NamedTuple.new, nil, nil, NamedTuple.new).as(AbstractArguments)
     end
 
     # Retrieves all positional arguments, including the spat arguments, in the order they were passed.

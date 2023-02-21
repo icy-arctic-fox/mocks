@@ -10,10 +10,10 @@ module Spectator::Mocks
 
     # Arguments necessary to trigger the stub.
     # If nil, any arguments will trigger the stub.
-    getter args : ArgumentsPattern?
+    getter args : AbstractArgumentsPattern?
 
     # Creates the stub.
-    def initialize(@method_name : Symbol, @args : ArgumentsPattern? = nil)
+    def initialize(@method_name : Symbol, @args : AbstractArgumentsPattern? = nil)
     end
 
     # Invokes the stub.
