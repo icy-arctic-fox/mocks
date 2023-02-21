@@ -36,6 +36,11 @@ module Spectator::Mocks
       Arguments.new(NamedTuple.new, nil, nil, NamedTuple.new).as(AbstractArguments)
     end
 
+    # Indicates no arguments were passed.
+    def empty?
+      args.empty? && ((splat = @splat).nil? || splat.empty?) && kwargs.empty?
+    end
+
     # Retrieves all positional arguments, including the spat arguments, in the order they were passed.
     def positional : Tuple
       raise NotImplementedError.new("Arguments#positional")
@@ -58,7 +63,35 @@ module Spectator::Mocks
 
     # Generates the string representation of the arguments.
     def to_s(io : IO) : Nil
-      raise NotImplementedError.new("Arguments#to_s")
+      return io << "(no args)" if empty?
+
+      io << '('
+
+      # Add the positional arguments.
+      @args.each_with_index do |_name, value, i|
+        io << ", " if i > 0
+        value.inspect(io)
+      end
+
+      # Add the splat arguments.
+      if (splat = @splat) && !splat.empty?
+        io << ", " unless @args.empty?
+        splat.each_with_index do |value, i|
+          io << ", " if i > 0
+          value.inspect(io)
+        end
+      end
+
+      # Add the keyword arguments.
+      offset = @args.size
+      offset += splat.size if splat = @splat
+      @kwargs.each_with_index(offset) do |key, value, i|
+        io << ", " if i > 0
+        io << key << ": "
+        value.inspect(io)
+      end
+
+      io << ')'
     end
 
     def_equals_and_hash @args, @splat_name, @splat, @kwargs
