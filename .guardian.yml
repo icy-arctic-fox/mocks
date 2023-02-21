@@ -1,0 +1,11 @@
+files: ./src/**/*.cr
+run: crystal spec
+---
+files: ./src/**/*.cr
+run: bin/ameba %file%
+---
+files: ./spec/**/*.cr
+run: crystal spec %file%
+---
+files: ./shard.yml
+run: shards
