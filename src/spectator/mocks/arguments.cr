@@ -43,22 +43,26 @@ module Spectator::Mocks
 
     # Retrieves all positional arguments, including the spat arguments, in the order they were passed.
     def positional : Tuple
-      raise NotImplementedError.new("Arguments#positional")
+      {% if Splat == Nil %}
+        @args.values
+      {% else %}
+        @args.values + @splat
+      {% end %}
     end
 
     # Retrieves the positional, non-splat arguments and additional keyword arguments.
     def named : NamedTuple
-      raise NotImplementedError.new("Arguments#named")
+      @kwargs.merge(@args)
     end
 
     # Retrieves the positional argument at the specified index.
     def [](index : Int)
-      raise NotImplementedError.new("Arguments#[]")
+      positional[index]
     end
 
     # Retrieves a positional, non-splat argument or keyword argument by the specified name.
     def [](arg : Symbol)
-      raise NotImplementedError.new("Arguments#[]")
+      named[arg]
     end
 
     # Generates the string representation of the arguments.
