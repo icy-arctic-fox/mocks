@@ -22,6 +22,16 @@ module Spectator::Mocks
     # The type returned by the block is used to derive the type returned by this method.
     abstract def call(args : Arguments, & : -> _)
 
+    # Constructs the string representation of the stub.
+    def to_s(io : IO) : Nil
+      io << "#" << method_name
+      if args = @arguments
+        io << args
+      else
+        io << "(any args)"
+      end
+    end
+
     # Checks if the stub can be used for a method call.
     def ===(call : Call) : Bool
       return false unless method_name == call.method_name
