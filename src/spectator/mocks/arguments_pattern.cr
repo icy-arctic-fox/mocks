@@ -15,17 +15,17 @@ module Spectator::Mocks
     getter positional : Positional
 
     # Keyword arguments.
-    getter kwargs : KeywordArguments
+    getter named : KeywordArguments
 
     # Creates a pattern to match against arguments passed to a method.
-    def initialize(@positional : Positional, @kwargs : KeywordArguments)
+    def initialize(@positional : Positional, @named : KeywordArguments)
       {% raise "Positional arguments must be a Tuple" unless Positional <= Tuple %}
       {% raise "KeywordArguments must be a NamedTuple" unless KeywordArguments <= NamedTuple %}
     end
 
     # Creates a pattern to match against arguments written as a normal parameter list.
-    def self.build(*args, **kwargs) : AbstractArgumentsPattern
-      new(args, kwargs)
+    def self.build(*args, **named) : AbstractArgumentsPattern
+      new(args, named)
     end
 
     # Creates an empty set of arguments to match against.
@@ -49,7 +49,7 @@ module Spectator::Mocks
       raise NotImplementedError.new("ArgumentsPattern#to_args")
     end
 
-    def_equals_and_hash @positional, @kwargs
+    def_equals_and_hash @positional, @named
 
     # Checks if arguments passed to a method match those specified by this pattern.
     def ===(arguments : Arguments) : Bool
