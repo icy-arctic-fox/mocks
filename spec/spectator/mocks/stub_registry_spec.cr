@@ -1,18 +1,18 @@
 require "../../spec_helper"
 
-def create_registry
+private def create_registry
   Spectator::Mocks::StubRegistry.new
 end
 
-def create_example_stub(args = nil)
+private def create_example_stub(args = nil)
   Spectator::Mocks::NilStub.new(:example, args)
 end
 
-def create_example_call(args = Spectator::Mocks::Arguments.none)
+private def create_example_call(args = Spectator::Mocks::Arguments.none)
   Spectator::Mocks::Call.new(:example, args)
 end
 
-def sample_args
+private def sample_args
   Spectator::Mocks::Arguments.new({arg: 42}, nil, nil, NamedTuple.new)
 end
 

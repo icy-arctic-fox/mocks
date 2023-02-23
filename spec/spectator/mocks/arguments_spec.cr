@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-def create_test_args(args = NamedTuple.new, splat_name = :test_splat, splat = nil, kwargs = NamedTuple.new)
+private def create_test_args(args = NamedTuple.new, splat_name = :test_splat, splat = nil, kwargs = NamedTuple.new)
   Spectator::Mocks::Arguments.new(args, splat ? splat_name : nil, splat, kwargs)
 end
 
