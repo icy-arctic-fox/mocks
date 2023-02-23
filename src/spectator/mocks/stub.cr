@@ -13,7 +13,7 @@ module Spectator::Mocks
     getter arguments : AbstractArgumentsPattern?
 
     # Creates the stub.
-    def initialize(@method_name : Symbol, @args : AbstractArgumentsPattern? = nil)
+    def initialize(@method_name : Symbol, @arguments : AbstractArgumentsPattern? = nil)
     end
 
     # Invokes the stub.
@@ -25,7 +25,7 @@ module Spectator::Mocks
     # Checks if the stub can be used for a method call.
     def ===(call : Call) : Bool
       return false unless method_name == call.method_name
-      return true unless args = arguments # Match any arguments.
+      return true unless args = @arguments # Match any arguments.
 
       args === call.arguments
     end
