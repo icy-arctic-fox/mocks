@@ -41,19 +41,73 @@ module Spectator::Mocks
 
     # Generates the string representation of the argument pattern.
     def to_s(io : IO) : Nil
-      raise NotImplementedError.new("ArgumentsPattern#to_s")
+      return io << "(no args)" if @positional.empty? && @named.empty?
+
+      io << '('
+
+      # Add positional arguments.
+      @positional.each_with_index do |value, i|
+        io << ", " if i > 0
+        value.inspect(io)
+      end
+
+      # Add named arguments.
+      @named.each_with_index(@positional.size) do |key, value, i|
+        io << ", " if i > 0
+        io << key << ": "
+        value.inspect(io)
+      end
+
+      io << ')'
     end
 
     # Returns the arguments as-if they were passed to a method.
     def to_args : Arguments
-      raise NotImplementedError.new("ArgumentsPattern#to_args")
+      Arguments.new(NamedTuple.new, nil, @positional, @named)
     end
 
     def_equals_and_hash @positional, @named
 
     # Checks if arguments passed to a method match those specified by this pattern.
-    def ===(arguments : Arguments) : Bool
-      raise NotImplementedError.new("ArgumentsPattern#===")
+    def ===(arguments : Arguments(Args, Splat, DoubleSplat)) : Bool forall Args, Splat, DoubleSplat
+      {% begin %}
+        {% named_positional_keys = Args.keys.select { |key| KeywordArguments.keys.includes?(key) }
+           keyword_argument_keys = (KeywordArguments.keys - named_positional_keys).sort
+           actual_positional_arg_count = Args.size + (Splat == Nil ? 0 : Splat.size)
+           expected_positional_arg_count = Positional.size + named_positional_keys.size
+           splat_offset = Args.size - named_positional_keys.size %}
+        {% if actual_positional_arg_count != expected_positional_arg_count %}
+          # The number of positional arguments doesn't match.
+          false
+        {% elsif keyword_argument_keys != DoubleSplat.keys.sort %}
+          # There are either more or less keyword arguments than expected.
+          false
+        {% else %}
+          # Check positional arguments.
+          {% for key, i in Args.keys %}
+            {% if named_positional_keys.includes?(key) %}
+              return false unless @named[{{key.symbolize}}] === arguments.args[{{key.symbolize}}]
+            {% else %}
+              return false unless @positional[{{i}}] === arguments.args[{{key.symbolize}}]
+            {% end %}
+          {% end %}
+
+          {% if Splat != Nil %}
+            # Check splat arguments.
+            {% for i in (0...Splat.size) %}
+              return false unless @positional[{{i + splat_offset}}] === arguments.splat[{{i}}]
+            {% end %}
+          {% end %}
+
+          # Check keyword arguments.
+          {% for key in keyword_argument_keys %}
+            return false unless @named[{{key.symbolize}}] === arguments.kwargs[{{key.symbolize}}]
+          {% end %}
+
+          # Comparison of all arguments passed.
+          true
+        {% end %}
+      {% end %}
     end
   end
 end
