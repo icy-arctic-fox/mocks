@@ -33,7 +33,7 @@ module Spectator::Mocks
 
     # Creates an empty set of arguments.
     def self.none : AbstractArguments
-      Arguments.new(NamedTuple.new, nil, nil, NamedTuple.new).as(AbstractArguments)
+      Arguments.new(NamedTuple.new, nil, nil, NamedTuple.new)
     end
 
     # Indicates no arguments were passed.
