@@ -400,11 +400,6 @@ describe Spectator::Mocks::Arguments do
     end
 
     it "returns false for unequal arguments" do
-      args = {arg: 42}
-      splat_name = :test_splat
-      splat = {"foo", :xyz}
-      kwargs = {extra: "value"}
-
       arguments1 = Spectator::Mocks::Arguments.new({arg: 42}, :test_splat, {"foo", :xyz}, {extra: "value"})
       arguments2 = Spectator::Mocks::Arguments.new({arg: 0}, :test_splat, Tuple.new, {other: "value"})
       arguments1.should_not eq(arguments2)
