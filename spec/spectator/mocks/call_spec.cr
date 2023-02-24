@@ -8,6 +8,14 @@ describe Spectator::Mocks::Call do
     call.arguments.should be(args)
   end
 
+  describe ".new" do
+    it "creates an instance with empty arguments" do
+      call = Spectator::Mocks::Call.new(:test_method)
+      call.method_name.should eq(:test_method)
+      call.arguments.empty?.should be_true
+    end
+  end
+
   describe "#to_s" do
     it "contains the method name" do
       call = Spectator::Mocks::Call.new(:test_method)

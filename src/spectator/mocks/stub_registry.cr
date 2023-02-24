@@ -26,7 +26,7 @@ module Spectator::Mocks
       getter stubs = [] of Stub
 
       # Method calls made to an object.
-      getter calls = [] of Call
+      getter calls = [] of AbstractCall
     end
 
     # Entries are stored and lazily created with a hash.
@@ -67,12 +67,12 @@ module Spectator::Mocks
     end
 
     # Retrieves all method calls made to an object.
-    def calls(object) : Enumerable(Call)
+    def calls(object) : Enumerable
       key = generate_key(object)
       if entry = @entries[key]?
         entry.calls
       else
-        [] of Call
+        [] of AbstractCall
       end
     end
 
