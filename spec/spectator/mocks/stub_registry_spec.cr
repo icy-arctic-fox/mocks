@@ -70,7 +70,7 @@ describe Spectator::Mocks::StubRegistry do
         registry = create_registry
         object = %w[foo bar]
 
-        stub1 = Spectator::Mocks::NilStub.new(:foo, Spectator::Mocks::ArgumentsPattern.build(Int32))
+        stub1 = Spectator::Mocks::NilStub.new(:foo, Spectator::Mocks::ArgumentsPattern.build(40..45))
         stub2 = Spectator::Mocks::NilStub.new(:foo, Spectator::Mocks::ArgumentsPattern.build(String))
         call = Spectator::Mocks::Call.new(:foo, sample_args)
 
@@ -307,7 +307,7 @@ describe Spectator::Mocks::StubRegistry do
         registry = create_registry
         object = 42
 
-        stub1 = Spectator::Mocks::NilStub.new(:foo, Spectator::Mocks::ArgumentsPattern.build(Int32))
+        stub1 = Spectator::Mocks::NilStub.new(:foo, Spectator::Mocks::ArgumentsPattern.build(40..45))
         stub2 = Spectator::Mocks::NilStub.new(:foo, Spectator::Mocks::ArgumentsPattern.build(String))
         call = Spectator::Mocks::Call.new(:foo, sample_args)
 
