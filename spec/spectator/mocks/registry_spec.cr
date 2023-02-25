@@ -1,7 +1,7 @@
 require "../../spec_helper"
 
 private def create_registry
-  Spectator::Mocks::StubRegistry.new
+  Spectator::Mocks::Registry.new
 end
 
 private def create_example_stub(args = nil)
@@ -20,7 +20,7 @@ record ExampleRecord1, value : Int32
 
 record ExampleRecord2, value : Int32
 
-describe Spectator::Mocks::StubRegistry do
+describe Spectator::Mocks::Registry do
   context "with reference types" do
     it "stores a stub for an object" do
       registry = create_registry

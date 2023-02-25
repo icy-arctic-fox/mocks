@@ -12,7 +12,7 @@ module Spectator::Mocks
   #   This also implies that two separate values with the same content will be tracked as the same object.
   #
   # See: https://crystal-lang.org/reference/1.7/syntax_and_semantics/structs.html
-  class StubRegistry
+  class Registry
     # Entry keys consist of two elements - the type's name and it's location in memory.
     # For value-types, it's byte-representation is is stored in a pool and that location is used.
     #
