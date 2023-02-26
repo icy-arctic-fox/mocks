@@ -4,6 +4,66 @@ private def create_test_args(args = NamedTuple.new, splat_name = :test_splat, sp
   Spectator::Mocks::Arguments.new(args, splat ? splat_name : nil, splat, kwargs)
 end
 
+private def capture0
+  Spectator::Mocks::Arguments.capture
+end
+
+private def capture1(arg1, arg2, arg3)
+  Spectator::Mocks::Arguments.capture
+end
+
+private def capture2(arg1, arg2, arg3, **captured_double_splat)
+  Spectator::Mocks::Arguments.capture
+end
+
+private def capture3(arg1, arg2, arg3, *captured_splat)
+  Spectator::Mocks::Arguments.capture
+end
+
+private def capture4(arg1, arg2, arg3, *captured_splat, **captured_double_splat)
+  Spectator::Mocks::Arguments.capture
+end
+
+private def capture5(*captured_splat)
+  Spectator::Mocks::Arguments.capture
+end
+
+private def capture6(*captured_splat, **captured_double_splat)
+  Spectator::Mocks::Arguments.capture
+end
+
+private def capture7(*captured_splat, kwarg1, kwarg2)
+  Spectator::Mocks::Arguments.capture
+end
+
+private def capture8(*captured_splat, kwarg1, kwarg2, **captured_double_splat)
+  Spectator::Mocks::Arguments.capture
+end
+
+private def capture9(*, kwarg1, kwarg2)
+  Spectator::Mocks::Arguments.capture
+end
+
+private def capture10(*, kwarg1, kwarg2, **captured_double_splat)
+  Spectator::Mocks::Arguments.capture
+end
+
+private def capture11(arg1, arg2, *, kwarg1, kwarg2)
+  Spectator::Mocks::Arguments.capture
+end
+
+private def capture12(arg1, arg2, *, kwarg1, kwarg2, **captured_double_splat)
+  Spectator::Mocks::Arguments.capture
+end
+
+private def capture13(arg1, arg2, *captured_splat, kwarg1, kwarg2)
+  Spectator::Mocks::Arguments.capture
+end
+
+private def capture14(arg1, arg2, *captured_splat, kwarg1, kwarg2, **captured_double_splat)
+  Spectator::Mocks::Arguments.capture
+end
+
 describe Spectator::Mocks::Arguments do
   it "sets attributes" do
     args = {arg: 42}
@@ -25,6 +85,128 @@ describe Spectator::Mocks::Arguments do
       none.splat_name.should be_nil
       none.splat.should be_nil
       none.kwargs.empty?.should be_true
+    end
+  end
+
+  describe ".capture" do
+    it "captures empty arguments" do
+      arguments = capture0
+      arguments.args.should eq(NamedTuple.new)
+      arguments.splat_name.should be_nil
+      arguments.splat.should be_nil
+      arguments.kwargs.should eq(NamedTuple.new)
+    end
+
+    it "captures positional arguments" do
+      arguments = capture1(1, 2, 3)
+      arguments.args.should eq({arg1: 1, arg2: 2, arg3: 3})
+      arguments.splat_name.should be_nil
+      arguments.splat.should be_nil
+      arguments.kwargs.should eq(NamedTuple.new)
+    end
+
+    it "captures positional arguments and a double splat" do
+      arguments = capture2(1, 2, 3, extra: 4, additional: 5)
+      arguments.args.should eq({arg1: 1, arg2: 2, arg3: 3})
+      arguments.splat_name.should be_nil
+      arguments.splat.should be_nil
+      arguments.kwargs.should eq({extra: 4, additional: 5})
+    end
+
+    it "captures positional arguments and a splat" do
+      arguments = capture3(1, 2, 3, 4, 5, 6)
+      arguments.args.should eq({arg1: 1, arg2: 2, arg3: 3})
+      arguments.splat_name.should eq(:captured_splat)
+      arguments.splat.should eq({4, 5, 6})
+      arguments.kwargs.should eq(NamedTuple.new)
+    end
+
+    it "captures positional arguments, a splat, and a double splat" do
+      arguments = capture4(1, 2, 3, 4, 5, 6, extra: 7, additional: 8)
+      arguments.args.should eq({arg1: 1, arg2: 2, arg3: 3})
+      arguments.splat_name.should eq(:captured_splat)
+      arguments.splat.should eq({4, 5, 6})
+      arguments.kwargs.should eq({extra: 7, additional: 8})
+    end
+
+    it "captures a splat" do
+      arguments = capture5(1, 2, 3)
+      arguments.args.should eq(NamedTuple.new)
+      arguments.splat_name.should eq(:captured_splat)
+      arguments.splat.should eq({1, 2, 3})
+      arguments.kwargs.should eq(NamedTuple.new)
+    end
+
+    it "captures a splat and double splat" do
+      arguments = capture6(1, 2, 3, extra: 4, another: 5)
+      arguments.args.should eq(NamedTuple.new)
+      arguments.splat_name.should eq(:captured_splat)
+      arguments.splat.should eq({1, 2, 3})
+      arguments.kwargs.should eq({extra: 4, another: 5})
+    end
+
+    it "captures a splat and keyword arguments" do
+      arguments = capture7(1, 2, 3, kwarg1: 4, kwarg2: 5)
+      arguments.args.should eq(NamedTuple.new)
+      arguments.splat_name.should eq(:captured_splat)
+      arguments.splat.should eq({1, 2, 3})
+      arguments.kwargs.should eq({kwarg1: 4, kwarg2: 5})
+    end
+
+    it "captures a splat, keyword arguments, and a double splat" do
+      arguments = capture8(1, 2, 3, kwarg1: 4, kwarg2: 5, additional: 6, more: 7)
+      arguments.args.should eq(NamedTuple.new)
+      arguments.splat_name.should eq(:captured_splat)
+      arguments.splat.should eq({1, 2, 3})
+      arguments.kwargs.should eq({kwarg1: 4, kwarg2: 5, additional: 6, more: 7})
+    end
+
+    it "captures keyword arguments" do
+      arguments = capture9(kwarg1: 42, kwarg2: 0)
+      arguments.args.should eq(NamedTuple.new)
+      arguments.splat_name.should be_nil
+      arguments.splat.should be_nil
+      arguments.kwargs.should eq({kwarg1: 42, kwarg2: 0})
+    end
+
+    it "captures keyword arguments and a double splat" do
+      arguments = capture10(kwarg1: 42, kwarg2: 0, additional: 1, more: 2)
+      arguments.args.should eq(NamedTuple.new)
+      arguments.splat_name.should be_nil
+      arguments.splat.should be_nil
+      arguments.kwargs.should eq({kwarg1: 42, kwarg2: 0, additional: 1, more: 2})
+    end
+
+    it "captures positional arguments and keyword arguments" do
+      arguments = capture11(42, 0, kwarg1: 1, kwarg2: 2)
+      arguments.args.should eq({arg1: 42, arg2: 0})
+      arguments.splat_name.should be_nil
+      arguments.splat.should be_nil
+      arguments.kwargs.should eq({kwarg1: 1, kwarg2: 2})
+    end
+
+    it "captures positional arguments, keyword arguments, and a double splat" do
+      arguments = capture12(42, 0, kwarg1: 1, kwarg2: 2, additional: 3, more: 4)
+      arguments.args.should eq({arg1: 42, arg2: 0})
+      arguments.splat_name.should be_nil
+      arguments.splat.should be_nil
+      arguments.kwargs.should eq({kwarg1: 1, kwarg2: 2, additional: 3, more: 4})
+    end
+
+    it "captures positional arguments, a splat, and keyword arguments" do
+      arguments = capture14(1, 2, 3, 4, kwarg1: 5, kwarg2: 6)
+      arguments.args.should eq({arg1: 1, arg2: 2})
+      arguments.splat_name.should eq(:captured_splat)
+      arguments.splat.should eq({3, 4})
+      arguments.kwargs.should eq({kwarg1: 5, kwarg2: 6})
+    end
+
+    it "captures all parameter types" do
+      arguments = capture14(1, 2, 3, 4, kwarg1: 5, kwarg2: 6, additional: 7, more: 8)
+      arguments.args.should eq({arg1: 1, arg2: 2})
+      arguments.splat_name.should eq(:captured_splat)
+      arguments.splat.should eq({3, 4})
+      arguments.kwargs.should eq({kwarg1: 5, kwarg2: 6, additional: 7, more: 8})
     end
   end
 

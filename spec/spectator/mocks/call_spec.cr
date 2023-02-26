@@ -1,5 +1,15 @@
 require "../../spec_helper"
 
+private def capture
+  Spectator::Mocks::Call.capture
+end
+
+private def capture(arg1, arg2, *splat, kwarg1, kwarg2, **double_splat)
+  call = Spectator::Mocks::Call.capture
+  args = Spectator::Mocks::Arguments.capture
+  {call, args}
+end
+
 describe Spectator::Mocks::Call do
   it "stores attributes" do
     args = Spectator::Mocks::Arguments.new({arg: 42}, nil, nil, NamedTuple.new)
@@ -13,6 +23,18 @@ describe Spectator::Mocks::Call do
       call = Spectator::Mocks::Call.new(:test_method)
       call.method_name.should eq(:test_method)
       call.arguments.empty?.should be_true
+    end
+  end
+
+  describe ".capture" do
+    it "captures the method name" do
+      call = capture
+      call.method_name.should eq(:capture)
+    end
+
+    it "captures the arguments" do
+      call, args = capture(1, 2, 3, kwarg1: 4, kwarg2: 5, additional: 6)
+      call.arguments.should eq(args)
     end
   end
 
