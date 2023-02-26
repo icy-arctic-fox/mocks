@@ -4,11 +4,15 @@ require "./stub"
 module Spectator::Mocks
   # Stub that does nothing and returns nil.
   class NilStub < Stub
-    def call(args : Arguments, & : -> _)
-      type = typeof(yield)
-      return if type.nilable?
-
-      raise TypeCastError.new("Attempted to return nil from stub, but method `#{method_name}` expects to return #{type}")
+    def call(args : Arguments, & : -> T) : T forall T
+      {% if T <= NoReturn %}
+        # NoReturn <= Nil is true, an explicit check for it is required.
+        raise TypeCastError.new("Attempted to return nil from stub, but method `#{method_name}` must not return")
+      {% elsif !(T <= Nil) %}
+        # A non-nil value is expected to be returned.
+        # Raising prevents a compilation error.
+        raise TypeCastError.new("Attempted to return nil from stub, but method `#{method_name}` expects type #{T}")
+      {% end %}
     end
   end
 end
