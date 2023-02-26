@@ -45,45 +45,63 @@ module Spectator::Mocks
            value = name.value
            name = name.var
          elsif name.is_a?(Assign)
-           type = nil
+           type = :none
            value = name.value
            name = name.target
          else
            raise "Unexpected stub syntax"
          end %}
       def {{name}}(*args, **kwargs){% if type %} : {{type}}{% end %}
-        {% if value %}
-          stubbed_method_body { {{value}} }
+        {% if value.is_a?(Nop) %}
+          stubbed_method_body(:unexpected, as: {{type}})
         {% else %}
-          stubbed_method_body(:unexpected)
+          stubbed_method_body(as: {{type}}) { {{value}} }
         {% end %}
       end
 
       def {{name}}(*args, **kwargs, &){% if type %} : {{type}}{% end %}
-        {% if value %}
-          stubbed_method_body { {{value}} }
+        {% if value.is_a?(Nop) %}
+          stubbed_method_body(:unexpected, as: {{type}})
         {% else %}
-          stubbed_method_body(:unexpected)
+          stubbed_method_body(as: {{type}}) { {{value}} }
         {% end %}
       end
     end
 
-    private macro stubbed_method_body(behavior = :block, &block)
+    private macro stubbed_method_body(behavior = :block, *, as type = :none, &block)
       %call = ::Spectator::Mocks::Call.capture
       if %stub = __mocks.find_stub(%call)
         %stub.call(%call.arguments) do
-          stubbed_method_behavior({{behavior}}) {{block}}
+          stubbed_method_behavior({{behavior}}, as: {{type}}) {{block}}
         end
       else
-        stubbed_method_behavior({{behavior}}) {{block}}
+        stubbed_method_behavior({{behavior}}, as: {{type}}) {{block}}
       end
     end
 
-    private macro stubbed_method_behavior(behavior = :block, &block)
-      {% if behavior == :block %}{{block.body}}
-      {% elsif behavior == :previous %}adjusted_previous_def
-      {% elsif behavior == :unexpected %}raise ::Spectator::Mocks::UnexpectedMessage.new({{@def.name.symbolize}})
-      {% else %}{% raise "Unknown stubbed method body behavior: #{behavior}" %}{% end %}
+    private macro stubbed_method_behavior(behavior = :block, *, as type = :none, &block)
+      {% if behavior == :block %}
+        %value = begin
+          {{block.body}}
+        end
+        {% if type != :none %}
+          %value.as({{type.id}})
+        {% end %}
+      {% elsif behavior == :previous %}
+        %value = adjusted_previous_def
+        {% if type != :none %}
+          %value.as({{type.id}})
+        {% end %}
+      {% elsif behavior == :unexpected %}
+        raise ::Spectator::Mocks::UnexpectedMessage.new({{@def.name.symbolize}})
+        {% if type != :none %}
+          # Trick compiler into thinking this is the returned type instead of `NoReturn` (from the raise).
+          # This line should not be reached.
+          {{type.id}}.allocate
+        {% end %}
+      {% else %}
+        {% raise "Unknown stubbed method body behavior: #{behavior}" %}
+      {% end %}
     end
 
     private macro adjusted_previous_def
