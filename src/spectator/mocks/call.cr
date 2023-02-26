@@ -23,6 +23,12 @@ module Spectator::Mocks
       new(method_name, Arguments.none)
     end
 
+    # Creates a method call containing from the current invocation.
+    macro capture
+      %args = ::Spectator::Mocks::Arguments.capture
+      {{@type.name(generic_args: false)}}.new({{@def.name.symbolize}}, %args)
+    end
+
     # Produces the string representation of the method call.
     def to_s(io : IO) : Nil
       io << '#' << method_name << arguments

@@ -36,6 +36,29 @@ module Spectator::Mocks
       Arguments.new(NamedTuple.new, nil, nil, NamedTuple.new)
     end
 
+    # Creates arguments from the ones passed to the containing method.
+    macro capture
+      {% if splat_index = @def.splat_index
+           splat = @def.args[splat_index]
+         else
+           splat = nil
+         end %}
+      %args = ::NamedTuple.new({% for arg, i in @def.args %}
+        {% if !splat_index || i < splat_index %}{{arg.internal_name.stringify}}: {{arg.internal_name}},{% end %}
+      {% end %})
+      {% if splat %}
+        %splat_name = {{(name = splat.internal_name).empty? ? nil : name.symbolize}}
+        %splat = {{(name = splat.internal_name).empty? ? nil : name}}
+      {% else %}
+        %splat_name = nil
+        %splat = nil
+      {% end %}
+      %kwargs = ::NamedTuple.new({% for arg, i in @def.args %}
+        {% if splat && i > splat_index %}{{arg.internal_name.stringify}}: {{arg.internal_name}}, {% end %}
+      {% end %}).merge({{@def.double_splat}})
+      {{@type.name(generic_args: false)}}.new(%args, %splat_name, %splat, %kwargs)
+    end
+
     # Indicates no arguments were passed.
     def empty?
       args.empty? && ((splat = @splat).nil? || splat.empty?) && kwargs.empty?
