@@ -763,5 +763,64 @@ describe Spectator::Mocks::ArgumentsPattern do
         (pattern === arguments).should be_false
       end
     end
+
+    it "returns false for an incompatible Range" do
+      arguments = create_test_args("foo", 42, :xyz)
+      pattern = Spectator::Mocks::ArgumentsPattern.build((0..10), 42, :xyz)
+
+      (pattern === arguments).should be_false
+    end
+
+    it "returns true when comparing identical Ranges" do
+      arguments = create_test_args((0..10), 42, :xyz)
+      pattern = Spectator::Mocks::ArgumentsPattern.build((0..10), 42, :xyz)
+
+      (pattern === arguments).should be_true
+    end
+
+    it "returns false for an incompatible Proc" do
+      arguments = create_test_args("foo", 42, :xyz)
+      pattern = Spectator::Mocks::ArgumentsPattern.build(->(x : Int32) { x.even? }, 42, :xyz)
+
+      (pattern === arguments).should be_false
+    end
+
+    it "returns true when comparing identical Procs" do
+      proc = ->(x : Int32) { x.even? }
+      arguments = create_test_args(proc, 42, :xyz)
+      pattern = Spectator::Mocks::ArgumentsPattern.build(proc, 42, :xyz)
+
+      (pattern === arguments).should be_true
+    end
+
+    it "returns false for an incompatible Proc (argument count)" do
+      arguments = create_test_args("foo", 42, :xyz)
+      pattern = Spectator::Mocks::ArgumentsPattern.build(->(x : Int32, y : Int32) { (x + y).even? }, 42, :xyz)
+
+      (pattern === arguments).should be_false
+    end
+
+    it "returns true when comparing identical Procs (argument count)" do
+      proc = ->(x : Int32, y : Int32) { (x + y).even? }
+      arguments = create_test_args(proc, 42, :xyz)
+      pattern = Spectator::Mocks::ArgumentsPattern.build(proc, 42, :xyz)
+
+      (pattern === arguments).should be_true
+    end
+
+    it "returns false for an incompatible Regex" do
+      arguments = create_test_args("foo", 42, :xyz)
+      pattern = Spectator::Mocks::ArgumentsPattern.build("foo", /bar/, :xyz)
+
+      (pattern === arguments).should be_false
+    end
+
+    it "returns true when comparing identical Regexes" do
+      regex = /bar/
+      arguments = create_test_args(regex, 42, :xyz)
+      pattern = Spectator::Mocks::ArgumentsPattern.build(regex, 42, :xyz)
+
+      (pattern === arguments).should be_true
+    end
   end
 end
