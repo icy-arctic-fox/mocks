@@ -127,7 +127,7 @@ module Spectator::Mocks
          (right.is_a?(typeof(left.end)) || right.is_a?(Comparable(typeof(left.end))))
         left === right
       else
-        false
+        left == right
       end
     end
   end
