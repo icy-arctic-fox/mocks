@@ -130,5 +130,17 @@ module Spectator::Mocks
         left == right
       end
     end
+
+    # Specialization of comparison for procs.
+    # The proc must accept a single argument of compatible type to *right*.
+    # If this condition is satisfied, then the proc can be called (via ===).
+    # Otherwise, compare the proc via standard equality.
+    private def compare(left : Proc(*T, R), right : U) forall T, R, U
+      {% if T.size == 1 && U <= T[0] %}
+        left === right
+      {% else %}
+        left == right
+      {% end %}
+    end
   end
 end
