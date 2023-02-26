@@ -92,6 +92,19 @@ describe Spectator::Mocks::Registry do
         registry.add_stub(object2, stub2)
         registry.find_stub(object1, call).should be(stub1)
       end
+
+      it "returns a newer stub when multiple match" do
+        registry = create_registry
+        object = %w[foo bar]
+
+        stub1 = create_example_stub
+        stub2 = create_example_stub
+        call = create_example_call
+
+        registry.add_stub(object, stub1)
+        registry.add_stub(object, stub2)
+        registry.find_stub(object, call).should be(stub2)
+      end
     end
 
     describe "#clear_stubs" do
@@ -328,6 +341,19 @@ describe Spectator::Mocks::Registry do
         registry.add_stub(object1, stub1)
         registry.add_stub(object2, stub2)
         registry.find_stub(object1, call).should be(stub1)
+      end
+
+      it "returns a newer stub when multiple match" do
+        registry = create_registry
+        object = ExampleRecord1.new(42)
+
+        stub1 = create_example_stub
+        stub2 = create_example_stub
+        call = create_example_call
+
+        registry.add_stub(object, stub1)
+        registry.add_stub(object, stub2)
+        registry.find_stub(object, call).should be(stub2)
       end
     end
 

@@ -45,12 +45,14 @@ module Spectator::Mocks
 
     # Finds a stub suitable stub for a method call.
     # Returns nil if no stub was found.
+    # Stubs are searched in *reverse* order so that newly define stubs take precedence.
     def find_stub(object, call : Call) : Stub?
       key = generate_key(object)
       return unless entry = @entries[key]?
 
-      entry.stubs.find do |stub|
-        stub === call
+      # Reverse search to ensure later-defined stubs take precedence.
+      entry.stubs.reverse_each do |stub|
+        return stub if stub === call
       end
     end
 
