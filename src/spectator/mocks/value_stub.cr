@@ -9,7 +9,7 @@ module Spectator::Mocks
       {% if T <= U %}
         @value
       {% else %}
-        raise TypeCastError.new("Attempted to return #{@value.inspect} (#{U}) from stub, but method `#{method_name}` expects type #{T}")
+        raise TypeCastError.new("Attempted to return #{@value.inspect} (#{T}) from stub, but method `#{method_name}` expects type #{U}")
       {% end %}
     end
   end
