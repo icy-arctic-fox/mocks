@@ -35,7 +35,11 @@ module Spectator::Mocks
         stub_any_args {{method}}
 
       {% else %}
-        # TODO: Stub all methods matching the specified name.
+        # Stub all methods matching the specified name.
+        # TODO: Handle ancestors.
+        {% for m in @type.methods %}
+          {% if m.name == method.id %}stub {{m}}{% end %}
+        {% end %}
       {% end %}
     end
 
