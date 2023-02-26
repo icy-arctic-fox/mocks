@@ -8,7 +8,7 @@ module Spectator::Mocks
       {% if T <= NoReturn %}
         # NoReturn <= Nil is true, an explicit check for it is required.
         raise TypeCastError.new("Attempted to return nil from stub, but method `#{method_name}` must not return")
-      {% elsif !(T <= Nil) %}
+      {% elsif !(Nil <= T) %}
         # A non-nil value is expected to be returned.
         # Raising prevents a compilation error.
         raise TypeCastError.new("Attempted to return nil from stub, but method `#{method_name}` expects type #{T}")

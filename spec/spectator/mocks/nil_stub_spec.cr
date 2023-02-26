@@ -29,5 +29,10 @@ describe Spectator::Mocks::NilStub do
         stub.call(no_args) { 42 }
       end
     end
+
+    it "supports nilable types" do
+      stub = create_stub
+      stub.call(no_args) { 42.as(Int32?) }.should be_nil
+    end
   end
 end
