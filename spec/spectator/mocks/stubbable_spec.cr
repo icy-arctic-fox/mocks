@@ -7,9 +7,16 @@ private class StubbableType
     :default
   end
 
+  stub def nil_method_syntax : Nil
+  end
+
   stub type_decl_syntax : Symbol
 
+  stub nil_type_decl_syntax : Nil
+
   stub type_decl_value_syntax : Symbol = :default
+
+  stub nil_type_decl_value_syntax : Int32? = nil
 
   def existing_method_syntax(arg)
     arg
@@ -28,6 +35,10 @@ private class StubbableType
   def proxy_visibility_syntax(arg)
     visibility_syntax(arg)
   end
+end
+
+private def nil_stub(method_name)
+  Spectator::Mocks::NilStub.new(method_name)
 end
 
 private def value_stub(method_name, value)
@@ -55,6 +66,17 @@ describe Spectator::Mocks::Stubbable do
         object.__mocks.add_stub(stub)
         expect_raises(TypeCastError, /Symbol/) { object.method_syntax }
       end
+
+      it "supports Nil as a type" do
+        object = StubbableType.new
+        stub = value_stub(:nil_method_syntax, 42)
+        object.__mocks.add_stub(stub)
+        expect_raises(TypeCastError, /Nil/) { object.nil_method_syntax }
+
+        stub = nil_stub(:nil_method_syntax)
+        object.__mocks.add_stub(stub)
+        object.nil_method_syntax.should be_nil
+      end
     end
 
     context "with a type declaration" do
@@ -76,6 +98,17 @@ describe Spectator::Mocks::Stubbable do
         object.__mocks.add_stub(stub)
         expect_raises(TypeCastError, /Symbol/) { object.type_decl_syntax }
       end
+
+      it "supports Nil as a type" do
+        object = StubbableType.new
+        stub = value_stub(:nil_type_decl_syntax, 42)
+        object.__mocks.add_stub(stub)
+        expect_raises(TypeCastError, /Nil/) { object.nil_type_decl_syntax }
+
+        stub = nil_stub(:nil_type_decl_syntax)
+        object.__mocks.add_stub(stub)
+        object.nil_type_decl_syntax.should be_nil
+      end
     end
 
     context "with a type declaration and value" do
@@ -96,6 +129,17 @@ describe Spectator::Mocks::Stubbable do
         stub = value_stub(:type_decl_value_syntax, 42)
         object.__mocks.add_stub(stub)
         expect_raises(TypeCastError, /Symbol/) { object.type_decl_value_syntax }
+      end
+
+      it "supports nil as a value" do
+        object = StubbableType.new
+        stub = value_stub(:nil_type_decl_value_syntax, 42)
+        object.__mocks.add_stub(stub)
+        object.nil_type_decl_value_syntax.should eq(42)
+
+        stub = nil_stub(:nil_type_decl_value_syntax)
+        object.__mocks.add_stub(stub)
+        object.nil_type_decl_value_syntax.should be_nil
       end
     end
 
