@@ -86,28 +86,49 @@ module Spectator::Mocks
           # Check positional arguments.
           {% for key, i in Args.keys %}
             {% if named_positional_keys.includes?(key) %}
-              return false unless @named[{{key.symbolize}}] === arguments.args[{{key.symbolize}}]
+              return false unless compare(@named[{{key.symbolize}}], arguments.args[{{key.symbolize}}])
             {% else %}
-              return false unless @positional[{{i}}] === arguments.args[{{key.symbolize}}]
+              return false unless compare(@positional[{{i}}], arguments.args[{{key.symbolize}}])
             {% end %}
           {% end %}
 
           {% if Splat != Nil %}
             # Check splat arguments.
             {% for i in (0...Splat.size) %}
-              return false unless @positional[{{i + splat_offset}}] === arguments.splat[{{i}}]
+              return false unless compare(@positional[{{i + splat_offset}}], arguments.splat[{{i}}])
             {% end %}
           {% end %}
 
           # Check keyword arguments.
           {% for key in keyword_argument_keys %}
-            return false unless @named[{{key.symbolize}}] === arguments.kwargs[{{key.symbolize}}]
+            return false unless compare(@named[{{key.symbolize}}], arguments.kwargs[{{key.symbolize}}])
           {% end %}
 
           # Comparison of all arguments passed.
           true
         {% end %}
       {% end %}
+    end
+
+    # Default comparison of two values.
+    # Calls the case equality operator.
+    private def compare(left, right)
+      left === right
+    end
+
+    # Specialization of comparison for ranges.
+    # The standard library's `Range#===` method does not restrict the argument's type.
+    # If *any* combination of arguments can't be compared, then a compiler error is raised.
+    # This method performs a check that satisfies the compiler by ensuring the types are compatible.
+    private def compare(left : Range, right : T) forall T
+      # Ensure the right-side is a type of the range's beginning and end or it is comparable with those types.
+      # The `Comparable` mix-in is a standard module that provides the comparison operators that `Range` looks for.
+      if (right.is_a?(typeof(left.begin)) || right.is_a?(Comparable(typeof(left.begin)))) &&
+         (right.is_a?(typeof(left.end)) || right.is_a?(Comparable(typeof(left.end))))
+        left === right
+      else
+        false
+      end
     end
   end
 end
