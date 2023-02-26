@@ -29,5 +29,15 @@ describe Spectator::Mocks::ValueStub do
         stub.call(no_args) { :xyz }
       end
     end
+
+    it "supports union types" do
+      stub = create_stub
+      stub.call(no_args) { "foo".as(String | Int32) }.should eq(42)
+    end
+
+    it "supports nilable types" do
+      stub = create_stub
+      stub.call(no_args) { 0.as(Int32?) }.should eq(42)
+    end
   end
 end
