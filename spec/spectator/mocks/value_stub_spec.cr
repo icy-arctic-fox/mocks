@@ -1,17 +1,17 @@
 require "../../spec_helper"
 
-private def create_stub(args = nil)
-  Spectator::Mocks::NilStub.new(:test_method, args)
+private def create_stub(value = 42, args = nil)
+  Spectator::Mocks::ValueStub.new(:test_method, value, args)
 end
 
 private def no_args
   Spectator::Mocks::Arguments.none
 end
 
-describe Spectator::Mocks::NilStub do
+describe Spectator::Mocks::ValueStub do
   it "sets the attributes" do
     args = Spectator::Mocks::ArgumentsPattern.build(42)
-    stub = Spectator::Mocks::NilStub.new(:test_method, args)
+    stub = Spectator::Mocks::ValueStub.new(:test_method, :xyz, args)
 
     stub.method_name.should eq(:test_method)
     stub.arguments.should be(args)
@@ -20,13 +20,13 @@ describe Spectator::Mocks::NilStub do
   describe "#call" do
     it "returns nil" do
       stub = create_stub
-      stub.call(no_args) { nil }.should be_nil
+      stub.call(no_args) { 0 }.should eq(42)
     end
 
     it "raises when return type can't be nil" do
       stub = create_stub
-      expect_raises(TypeCastError, /nil/) do
-        stub.call(no_args) { 42 }
+      expect_raises(TypeCastError, /Int32/) do
+        stub.call(no_args) { :xyz }
       end
     end
   end

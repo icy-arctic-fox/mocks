@@ -1,4 +1,5 @@
 module Spectator::Mocks
+  # Stub that returns a static value.
   class ValueStub(T) < Stub
     def initialize(method_name : Symbol, @value : T, arguments : AbstractArgumentsPattern? = nil)
       super(method_name, arguments)
