@@ -108,8 +108,57 @@ module Spectator::Mocks
       {% end %}
     end
 
-    private macro adjusted_previous_def
-      previous_def # TODO
+    # Reconstructs a `previous_def` or `super` call.
+    # The compiler (currently) does not forward the block when `previous_def` and `super` are used.
+    # This macro expands the call so that all arguments and the block are passed along.
+    # See: https://github.com/crystal-lang/crystal/issues/10399
+    private macro adjusted_previous_def(keyword = :previous_def)
+      {{ if @def.accepts_block?
+           # A block is involved, manually reconstruct the call with all arguments and the block.
+           call = keyword + "("
+
+           # Iterate through all of the arguments,
+           # but the logic is slightly different when a splat it used.
+           if @def.splat_index
+             @def.args.each_with_index do |arg, i|
+               if i == @def.splat_index
+                 # Encountered the splat, prefix its name (if any).
+                 call += "*#{arg.internal_name}, "
+                 # Insert the double-splat immediately after.
+                 # Any additional explicit keyword arguments will override these values.
+                 original += "**#{@def.double_splat}, " if @def.double_splat
+               elsif i > @def.splat_index
+                 # After the splat, arguments must be named.
+                 call += "#{arg.name}: #{arg.internal_name}, "
+               else
+                 # Before the splat, use positional syntax.
+                 call += "#{arg.internal_name}, "
+               end
+             end
+           else
+             # No splat, add each argument.
+             call += @def.args.map(&.internal_name).join(", ")
+             # Add double-splat if it exists.
+             call += "**#{@def.double_splat}, " if @def.double_splat
+           end
+
+           # If the block is captured (`&block` syntax), it must be passed along as an argument.
+           # Otherwise, use `yield` to forward the block.
+           captured = if @def.block_arg && @def.block_arg.name && @def.block_arg.name.size > 0
+                        @def.block_arg.name
+                      else
+                        nil
+                      end
+
+           # Append the block.
+           call += "&#{captured}" if captured
+           call += ")"
+           call += " { |*__args| yield *__args }" unless captured
+           call
+         else
+           # No block involved, don't need a workaround.
+           keyword
+         end.id }}
     end
   end
 end
