@@ -11,7 +11,8 @@ module Spectator::Mocks
       # TODO: Apply to ancestors and mix-ins.
       {% for method in @type.methods %}
         {% unless ::Spectator::Mocks::Stubbable::Automatic::SKIPPED_METHOD_NAMES.includes?(method.name.symbolize) ||
-                    method.name.starts_with?("__") %}
+                    method.name.starts_with?("__") ||
+                    method.annotation(Primitive) %}
           stub {{method}}
         {% end %}
       {% end %}
