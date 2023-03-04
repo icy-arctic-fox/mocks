@@ -113,3 +113,5 @@ module Spectator::Mocks
     end
   end
 end
+
+require "./stubbable/*"
