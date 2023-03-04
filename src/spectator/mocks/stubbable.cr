@@ -27,7 +27,7 @@ module Spectator::Mocks
             {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
           ){% end %}{% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
-            stubbed_method_body(:previous)
+            stubbed_method_body(:previous_def)
           end
         {% end %}
 
@@ -91,8 +91,8 @@ module Spectator::Mocks
         {% if type != :none %}
           %value.as({{type.id}})
         {% end %}
-      {% elsif behavior == :previous %}
-        %value = adjusted_previous_def
+      {% elsif behavior == :previous_def || behavior == :super %}
+        %value = adjusted_previous_def({{behavior}})
         {% if type != :none %}
           %value.as({{type.id}})
         {% end %}
