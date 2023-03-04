@@ -5,7 +5,7 @@ module Spectator::Mocks
 
     # Names of methods to skip defining a stub for.
     # These are typically special methods, such as Crystal built-ins, that would be unsafe to mock.
-    SKIPPED_METHOD_NAMES = %i[finalize object_id]
+    SKIPPED_METHOD_NAMES = %i[finalize should should_not]
 
     macro included
       # TODO: Apply to ancestors and mix-ins.
