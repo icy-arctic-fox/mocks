@@ -14,5 +14,9 @@ module Spectator::Mocks
         raise TypeCastError.new("Attempted to return nil from stub, but method `#{method_name}` expects type #{T}")
       {% end %}
     end
+
+    private def with_arguments(arguments : AbstractArgumentsPattern?)
+      {{@type.name(generic_args: false)}}.new(method_name, arguments)
+    end
   end
 end

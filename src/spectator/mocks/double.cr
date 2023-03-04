@@ -7,17 +7,27 @@ module Spectator::Mocks
     macro define(name, *stubs, &block)
       class {{name.id}} < ::Spectator::Mocks::Double
         {% for stub in stubs %}
-          stub {{stub}}
+          stub_any_args {{stub}}
         {% end %}
 
         {{block.body if block}}
       end
     end
 
-    @stubs : Array(Stub)
+    @name : String?
 
-    def initialize(@name : String, stubs : Enumerable(Stub))
-      @stubs = stubs.to_a
+    def initialize(@name : String? = nil)
+    end
+
+    def initialize(@name : String?, stubs : Enumerable(Stub))
+      proxy = __mocks
+      stubs.each do |stub|
+        proxy.add_stub(stub)
+      end
+    end
+
+    def to_s(io : IO) : Nil
+      raise NotImplementedError.new("Double#to_s")
     end
   end
 end

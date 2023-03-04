@@ -12,5 +12,9 @@ module Spectator::Mocks
         raise TypeCastError.new("Attempted to return #{@value.inspect} (#{T}) from stub, but method `#{method_name}` expects type #{U}")
       {% end %}
     end
+
+    private def with_arguments(arguments : AbstractArgumentsPattern?)
+      {{@type.name(generic_args: false)}}.new(method_name, @value, arguments)
+    end
   end
 end

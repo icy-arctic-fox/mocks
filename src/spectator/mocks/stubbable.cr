@@ -55,7 +55,7 @@ module Spectator::Mocks
          else
            raise "Unexpected stub syntax"
          end %}
-      def {{name}}(*args, **kwargs){% if type %} : {{type}}{% end %}
+      def {{name}}(*args, **kwargs){% if type != :none %} : {{type}}{% end %}
         {% if value.is_a?(Nop) %}
           stubbed_method_body(:unexpected, as: {{type}})
         {% else %}
@@ -63,7 +63,7 @@ module Spectator::Mocks
         {% end %}
       end
 
-      def {{name}}(*args, **kwargs, &){% if type %} : {{type}}{% end %}
+      def {{name}}(*args, **kwargs, &){% if type != :none %} : {{type}}{% end %}
         {% if value.is_a?(Nop) %}
           stubbed_method_body(:unexpected, as: {{type}})
         {% else %}

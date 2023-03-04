@@ -1,10 +1,13 @@
 require "./arguments"
 require "./arguments_pattern"
 require "./call"
+require "./stub_modifiers"
 
 module Spectator::Mocks
   # Stand-in behavior for a method.
   abstract class Stub
+    include StubModifiers
+
     # Name of the method being applied to.
     getter method_name : Symbol
 
