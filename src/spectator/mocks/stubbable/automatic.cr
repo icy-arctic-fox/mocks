@@ -68,13 +68,13 @@ module Spectator::Mocks
       {% end %}
 
       {% verbatim do %}
-      # Automatically apply to all sub-types.
-      macro included
-        include ::Spectator::Mocks::Stubbable::Automatic
-      end
+        # Automatically apply to all sub-types.
+        macro inherited
+          include ::Spectator::Mocks::Stubbable::Automatic
+        end
 
         # Automatically redefine new methods with stub functionality.
-    macro method_added(method)
+        macro method_added(method)
           {% unless ::Spectator::Mocks::Stubbable::Automatic::SKIPPED_METHOD_NAMES.includes?(method.name.symbolize) ||
                       method.name.starts_with?("__") ||
                       method.annotation(Primitive) %}
