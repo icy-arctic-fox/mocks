@@ -67,14 +67,28 @@ module Spectator::Mocks
         {% end %}
       {% end %}
 
+      {% verbatim do %}
       # Automatically apply to all sub-types.
       macro included
         include ::Spectator::Mocks::Stubbable::Automatic
       end
-    end
 
+        # Automatically redefine new methods with stub functionality.
     macro method_added(method)
-      stub {{method}}
+          {% unless ::Spectator::Mocks::Stubbable::Automatic::SKIPPED_METHOD_NAMES.includes?(method.name.symbolize) ||
+                      method.name.starts_with?("__") ||
+                      method.annotation(Primitive) %}
+            {% begin %}
+              {{method.visibility.id if method.visibility != :public}} def {{"#{method.receiver}.".id if method.receiver}}{{method.name}}{% unless method.args.empty? %}({% for arg, i in method.args %}
+                {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
+                {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
+              ){% end %}{% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
+                stubbed_method_body(:previous_def)
+              end
+            {% end %}
+          {% end %}
+        end
+      {% end %}
     end
   end
 end
