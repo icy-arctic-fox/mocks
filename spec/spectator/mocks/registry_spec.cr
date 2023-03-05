@@ -42,7 +42,7 @@ describe Spectator::Mocks::Registry do
         registry.find_stub(object, call).should be_nil
       end
 
-      it "returns when no stubs match" do
+      it "returns nil when no stubs match" do
         registry = create_registry
         object = %w[foo bar]
 
@@ -292,7 +292,7 @@ describe Spectator::Mocks::Registry do
         registry.find_stub(object, call).should be_nil
       end
 
-      it "returns when no stubs match" do
+      it "returns nil when no stubs match" do
         registry = create_registry
         object = 42
 
