@@ -8,6 +8,10 @@ module Spectator::Mocks
     SKIPPED_METHOD_NAMES = %i[allocate finalize should should_not]
 
     macro included
+      # Add stub support to class methods.
+      extend ::Spectator::Mocks::Stubbable
+
+      # Find all methods to redefine.
       {% definitions = [] of {Def, Symbol, Symbol?}
          # Definitions are stored as an array of tuples.
          # The first element is the method definition.
@@ -50,6 +54,7 @@ module Spectator::Mocks
            end
          end %}
 
+      # Redefine virtually all methods to support stubs.
       {% for definition in definitions %}
         {% method, behavior, receiver = definition
            visibility = method.visibility %}
