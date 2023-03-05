@@ -6,7 +6,14 @@ private double EmptyTestDouble
 
 private double SimpleTestDouble, value = 1, typed_value : Int32 = 2, typed : Int32
 
-private double ComplexTestDouble, value = 1, typed_value : Int32 = 2, typed : Int32 do
+private double ComplexTestDouble, value = 1, override = 2 do
+  def method
+    3
+  end
+
+  def override
+    4
+  end
 end
 
 describe Spectator::Mocks::DSL do
@@ -34,6 +41,18 @@ describe Spectator::Mocks::DSL do
         double = SimpleTestDouble.new
         allow(double).to receive(:typed).and_return(42)
         double.typed.should eq(42)
+      end
+
+      it "can redefine stubs from the block" do
+        double = ComplexTestDouble.new
+        allow(double).to receive(:method).and_return(42)
+        double.method.should eq(42)
+      end
+
+      it "can redefine simple stubs overridden in the block" do
+        double = ComplexTestDouble.new
+        allow(double).to receive(:override).and_return(42)
+        double.override.should eq(42)
       end
     end
 
