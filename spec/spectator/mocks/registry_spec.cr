@@ -16,9 +16,15 @@ private def sample_args
   Spectator::Mocks::Arguments.new({arg: 42}, nil, nil, NamedTuple.new)
 end
 
-record ExampleRecord1, value : Int32
+private record ExampleRecord1, value : Int32
 
-record ExampleRecord2, value : Int32
+private record ExampleRecord2, value : Int32
+
+private class TestType; end
+
+private class SubTestType < TestType; end
+
+private class OtherTestType; end
 
 describe Spectator::Mocks::Registry do
   context "with reference types" do
@@ -567,6 +573,323 @@ describe Spectator::Mocks::Registry do
           registry = create_registry
           object1 = ExampleRecord1.new(42)
           object2 = ExampleRecord2.new(42)
+
+          stub1 = create_example_stub
+          stub2 = create_example_stub
+          call1 = create_example_call
+          call2 = create_example_call
+
+          registry.add_stub(object1, stub1)
+          registry.add_stub(object2, stub2)
+          registry.add_call(object1, call1)
+          registry.add_call(object2, call2)
+
+          registry.clear(object1)
+          registry.find_stub(object1, call1).should be_nil
+          registry.find_stub(object2, call2).should be(stub2)
+          registry.calls(object1).empty?.should be_true
+          registry.calls(object2).should contain(call2)
+        end
+      end
+    end
+  end
+
+  context "with a type (Class)" do
+    it "stores a stub for a type" do
+      registry = create_registry
+      object = TestType
+
+      stub = create_example_stub
+      call = create_example_call
+
+      registry.add_stub(object, stub)
+      registry.find_stub(object, call).should be(stub)
+    end
+
+    describe "#find_stub" do
+      it "returns nil when there are no stubs" do
+        registry = create_registry
+        object = TestType
+        call = create_example_call
+
+        registry.find_stub(object, call).should be_nil
+      end
+
+      it "returns nil when no stubs match" do
+        registry = create_registry
+        object = TestType
+
+        stub = Spectator::Mocks::NilStub.new(:foo)
+        call = Spectator::Mocks::Call.new(:bar)
+
+        registry.add_stub(object, stub)
+        registry.find_stub(object, call).should be_nil
+      end
+
+      it "returns a stub matching the method name" do
+        registry = create_registry
+        object = TestType
+
+        stub1 = Spectator::Mocks::NilStub.new(:foo)
+        stub2 = Spectator::Mocks::NilStub.new(:bar)
+        call = Spectator::Mocks::Call.new(:foo)
+
+        registry.add_stub(object, stub1)
+        registry.add_stub(object, stub2)
+        registry.find_stub(object, call).should be(stub1)
+      end
+
+      it "returns a stub matching arguments" do
+        registry = create_registry
+        object = TestType
+
+        stub1 = Spectator::Mocks::NilStub.new(:foo, Spectator::Mocks::ArgumentsPattern.build(40..45))
+        stub2 = Spectator::Mocks::NilStub.new(:foo, Spectator::Mocks::ArgumentsPattern.build(String))
+        call = Spectator::Mocks::Call.new(:foo, sample_args)
+
+        registry.add_stub(object, stub1)
+        registry.add_stub(object, stub2)
+        registry.find_stub(object, call).should be(stub1)
+      end
+
+      it "doesn't confuse two types in the same hierarchy" do
+        registry = create_registry
+        object1 = TestType
+        object2 = SubTestType
+
+        stub1 = create_example_stub
+        stub2 = create_example_stub
+        call = create_example_call
+
+        registry.add_stub(object1, stub1)
+        registry.add_stub(object2, stub2)
+        registry.find_stub(object1, call).should be(stub1)
+      end
+
+      it "returns a newer stub when multiple match" do
+        registry = create_registry
+        object = TestType
+
+        stub1 = create_example_stub
+        stub2 = create_example_stub
+        call = create_example_call
+
+        registry.add_stub(object, stub1)
+        registry.add_stub(object, stub2)
+        registry.find_stub(object, call).should be(stub2)
+      end
+    end
+
+    describe "#clear_stubs" do
+      it "removes a previously added stub" do
+        registry = create_registry
+        object = TestType
+
+        stub = create_example_stub
+        call = create_example_call
+
+        registry.add_stub(object, stub)
+        registry.clear_stubs(object)
+        registry.find_stub(object, call).should be_nil
+      end
+
+      it "doesn't modify other type stubs" do
+        registry = create_registry
+        object1 = TestType
+        object2 = OtherTestType
+
+        stub1 = create_example_stub
+        stub2 = create_example_stub
+        call = create_example_call
+
+        registry.add_stub(object1, stub1)
+        registry.add_stub(object2, stub2)
+        registry.clear_stubs(object1)
+        registry.find_stub(object2, call).should be(stub2)
+      end
+
+      it "doesn't confuse two types in the same hierarchy" do
+        registry = create_registry
+        object1 = TestType
+        object2 = SubTestType
+
+        stub1 = create_example_stub
+        stub2 = create_example_stub
+        call = create_example_call
+
+        registry.add_stub(object1, stub1)
+        registry.add_stub(object2, stub2)
+        registry.clear_stubs(object1)
+        registry.find_stub(object1, call).should be_nil
+        registry.find_stub(object2, call).should be(stub2)
+      end
+    end
+
+    it "stores a call for a type" do
+      registry = create_registry
+      object = TestType
+      call = create_example_call
+
+      registry.add_call(object, call)
+      registry.calls(object).should contain(call)
+    end
+
+    describe "#calls" do
+      it "returns an empty list for an unknown type" do
+        registry = create_registry
+        object = TestType
+
+        registry.calls(object).empty?.should be_true
+      end
+
+      it "returns calls only for a type" do
+        registry = create_registry
+        object1 = TestType
+        object2 = OtherTestType
+
+        call1 = create_example_call
+        call2 = create_example_call
+
+        registry.add_call(object1, call1)
+        registry.add_call(object2, call2)
+        registry.calls(object1).should_not contain(call2)
+      end
+
+      it "doesn't confuse two types in the same hierarchy" do
+        registry = create_registry
+        object1 = TestType
+        object2 = SubTestType
+
+        call1 = create_example_call
+        call2 = create_example_call
+
+        registry.add_call(object1, call1)
+        registry.add_call(object2, call2)
+        registry.calls(object1).should contain(call1)
+        registry.calls(object1).should_not contain(call2)
+      end
+    end
+
+    describe "#clear_calls" do
+      it "removes a previously added call" do
+        registry = create_registry
+        object = TestType
+        call = create_example_call
+
+        registry.add_call(object, call)
+        registry.clear_calls(object)
+        registry.calls(object).empty?.should be_true
+      end
+
+      it "doesn't modify other object calls" do
+        registry = create_registry
+        object1 = TestType
+        object2 = OtherTestType
+
+        call1 = create_example_call
+        call2 = create_example_call
+
+        registry.add_call(object1, call1)
+        registry.add_call(object2, call2)
+        registry.clear_calls(object1)
+        registry.calls(object2).should contain(call2)
+      end
+
+      it "doesn't confuse two types in the same hierarchy" do
+        registry = create_registry
+        object1 = TestType
+        object2 = SubTestType
+
+        call1 = create_example_call
+        call2 = create_example_call
+
+        registry.add_call(object1, call1)
+        registry.add_call(object2, call2)
+        registry.clear_calls(object1)
+        registry.calls(object1).empty?.should be_true
+        registry.calls(object2).should contain(call2)
+      end
+    end
+
+    describe "#clear" do
+      it "removes a previously added stub" do
+        registry = create_registry
+        object = TestType
+
+        stub = create_example_stub
+        call = create_example_call
+
+        registry.add_stub(object, stub)
+        registry.clear
+        registry.find_stub(object, call).should be_nil
+      end
+
+      it "removes a previously added call" do
+        registry = create_registry
+        object = TestType
+        call = create_example_call
+
+        registry.add_call(object, call)
+        registry.clear
+        registry.calls(object).empty?.should be_true
+      end
+
+      context "with an object" do
+        it "removes a previously added stub" do
+          registry = create_registry
+          object = TestType
+
+          stub = create_example_stub
+          call = create_example_call
+
+          registry.add_stub(object, stub)
+          registry.clear(object)
+          registry.find_stub(object, call).should be_nil
+        end
+
+        it "removes a previously added call" do
+          registry = create_registry
+          object = TestType
+          call = create_example_call
+
+          registry.add_call(object, call)
+          registry.clear(object)
+          registry.calls(object).empty?.should be_true
+        end
+
+        it "doesn't modify other type stubs" do
+          registry = create_registry
+          object1 = TestType
+          object2 = OtherTestType
+
+          stub1 = create_example_stub
+          stub2 = create_example_stub
+          call = create_example_call
+
+          registry.add_stub(object1, stub1)
+          registry.add_stub(object2, stub2)
+          registry.clear(object1)
+          registry.find_stub(object2, call).should be(stub2)
+        end
+
+        it "doesn't modify other type calls" do
+          registry = create_registry
+          object1 = TestType
+          object2 = OtherTestType
+
+          call1 = create_example_call
+          call2 = create_example_call
+
+          registry.add_call(object1, call1)
+          registry.add_call(object2, call2)
+          registry.clear(object1)
+          registry.calls(object2).should contain(call2)
+        end
+
+        it "doesn't confuse two types in the same hierarchy" do
+          registry = create_registry
+          object1 = TestType
+          object2 = SubTestType
 
           stub1 = create_example_stub
           stub2 = create_example_stub
