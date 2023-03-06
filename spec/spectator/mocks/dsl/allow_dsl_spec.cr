@@ -1,7 +1,7 @@
 require "../../../spec_helper"
-require "../../../../src/spectator/mocks/dsl/allow"
 
-include Spectator::Mocks::DSL
+# 'allow' syntax must be manually dragged in for Spec framework.
+require "../../../../src/spectator/mocks/dsl/allow"
 
 private double EmptyTestDouble
 

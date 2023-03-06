@@ -22,3 +22,13 @@ module Spectator::Mocks
     end
   end
 end
+
+# Automatically include DSL methods and use 'can' syntax
+# for Crystal's Spec framework.
+{% if @top_level.has_constant?(:Spec) %}
+  require "./dsl/can"
+
+  module Spec::Methods
+    include Spectator::Mocks::DSL
+  end
+{% end %}

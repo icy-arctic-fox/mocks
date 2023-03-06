@@ -1,7 +1,5 @@
 require "../../../spec_helper"
 
-include Spectator::Mocks::DSL
-
 private double EmptyTestDouble
 
 private double SimpleTestDouble, value = 1, typed_value : Int32 = 2, typed : Int32
