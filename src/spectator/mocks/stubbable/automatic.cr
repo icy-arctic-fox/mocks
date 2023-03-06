@@ -70,6 +70,7 @@ module Spectator::Mocks
                     method.name.starts_with?("__") ||
                     method.annotation(Primitive) || method.annotation(::Spectator::Mocks::Stubbed) %}
           {% begin %}
+            # FIXME: Reuse method signature code.
             @[::Spectator::Mocks::Stubbed]
             {{visibility.id if visibility != :public}} def {{"self.".id if receiver}}{{method.name}}{% unless method.args.empty? %}({% for arg, i in method.args %}
               {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
@@ -93,6 +94,7 @@ module Spectator::Mocks
                       method.name.starts_with?("__") ||
                       method.annotation(Primitive) || method.annotation(::Spectator::Mocks::Stubbed) %}
             {% begin %}
+              # FIXME: Reuse method signature code.
               @[::Spectator::Mocks::Stubbed]
               {{method.visibility.id if method.visibility != :public}} def {{"#{method.receiver}.".id if method.receiver}}{{method.name}}{% unless method.args.empty? %}({% for arg, i in method.args %}
                 {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}

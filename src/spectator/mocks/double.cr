@@ -22,11 +22,13 @@ module Spectator::Mocks
       @name = name.try &.to_s
     end
 
-    def initialize(stubs : Enumerable(Stub))
+    # FIXME: Absolute name for Stub is required because it cannot be resolved when redefined.
+    def initialize(stubs : Enumerable(::Spectator::Mocks::Stub))
       initialize(nil, stubs)
     end
 
-    def initialize(name, stubs : Enumerable(Stub))
+    # FIXME: Absolute name for Stub is required because it cannot be resolved when redefined.
+    def initialize(name, stubs : Enumerable(::Spectator::Mocks::Stub))
       @name = name.try &.to_s
       proxy = __mocks
       stubs.each do |stub|
