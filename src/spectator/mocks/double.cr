@@ -16,10 +16,16 @@ module Spectator::Mocks
 
     @name : String?
 
-    def initialize(@name : String? = nil)
+    def initialize(name = nil)
+      @name = name.try &.to_s
     end
 
-    def initialize(@name : String?, stubs : Enumerable(Stub))
+    def initialize(stubs : Enumerable(Stub))
+      initialize(nil, stubs)
+    end
+
+    def initialize(name, stubs : Enumerable(Stub))
+      @name = name.try &.to_s
       proxy = __mocks
       stubs.each do |stub|
         proxy.add_stub(stub)
