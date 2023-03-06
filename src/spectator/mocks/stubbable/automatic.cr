@@ -7,7 +7,13 @@ module Spectator::Mocks
 
     # Names of methods to skip defining a stub for.
     # These are typically special methods, such as Crystal built-ins, that would be unsafe to mock.
-    SKIPPED_METHOD_NAMES = %i[allocate finalize should should_not]
+    SKIPPED_METHOD_NAMES = %i[allocate finalize]
+
+    # Avoid modifying 'should' and 'should_not' methods from Spec framework.
+    {% if @top_level.has_constant?(:Spec) %}
+      {% SKIPPED_METHOD_NAMES << :should
+         SKIPPED_METHOD_NAMES << :should_not %}
+    {% end %}
 
     macro included
       # Add stub support to class methods.
