@@ -7,7 +7,7 @@ module Spectator::Mocks
     include Stubbable::Automatic
 
     macro define(name, *stubs, &block)
-      class {{name.id}} < ::Spectator::Mocks::Double
+      class {{name.id}} < {{@type.name}}
         {% for stub in stubs %}
           stub_any_args {{stub}}
         {% end %}
