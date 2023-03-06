@@ -2,6 +2,7 @@ require "./allow"
 require "./double"
 require "./mock"
 require "./nil_stub"
+require "./proc_stub"
 
 module Spectator::Mocks
   module DSL
@@ -19,6 +20,10 @@ module Spectator::Mocks
 
     def receive(method : Symbol)
       NilStub.new(method)
+    end
+
+    def receive(method : Symbol, &block : -> T) forall T
+      ProcStub.new(method, block)
     end
   end
 end
