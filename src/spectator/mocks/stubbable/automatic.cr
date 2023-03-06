@@ -1,3 +1,5 @@
+require "../stubbed"
+
 module Spectator::Mocks
   # When included, automatically redefines all methods to be stubbable.
   module Stubbable::Automatic
@@ -60,8 +62,9 @@ module Spectator::Mocks
            visibility = method.visibility %}
         {% unless ::Spectator::Mocks::Stubbable::Automatic::SKIPPED_METHOD_NAMES.includes?(method.name.symbolize) ||
                     method.name.starts_with?("__") ||
-                    method.annotation(Primitive) %}
+                    method.annotation(Primitive) || method.annotation(::Spectator::Mocks::Stubbed) %}
           {% begin %}
+            @[::Spectator::Mocks::Stubbed]
             {{visibility.id if visibility != :public}} def {{"self.".id if receiver}}{{method.name}}{% unless method.args.empty? %}({% for arg, i in method.args %}
               {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
               {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
@@ -82,8 +85,9 @@ module Spectator::Mocks
         macro method_added(method)
           {% unless ::Spectator::Mocks::Stubbable::Automatic::SKIPPED_METHOD_NAMES.includes?(method.name.symbolize) ||
                       method.name.starts_with?("__") ||
-                      method.annotation(Primitive) %}
+                      method.annotation(Primitive) || method.annotation(::Spectator::Mocks::Stubbed) %}
             {% begin %}
+              @[::Spectator::Mocks::Stubbed]
               {{method.visibility.id if method.visibility != :public}} def {{"#{method.receiver}.".id if method.receiver}}{{method.name}}{% unless method.args.empty? %}({% for arg, i in method.args %}
                 {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
                 {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}

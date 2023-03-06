@@ -1,5 +1,6 @@
 require "./call"
 require "./proxy"
+require "./stubbed"
 
 module Spectator::Mocks
   module Stubbable
@@ -23,6 +24,7 @@ module Spectator::Mocks
 
         # Stub implementation.
         {% begin %}
+          @[::Spectator::Mocks::Stubbed]
           {{visibility.id if visibility != :public}} def {% if method.receiver %}{{method.receiver}}.{% end %}{{method.name}}{% unless method.args.empty? %}({% for arg, i in method.args %}
             {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
@@ -55,6 +57,7 @@ module Spectator::Mocks
          else
            raise "Unexpected stub syntax"
          end %}
+      @[::Spectator::Mocks::Stubbed]
       def {{name}}(*args, **kwargs){% if type != :none %} : {{type}}{% end %}
         {% if value.is_a?(Nop) %}
           stubbed_method_body(:unexpected, as: {{type}})
@@ -63,6 +66,7 @@ module Spectator::Mocks
         {% end %}
       end
 
+      @[::Spectator::Mocks::Stubbed]
       def {{name}}(*args, **kwargs, &){% if type != :none %} : {{type}}{% end %}
         {% if value.is_a?(Nop) %}
           stubbed_method_body(:unexpected, as: {{type}})
