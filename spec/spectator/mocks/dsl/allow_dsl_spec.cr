@@ -1,4 +1,5 @@
 require "../../../spec_helper"
+require "../../../../src/spectator/mocks/dsl/allow"
 
 include Spectator::Mocks::DSL
 

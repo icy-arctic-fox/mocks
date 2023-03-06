@@ -1,4 +1,4 @@
-require "./mocks/**"
+require "./mocks/*"
 
 # TODO: Write documentation for `Spectator::Mocks`
 module Spectator::Mocks
