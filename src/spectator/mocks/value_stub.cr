@@ -1,3 +1,5 @@
+require "./stub"
+
 module Spectator::Mocks
   # Stub that returns a static value.
   class ValueStub(T) < Stub

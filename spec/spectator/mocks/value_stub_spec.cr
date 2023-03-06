@@ -18,12 +18,12 @@ describe Spectator::Mocks::ValueStub do
   end
 
   describe "#call" do
-    it "returns nil" do
+    it "returns the value" do
       stub = create_stub
       stub.call(no_args) { 0 }.should eq(42)
     end
 
-    it "raises when return type can't be nil" do
+    it "raises when return type doesn't match" do
       stub = create_stub
       expect_raises(TypeCastError, /Int32/) do
         stub.call(no_args) { :xyz }
