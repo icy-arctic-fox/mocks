@@ -40,18 +40,7 @@ describe Double do
       double.to_s.should contain("empty")
     end
 
-    pending "sets a collection of stubs" do
-      stubs = [
-        Spectator::Mocks::ValueStub.new(:to_s, "foobar"),
-        Spectator::Mocks::ValueStub.new(:hash, 0_u64), # Hash of a reference type can't be 0.
-      ] of Spectator::Mocks::Stub
-
-      double = EmptyTestDouble.new(stubs)
-      double.to_s.should eq("foobar")
-      double.hash.should eq(0)
-    end
-
-    pending "sets keyword arguments as stubs" do
+    it "sets keyword arguments as stubs" do
       double = EmptyTestDouble.new(to_s: "foobar", hash: 0_u64)
       double.to_s.should eq("foobar")
       double.hash.should eq(0)
