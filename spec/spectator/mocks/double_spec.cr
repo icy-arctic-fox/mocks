@@ -40,7 +40,8 @@ describe Double do
       double.to_s.should contain("empty")
     end
 
-    it "sets keyword arguments as stubs" do
+    pending "sets keyword arguments as stubs" do
+      # Hash of a reference type can't be 0.
       double = EmptyTestDouble.new(to_s: "foobar", hash: 0_u64)
       double.to_s.should eq("foobar")
       double.hash.should eq(0)
