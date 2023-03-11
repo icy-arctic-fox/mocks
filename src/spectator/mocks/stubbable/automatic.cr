@@ -85,12 +85,22 @@ module Spectator::Mocks
         {% end %}
       {% end %}
 
-      {% verbatim do %}
-        # Automatically apply to all sub-types.
-        macro inherited
+      # Automatically apply to all sub-types.
+      {% if @type.module? %}
+        macro included
           include ::Spectator::Mocks::Stubbable::Automatic
         end
 
+        macro extended
+          include ::Spectator::Mocks::Stubbable::Automatic
+        end
+      {% else %}
+        macro inherited
+          include ::Spectator::Mocks::Stubbable::Automatic
+        end
+      {% end %}
+
+      {% verbatim do %}
         # Automatically redefine new methods with stub functionality.
         # FIXME: Reuse method signature generation code.
         macro method_added(method)
