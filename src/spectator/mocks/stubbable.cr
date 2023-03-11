@@ -23,8 +23,8 @@ module Spectator::Mocks
         {% begin %}{{visibility.id if visibility != :public}} {{method}}{% end %}
 
         # Stub implementation.
+        # FIXME: Reuse method signature generation code.
         {% begin %}
-          # FIXME: Reuse method signature code.
           @[::Spectator::Mocks::Stubbed]
           {{visibility.id if visibility != :public}} def {% if method.receiver %}{{method.receiver}}.{% end %}{{method.name}}{% unless method.args.empty? %}({% for arg, i in method.args %}
             {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
