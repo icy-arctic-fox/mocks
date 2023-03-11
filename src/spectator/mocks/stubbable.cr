@@ -3,11 +3,59 @@ require "./proxy"
 require "./stubbed"
 
 module Spectator::Mocks
+  # Adds support for method stubs to a type.
+  #
+  # This module is intended to be used as a mix-in.
+  # Include it to allow instance methods to be stubbed.
+  # Extend it to allow class methods to be stubbed.
+  #
+  # Example usage:
+  # ```
+  # class MyClass
+  #   include Spectator::Mocks::Stubbable
+  #
+  #   stub the_answer = 42
+  #
+  #   stub def stringify(arg) : String
+  #     arg.to_s
+  #   end
+  # end
+  # ```
   module Stubbable
+    # :nodoc:
     def __mocks
       Proxy.new(self)
     end
 
+    # Defines a new stubbable method or redefines an existing method to support stubbing.
+    #
+    # Multiple syntaxes are supported.
+    # The following define new methods that accept any arguments.
+    # ```
+    # stub some_method1 : Int32
+    # stub some_method2 : Int32 = 42
+    # stub some_method3 = 42
+    # ```
+    # When a stub isn't applied and a value is assigned, it is used as the return value.
+    # Otherwise, an `UnexpectedMessage` error is raised when the stubbed method is called.
+    #
+    # A method (an its overrides) can be redefined by specifying the method name.
+    # ```
+    # stub to_s
+    # ```
+    # The argument list must be omitted.
+    # All methods matching the specified name will be redefined to support stubbing.
+    # When a stub isn't applied, the default behavior will be to call the original implementation.
+    #
+    # Lastly, a method definition can be provided.
+    # ```
+    # stub def do_something(arg) : String
+    #   arg.to_s
+    # end
+    # ```
+    # This will define (or redefine) a method that supports stubbing.
+    # The method will only accept calls with a matching signature.
+    # When a stub isn't applied, the default behavior will be the contents of the method's body.
     macro stub(method)
       {% if method.is_a?(VisibilityModifier)
            visibility = method.visibility
@@ -46,6 +94,16 @@ module Spectator::Mocks
       {% end %}
     end
 
+    # Defines stubbable methods that can accept any arguments (and block).
+    #
+    # Three syntaxes are supported:
+    # ```
+    # stub_any_args some_method1 : Int32
+    # stub_any_args some_method2 : Int32 = 42
+    # stub_any_args some_method3 = 42
+    # ```
+    # The type returned by the method must be known at compile-time,
+    # either from the type restriction or by inferring from the assignment.
     private macro stub_any_args(name)
       {% if name.is_a?(TypeDeclaration)
            type = name.type
@@ -77,6 +135,15 @@ module Spectator::Mocks
       end
     end
 
+    # Constructs the contents of a stubbed method's body.
+    # This macro is intended to be used inside a stubbable method.
+    #
+    # The *behavior* argument is passed along to the `#stubbed_method_behavior` macro.
+    # It is used by this macro to infer the method's return type if the *as* *type* argument isn't provided.
+    #
+    # A *type* can be specified with the *as* keyword argument.
+    # This should be provided when the method is expected to return a specific type.
+    # It can be `:none`, which indicates no casting is performed and the compiler should infer the return type.
     private macro stubbed_method_body(behavior = :block, *, as type = :none, &block)
       %call = ::Spectator::Mocks::Call.capture
       %type = {% if type != :none %}
@@ -92,6 +159,7 @@ module Spectator::Mocks
               {% end %}
 
       if %stub = __mocks.find_stub(%call)
+        # Stub found for invocation.
         %stub.call(%call.arguments, %type) do
           stubbed_method_behavior({{behavior}}, as: {{type}}) {{block}}
         end
@@ -100,6 +168,18 @@ module Spectator::Mocks
       end
     end
 
+    # Defines the behavior of a stubbed method.
+    # This macro is intended to be used inside a stubbable method.
+    #
+    # The *behavior* argument can be `:block`, `:previous_def`, `:super`, or `:unexpected`.
+    # When the *behavior* is `:block`, a block must be provided.
+    # The block's content is used as the method's behavior.
+    # For `:previous_def` and `:super`, the original method's implementation is invoked.
+    # Lastly, for `:unexpected`, an `UnexpectedMessage` error is raised.
+    #
+    # A *type* can be specified with the *as* keyword argument.
+    # This should be provided when the method is expected to return a specific type.
+    # It can be `:none`, which indicates no casting is performed and the compiler should infer the return type.
     private macro stubbed_method_behavior(behavior = :block, *, as type = :none, &block)
       {% if behavior == :block %}
         %value = begin
@@ -126,6 +206,7 @@ module Spectator::Mocks
     end
 
     # Reconstructs a `previous_def` or `super` call.
+    #
     # This macro expands the call so that all arguments and the block are passed along.
     # The compiler (currently) does not forward the block when `previous_def` and `super` are used.
     # See: https://github.com/crystal-lang/crystal/issues/10399
