@@ -79,8 +79,20 @@ module Spectator::Mocks
 
     private macro stubbed_method_body(behavior = :block, *, as type = :none, &block)
       %call = ::Spectator::Mocks::Call.capture
+      %type = {% if type != :none %}
+                {{type.id}}
+              {% elsif behavior == :block %}
+                typeof(begin
+                  {{block.body}}
+                end)
+              {% elsif behavior == :previous_def || behavior == :super %}
+                typeof(adjusted_previous_def({{behavior}}))
+              {% else %}
+                ::NoReturn # behavior == :unexpected
+              {% end %}
+
       if %stub = __mocks.find_stub(%call)
-        %stub.call(%call.arguments) do
+        %stub.call(%call.arguments, %type) do
           stubbed_method_behavior({{behavior}}, as: {{type}}) {{block}}
         end
       else

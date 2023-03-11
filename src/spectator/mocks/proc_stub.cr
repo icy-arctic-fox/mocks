@@ -11,7 +11,7 @@ module Spectator::Mocks
       super(method_name, arguments)
     end
 
-    def call(args : Arguments, & : -> U) : U forall U
+    def call(args : Arguments, return_type : U.class, & : -> U) forall U
       {% if T <= U %}
         @proc.call
       {% else %}

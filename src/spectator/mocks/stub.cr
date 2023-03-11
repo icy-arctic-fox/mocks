@@ -21,9 +21,10 @@ module Spectator::Mocks
 
     # Invokes the stub.
     # *args* are the arguments passed to the method call.
+    # The *return_type* indicates the type expected to be returned by the stub.
     # A block must be passed that invokes the original method or fallback behavior.
-    # The type returned by the block is used to derive the type returned by this method.
-    abstract def call(args : Arguments, & : -> _)
+    # The type returned by the block must match *return_type*.
+    abstract def call(args : Arguments, return_type : T.class, & : -> T) forall T
 
     # Constructs the string representation of the stub.
     def to_s(io : IO) : Nil
