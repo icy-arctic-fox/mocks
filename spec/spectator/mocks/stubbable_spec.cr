@@ -82,7 +82,7 @@ describe Spectator::Mocks::Stubbable do
     context "with a type declaration" do
       it "defines a method that raises by default" do
         object = StubbableType.new
-        expect_raises(Spectator::Mocks::UnexpectedMessage, /type_decl_syntax/) { object.type_decl_syntax }
+        expect_raises(UnexpectedMessage, /type_decl_syntax/) { object.type_decl_syntax }
       end
 
       it "can change the method's behavior" do

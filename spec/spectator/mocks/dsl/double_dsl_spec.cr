@@ -37,7 +37,7 @@ describe Spectator::Mocks::DSL do
     it "applies simple typed stubs" do
       double = SimpleTestDouble.new
       typeof(double.typed).should eq(Int32)
-      expect_raises(Spectator::Mocks::UnexpectedMessage, /typed/) { double.typed }
+      expect_raises(UnexpectedMessage, /typed/) { double.typed }
     end
 
     it "applies stubs from the block" do
