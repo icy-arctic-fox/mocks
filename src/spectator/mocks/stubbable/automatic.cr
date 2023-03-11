@@ -104,7 +104,6 @@ module Spectator::Mocks
               end
             {% end %}
           {% end %}
-          {% debug %}
         end
       {% end %}
     end
