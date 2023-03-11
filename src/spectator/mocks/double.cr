@@ -18,13 +18,26 @@ module Spectator::Mocks
 
     @name : String?
 
-    def initialize(name = nil, **value_stubs)
+    def initialize(name = nil)
       @name = name.try &.to_s
+    end
+
+    protected def initialize(name, value_stubs : T) forall T
+      {% raise "Type argument T must be a NamedTuple" unless T < NamedTuple %}
+
+      initialize(name)
       proxy = __mocks
-      value_stubs.each do |method_name, value|
-        stub = ValueStub.new(method_name, value)
-        proxy.add_stub(stub)
-      end
+
+      # Avoid producing a stub where each value is a union (don't use `#each`).
+      # This is done by capturing the NamedTuple's type (and keys) via T.
+      # A layer of indirection is necessary since the syntax `**kwargs : **T` isn't valid.
+      {% for key in T.keys %}
+        proxy.add_stub(ValueStub.new({{key.symbolize}}, value_stubs[{{key.symbolize}}]))
+      {% end %}
+    end
+
+    def self.new(name = nil, **value_stubs)
+      new(name, value_stubs)
     end
 
     def to_s(io : IO) : Nil
