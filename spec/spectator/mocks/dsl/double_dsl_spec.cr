@@ -14,6 +14,10 @@ private double ComplexTestDouble, value = 1, override = 2 do
   end
 end
 
+private double AbstractTestDouble do
+  stub do_not_call_me : Symbol
+end
+
 describe Spectator::Mocks::DSL do
   describe "#double" do
     it "defines a stubbable type" do
@@ -44,6 +48,11 @@ describe Spectator::Mocks::DSL do
     it "overrides simple stubs with stubs from the block" do
       double = ComplexTestDouble.new
       double.override.should eq(4)
+    end
+
+    it "raises for abstract methods" do
+      double = AbstractTestDouble.new
+      expect_raises(UnexpectedMessage, /do_not_call_me/) { double.do_not_call_me }
     end
   end
 end
