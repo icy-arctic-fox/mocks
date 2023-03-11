@@ -114,12 +114,14 @@ module Spectator::Mocks
     end
 
     # Reconstructs a `previous_def` or `super` call.
-    # The compiler (currently) does not forward the block when `previous_def` and `super` are used.
     # This macro expands the call so that all arguments and the block are passed along.
+    # The compiler (currently) does not forward the block when `previous_def` and `super` are used.
     # See: https://github.com/crystal-lang/crystal/issues/10399
+    # Additionally, methods with a double-splat aren't handled correctly.
+    # See: https://github.com/crystal-lang/crystal/issues/13176
     private macro adjusted_previous_def(keyword = :previous_def)
-      {{ if @def.accepts_block?
-           # A block is involved, manually reconstruct the call with all arguments and the block.
+      {{ if @def.accepts_block? || @def.double_splat
+           # A block or double-splat is involved, manually reconstruct the call with all arguments and the block.
            call = keyword + "("
 
            # Iterate through all of the arguments,
@@ -143,6 +145,7 @@ module Spectator::Mocks
            else
              # No splat, add each argument.
              call += @def.args.map(&.internal_name).join(", ")
+             call += ", " unless @def.args.empty?
              # Add double-splat if it exists.
              call += "**#{@def.double_splat}, " if @def.double_splat
            end
@@ -158,7 +161,7 @@ module Spectator::Mocks
            # Append the block.
            call += "&#{captured}" if captured
            call += ")"
-           call += " { |*__args| yield *__args }" unless captured
+           call += " { |*__args| yield *__args }" if !captured && @def.accepts_block?
            call
          else
            # No block involved, don't need a workaround.
