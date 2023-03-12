@@ -110,14 +110,14 @@ module Spectator::Mocks
            value = name.value
            name = name.var
          elsif name.is_a?(Assign)
-           type = :none
+           type = :infer
            value = name.value
            name = name.target
          else
            raise "Unexpected stub syntax"
          end %}
       @[::Spectator::Mocks::Stubbed]
-      def {{name}}(*args, **kwargs){% if type != :none %} : {{type}}{% end %}
+      def {{name}}(*args, **kwargs){% if type != :infer %} : {{type}}{% end %}
         {% if value.is_a?(Nop) %}
           stubbed_method_body(:unexpected, as: {{type}})
         {% else %}
@@ -126,7 +126,7 @@ module Spectator::Mocks
       end
 
       @[::Spectator::Mocks::Stubbed]
-      def {{name}}(*args, **kwargs, &){% if type != :none %} : {{type}}{% end %}
+      def {{name}}(*args, **kwargs, &){% if type != :infer %} : {{type}}{% end %}
         {% if value.is_a?(Nop) %}
           stubbed_method_body(:unexpected, as: {{type}})
         {% else %}
@@ -143,10 +143,10 @@ module Spectator::Mocks
     #
     # A *type* can be specified with the *as* keyword argument.
     # This should be provided when the method is expected to return a specific type.
-    # It can be `:none`, which indicates no casting is performed and the compiler should infer the return type.
-    private macro stubbed_method_body(behavior = :block, *, as type = :none, &block)
+    # It can be `:infer`, which indicates no casting is performed and the compiler should infer the return type.
+    private macro stubbed_method_body(behavior = :block, *, as type = :infer, &block)
       %call = ::Spectator::Mocks::Call.capture
-      %type = {% if type != :none %}
+      %type = {% if type != :infer %}
                 {{type.id}}
               {% elsif behavior == :block %}
                 typeof(begin
@@ -179,23 +179,23 @@ module Spectator::Mocks
     #
     # A *type* can be specified with the *as* keyword argument.
     # This should be provided when the method is expected to return a specific type.
-    # It can be `:none`, which indicates no casting is performed and the compiler should infer the return type.
-    private macro stubbed_method_behavior(behavior = :block, *, as type = :none, &block)
+    # It can be `:infer`, which indicates no casting is performed and the compiler should infer the return type.
+    private macro stubbed_method_behavior(behavior = :block, *, as type = :infer, &block)
       {% if behavior == :block %}
         %value = begin
           {{block.body}}
         end
-        {% if type != :none %}
+        {% if type != :infer %}
           %value.as({{type.id}})
         {% end %}
       {% elsif behavior == :previous_def || behavior == :super %}
         %value = adjusted_previous_def({{behavior}})
-        {% if type != :none %}
+        {% if type != :infer %}
           %value.as({{type.id}})
         {% end %}
       {% elsif behavior == :unexpected %}
         raise ::Spectator::Mocks::UnexpectedMessage.new({{@def.name.symbolize}})
-        {% if type != :none %}
+        {% if type != :infer %}
           # Trick compiler into thinking this is the returned type instead of `NoReturn` (from the raise).
           # This line should not be reached.
           {{type.id}}.allocate
