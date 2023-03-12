@@ -55,8 +55,8 @@ module Spectator::Mocks
     # mock.the_answer.should eq(5)
     # expect_raises(UnexpectedMessage) { mock.some_method(:foo) }
     # ```
-    macro mock(type, *stubs, &block)
-      ::Spectator::Mocks::Mock.define({{name}}, {{*stubs}}) {{block}}
+    macro mock(type, **stubs, &block)
+      ::Spectator::Mocks::Mock.define({{type}}, {{**stubs}}) {{block}}
     end
 
     # Constructs a stub for a method.

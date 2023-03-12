@@ -116,9 +116,12 @@ module Spectator::Mocks
     end
 
     # Redefines all methods in the current type to support stubs.
+    #
     # All methods in the current type and its ancestors are redefined.
     # Only methods with a specific name can be redefined by providing a *name*.
-    private macro stub_existing(name = nil)
+    #
+    # A block can be provided, which gives the default implementation.
+    private macro stub_existing(name = nil, &block)
       {% definitions = [] of {Def, Symbol, Symbol?}
          # Find all methods to redefine.
          # Definitions are stored as an array of tuples.
@@ -128,7 +131,7 @@ module Spectator::Mocks
          # Add methods from the current type.
          # This must be done first so that the previous definition is used instead of one from an ancestor.
          definitions = @type.methods.map do |method|
-           {method, :previous_def, nil}
+           {method, method.abstract? ? :unexpected : :previous_def, nil}
          end
 
          # Add class methods from the current type.
@@ -156,7 +159,7 @@ module Spectator::Mocks
                         m.block_arg == method.block_arg
                       end
                  # Method not overridden, add it to the list.
-                 definitions << {method, :super, receiver}
+                 definitions << {method, method.abstract? ? :unexpected : :super, receiver}
                end
              end
            end
@@ -189,12 +192,9 @@ module Spectator::Mocks
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
           ){% end %}{% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
             {% if method.abstract? && method.return_type %}
-              stubbed_method_body(:unexpected, as: {{method.return_type}})
+              stubbed_method_body({{block ? :block : :unexpected}}, as: {{method.return_type}}) {{block}}
             {% else %}
-              # For abstract methods, if no return type is specified, it will be `NoReturn`.
-              # It is expected that the method is overridden if another type is needed.
-              # Requiring a return type is not allowed here since it could require changes outside the user's code.
-              stubbed_method_body({{method.abstract? ? :unexpected : behavior}})
+              stubbed_method_body({{behavior}}) {{block}}
             {% end %}
           end
         {% end %}
@@ -296,8 +296,16 @@ module Spectator::Mocks
           %value.as({{type.id}})
         {% end %}
       {% elsif behavior == :previous_def || behavior == :super %}
-        %value = adjusted_previous_def({{behavior}})
-        {% if type != :infer %}
+        {% if block %}
+          %value = begin
+            {{block.body}}
+          end
+        {% else %}
+          %value = adjusted_previous_def({{behavior}})
+        {% end %}
+        {% if type == :infer %}
+          %value.as(typeof(adjusted_previous_def({{behavior}})))
+        {% else %}
           %value.as({{type.id}})
         {% end %}
       {% elsif behavior == :unexpected %}

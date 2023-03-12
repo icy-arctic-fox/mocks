@@ -1,10 +1,13 @@
+require "./stubbable"
+require "./stubbed"
+
 module Spectator::Mocks
   module Mock
-    macro define(name, **stubs, &block)
+    macro define(type, **stubs, &block)
       {% if type.is_a?(Call) && type.name == :<.id %}
         {% parent = type.args.first
            parent = parse_type(parent.id.stringify).resolve
-           type = type.name
+           type = type.receiver
            type_keyword = if parent.class?
                             :class
                           elsif parent.struct?
@@ -15,16 +18,27 @@ module Spectator::Mocks
                             raise "Unsupported mock type for #{parent.name}"
                           end %}
 
-        {% if type_keyword == :module %}
-        {{@type.name}}.mock_module {{type}}, {{**stubs}} {{block}}
+        {% begin %}
+          {% if type_keyword == :module %}
+            module {{type}}
+              include {{parent}}
 
-        {% else %}
-          {{type_keyword.id}} {{type}} < {{parent.name}}
+              class Instance
+                include {{type}}
+              end
+
+              @[::Spectator::Mocks::Stubbed]
+              def self.new : Instance
+                Instance.new
+              end
+          {% else %}
+            {{type_keyword.id}} {{type}} < {{parent.name}}
+          {% end %}
             include ::Spectator::Mocks::Stubbable::Automatic
 
-            private def default_stubs
-              {{**stubs}}
-            end
+            {% for name, value in stubs %}
+              stub_existing({{name}}) { {{value}} }
+            {% end %}
 
             {{block.body if block}}
           end
@@ -33,20 +47,6 @@ module Spectator::Mocks
       {% else %}
         {% raise "Syntax error in mock definition. Must be: `NewType < OriginalType`" %}
       {% end %}
-        end
-  end
-
-  macro mock_module(type, **stubs, &block)
-    module {{type}}
-      extend {{parent}}
-
-      def self.new : Instance
-        Instance.new
-      end
-
-      class Instance
-        include {{type}}
-      end
     end
   end
 end
