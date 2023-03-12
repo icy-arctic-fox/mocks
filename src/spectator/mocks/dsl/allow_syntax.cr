@@ -1,7 +1,10 @@
 require "../allow"
+require "../stubbable"
 
-module Spectator::Mocks
-  module DSL
+module Spectator::Mocks::DSL
+  # Methods to enable the "allow" syntax.
+  # This module should be included wherever necessary to specify DSL methods.
+  module AllowSyntax
     # Wrapper for a stubbable object.
     # Begins the fluent language for defining stubs for an object.
     #

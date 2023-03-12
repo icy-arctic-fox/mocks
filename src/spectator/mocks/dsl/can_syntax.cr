@@ -1,10 +1,11 @@
 require "../stub"
 require "../stubbable"
+require "../stub_collection"
 
-module Spectator::Mocks
-  module Stubbable
+module Spectator::Mocks::DSL
+  module CanSyntax
     # Prevent `can` from being stubbed.
-    {% UNSAFE_METHODS << :can %}
+    {% Stubbable::UNSAFE_METHODS << :can %}
 
     # Applies a stub to an object.
     # Begins the fluent language for defining stubs for an object.
