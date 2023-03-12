@@ -15,5 +15,10 @@ module Spectator::Mocks::DSL
     def allow(stubbable : Stubbable)
       Allow.new(stubbable.__mocks)
     end
+
+    # Fallback method that provides a helpful compiler error message for types that aren't stubbable.
+    def allow(object)
+      {% raise "`allow` requires a stubbable type (mock or double)" %}
+    end
   end
 end
