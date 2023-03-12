@@ -10,11 +10,19 @@ module Spectator::Mocks
     end
 
     # DSL method to apply a stub.
+    #
+    # ```
+    # allow(dbl).to receive(:foo)
+    # ```
     def to(stub : Stub)
       @proxy.add_stub(stub)
     end
 
     # DSL method to apply a collection of stubs.
+    #
+    # ```
+    # allow(dbl).to receive(answer: 42, foo: "bar")
+    # ```
     def to(collection : StubCollection)
       collection.apply(@proxy)
     end
