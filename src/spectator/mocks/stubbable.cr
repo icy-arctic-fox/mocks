@@ -178,10 +178,14 @@ module Spectator::Mocks
             {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
           ){% end %}{% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
-            # For abstract methods, if no return type is specified, it will be `NoReturn`.
-            # It is expected that the method is overridden if another type is needed.
-            # Requiring a return type is not allowed here since it could require changes outside the user's code.
-            stubbed_method_body({{method.abstract? ? :undefined : behavior}})
+            {% if method.abstract? && method.return_type %}
+              stubbed_method_body(:unexpected, as: {{method.return_type}})
+            {% else %}
+              # For abstract methods, if no return type is specified, it will be `NoReturn`.
+              # It is expected that the method is overridden if another type is needed.
+              # Requiring a return type is not allowed here since it could require changes outside the user's code.
+              stubbed_method_body({{method.abstract? ? :unexpected : behavior}})
+            {% end %}
           end
         {% end %}
       {% end %}
