@@ -10,7 +10,7 @@ module Spectator::Mocks
       extend ::Spectator::Mocks::Stubbable
 
       macro finished
-        stub_existing_methods
+        stub_existing
       end
 
       # Automatically apply to all sub-types.

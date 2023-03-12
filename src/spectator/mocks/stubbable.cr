@@ -111,14 +111,14 @@ module Spectator::Mocks
 
       {% else %}
         # Stub all methods matching the specified name.
-        stub_existing_methods {{method}}
+        stub_existing {{method}}
       {% end %}
     end
 
     # Redefines all methods in the current type to support stubs.
     # All methods in the current type and its ancestors are redefined.
     # Only methods with a specific name can be redefined by providing a *name*.
-    private macro stub_existing_methods(name = nil)
+    private macro stub_existing(name = nil)
       {% definitions = [] of {Def, Symbol, Symbol?}
          # Find all methods to redefine.
          # Definitions are stored as an array of tuples.
