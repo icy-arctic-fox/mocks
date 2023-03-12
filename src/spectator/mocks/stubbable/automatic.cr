@@ -5,16 +5,6 @@ module Spectator::Mocks
   module Stubbable::Automatic
     include Stubbable
 
-    # Names of methods to skip defining a stub for.
-    # These are typically special methods, such as Crystal built-ins, that would be unsafe to mock.
-    SKIPPED_METHOD_NAMES = %i[allocate finalize initialize]
-
-    # Avoid modifying 'should' and 'should_not' methods from Spec framework.
-    {% if @top_level.has_constant?(:Spec) %}
-      {% SKIPPED_METHOD_NAMES << :should
-         SKIPPED_METHOD_NAMES << :should_not %}
-    {% end %}
-
     macro included
       # Add stub support to class methods.
       extend ::Spectator::Mocks::Stubbable
@@ -42,7 +32,7 @@ module Spectator::Mocks
         # Automatically redefine new methods with stub functionality.
         # FIXME: Reuse method signature generation code.
         macro method_added(method)
-          {% unless ::Spectator::Mocks::Stubbable::Automatic::SKIPPED_METHOD_NAMES.includes?(method.name.symbolize) ||
+          {% unless ::Spectator::Mocks::Stubbable::UNSAFE_METHODS.includes?(method.name.symbolize) ||
                       method.name.starts_with?("__") ||
                       method.annotation(Primitive) || method.annotation(::Spectator::Mocks::Stubbed) %}
             {% begin %}

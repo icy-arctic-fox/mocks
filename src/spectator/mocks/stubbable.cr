@@ -22,6 +22,16 @@ module Spectator::Mocks
   # end
   # ```
   module Stubbable
+    # Names of methods to skip defining a stub for.
+    # These are typically special methods, such as Crystal built-ins, that would be unsafe to mock.
+    UNSAFE_METHODS = %i[allocate finalize initialize]
+
+    # Avoid modifying 'should' and 'should_not' methods from Spec framework.
+    {% if @top_level.has_constant?(:Spec) %}
+      {% UNSAFE_METHODS << :should
+         UNSAFE_METHODS << :should_not %}
+    {% end %}
+
     # :nodoc:
     def __mocks
       Proxy.new(self)
@@ -154,7 +164,7 @@ module Spectator::Mocks
 
          # Filter out methods that should be skipped, are incompatible, or unsafe to stub.
          definitions = definitions.reject do |(method, _, _)|
-           ::Spectator::Mocks::Stubbable::Automatic::SKIPPED_METHOD_NAMES.includes?(method.name.symbolize) ||
+           ::Spectator::Mocks::Stubbable::UNSAFE_METHODS.includes?(method.name.symbolize) ||
              method.name.starts_with?("__") ||
              method.annotation(Primitive) || method.annotation(::Spectator::Mocks::Stubbed)
          end
