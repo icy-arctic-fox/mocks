@@ -265,6 +265,7 @@ module Spectator::Mocks
                 ::NoReturn # behavior == :unexpected
               {% end %}
 
+      __mocks.add_call(%call) # Record call.
       if %stub = __mocks.find_stub(%call)
         # Stub found for invocation.
         %stub.call(%call.arguments, %type) do

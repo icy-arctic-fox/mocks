@@ -19,5 +19,11 @@ module Spectator::Mocks
     def find_stub(call : Call) : Stub?
       @scope.registry.find_stub(@object, call)
     end
+
+    # Records a method call made to the object this proxy represents.
+    # See: `Registry#call_call`
+    def add_call(call : Call) : Nil
+      @scope.registry.add_call(@object, call)
+    end
   end
 end
