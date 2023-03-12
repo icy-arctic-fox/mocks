@@ -140,43 +140,42 @@ describe Spectator::Mocks::DSL do
       end
     end
 
-    # Creating an instance of a mock module causes a stack overflow (infinite recursion).
     context "with a module" do
-      pending "defines a sub-type of the original" do
+      it "defines a sub-type of the original" do
         obj = MockSimpleModule.new
         obj.should be_a(OriginalModule)
       end
 
-      pending "defines default behavior with simple value stubs" do
+      it "defines default behavior with simple value stubs" do
         obj = MockSimpleModule.new
         obj.method.should eq(:stubbed_module)
       end
 
-      pending "can redefine behavior of a simple value stub" do
+      it "can redefine behavior of a simple value stub" do
         obj = MockSimpleModule.new
         stub = value_stub(:method, :override)
         obj.__mocks.add_stub(stub)
         obj.method.should eq(:override)
       end
 
-      pending "raises for abstract methods" do
+      it "raises for abstract methods" do
         obj = MockSimpleModule.new
         expect_raises(UnexpectedMessage, /abstract_method/) { obj.abstract_method }
       end
 
-      pending "can have stubs applied to abstract methods" do
+      it "can have stubs applied to abstract methods" do
         obj = MockComplexModule.new
         stub = value_stub(:abstract_method, :override)
         obj.__mocks.add_stub(stub)
         obj.abstract_method.should eq(:override)
       end
 
-      pending "raises for abstract typed methods" do
+      it "raises for abstract typed methods" do
         obj = MockSimpleModule.new
         expect_raises(UnexpectedMessage, /abstract_typed_method/) { obj.abstract_typed_method }
       end
 
-      pending "can have stubs applied to abstract typed methods" do
+      it "can have stubs applied to abstract typed methods" do
         obj = MockSimpleModule.new
         stub = value_stub(:abstract_typed_method, :override)
         obj.__mocks.add_stub(stub)

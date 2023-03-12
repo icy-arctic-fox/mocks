@@ -25,6 +25,10 @@ module Spectator::Mocks
 
               class Instance
                 include {{type}}
+
+                # Empty initializer to override the `.new` method from {{type}}.
+                def initialize
+                end
               end
 
               @[::Spectator::Mocks::Stubbed]
