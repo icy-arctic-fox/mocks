@@ -16,6 +16,8 @@ end
 
 private double AbstractTestDouble do
   stub do_not_call_me : Symbol
+
+  stub abstract def abstract_method : Symbol
 end
 
 describe Spectator::Mocks::DSL do
@@ -50,9 +52,14 @@ describe Spectator::Mocks::DSL do
       double.override.should eq(4)
     end
 
-    it "raises for abstract methods" do
+    it "raises for abstract typed stubs" do
       double = AbstractTestDouble.new
       expect_raises(UnexpectedMessage, /do_not_call_me/) { double.do_not_call_me }
+    end
+
+    it "raises for abstract methods" do
+      double = AbstractTestDouble.new
+      expect_raises(UnexpectedMessage, /abstract_method/) { double.abstract_method }
     end
   end
 end

@@ -35,6 +35,8 @@ private class StubbableType
   def proxy_visibility_syntax(arg)
     visibility_syntax(arg)
   end
+
+  stub abstract def abstract_method : Int32
 end
 
 private def nil_stub(method_name)
@@ -182,6 +184,20 @@ describe Spectator::Mocks::Stubbable do
         stub = value_stub(:visibility_syntax, 5)
         object.__mocks.add_stub(stub)
         object.proxy_visibility_syntax(42).should eq(5)
+      end
+    end
+
+    context "with an abstract method" do
+      it "raises by default" do
+        object = StubbableType.new
+        expect_raises(UnexpectedMessage, /abstract_method/) { object.abstract_method }
+      end
+
+      it "can change the method's behavior" do
+        object = StubbableType.new
+        stub = value_stub(:abstract_method, 42)
+        object.__mocks.add_stub(stub)
+        object.abstract_method.should eq(42)
       end
     end
   end

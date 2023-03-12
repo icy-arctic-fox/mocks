@@ -56,6 +56,16 @@ module Spectator::Mocks
     # This will define (or redefine) a method that supports stubbing.
     # The method will only accept calls with a matching signature.
     # When a stub isn't applied, the default behavior will be the contents of the method's body.
+    #
+    # Abstract methods will be given an implementation that raises `UnexpectedMessage`.
+    # Provide a stub to define alternate behavior.
+    # ```
+    # stub abstract def do_something
+    # # ...
+    # obj.do_something # Raises `UnexpectedMessage`
+    # obj.can receive(:do_something)
+    # obj.do_something # OK
+    # ```
     macro stub(method)
       {% if method.is_a?(VisibilityModifier)
            visibility = method.visibility
@@ -68,7 +78,7 @@ module Spectator::Mocks
 
       {% if method.is_a?(Def) %}
         # Default implementation.
-        {% begin %}{{visibility.id if visibility != :public}} {{method}}{% end %}
+        {% unless method.abstract? %}{{visibility.id if visibility != :public}} {{method}}{% end %}
 
         # Stub implementation.
         # FIXME: Reuse method signature generation code.
@@ -78,7 +88,11 @@ module Spectator::Mocks
             {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
           ){% end %}{% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
-            stubbed_method_body(:previous_def)
+            {% if method.abstract? %}
+              stubbed_method_body(:unexpected, as: {{method.return_type || raise "A return type must be specified for abstract stubbed methods"}})
+            {% else %}
+              stubbed_method_body(:previous_def)
+            {% end %}
           end
         {% end %}
 
@@ -167,7 +181,7 @@ module Spectator::Mocks
             # For abstract methods, if no return type is specified, it will be `NoReturn`.
             # It is expected that the method is overridden if another type is needed.
             # Requiring a return type is not allowed here since it could require changes outside the user's code.
-            stubbed_method_body({{behavior}})
+            stubbed_method_body({{method.abstract? ? :undefined : behavior}})
           end
         {% end %}
       {% end %}
