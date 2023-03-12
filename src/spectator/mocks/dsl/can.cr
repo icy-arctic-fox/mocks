@@ -9,5 +9,9 @@ module Spectator::Mocks
     def can(stub : Stub) : Nil
       __mocks.add_stub(stub)
     end
+
+    def can(collection : StubCollection) : Nil
+      collection.apply(__mocks)
+    end
   end
 end

@@ -98,6 +98,25 @@ module Spectator::Mocks
     def receive(method : Symbol, &block : -> _)
       ProcStub.new(method, block)
     end
+
+    # Constructs multiple method stubs for an object.
+    #
+    # A collection of key-value pairs is used.
+    # Each key is a method's name.
+    # The value is what is returned by the corresponding method.
+    #
+    # Can syntax:
+    # ```
+    # dbl.can receive(the_answer: 42, some_method: "foobar")
+    # ```
+    #
+    # Allow syntax:
+    # ```
+    # allow(dbl).to receive(the_answer: 42, some_method: "foobar")
+    # ```
+    def receive(**value_stubs)
+      StubCollection.new(value_stubs)
+    end
   end
 end
 

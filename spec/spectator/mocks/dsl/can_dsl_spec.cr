@@ -52,6 +52,14 @@ describe Spectator::Mocks::DSL do
         double.can receive(:override).and_return(42)
         double.override.should eq(42)
       end
+
+      it "can redefine multiple stubs" do
+        double = SimpleTestDouble.new
+        double.can receive(value: 3, typed_value: 4, typed: 5)
+        double.value.should eq(3)
+        double.typed_value.should eq(4)
+        double.typed.should eq(5)
+      end
     end
 
     context "with a mock" do

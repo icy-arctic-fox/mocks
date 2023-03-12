@@ -13,5 +13,10 @@ module Spectator::Mocks
     def to(stub : Stub)
       @proxy.add_stub(stub)
     end
+
+    # DSL method to apply a collection of stubs.
+    def to(collection : StubCollection)
+      collection.apply(@proxy)
+    end
   end
 end
