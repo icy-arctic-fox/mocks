@@ -25,5 +25,11 @@ module Spectator::Mocks
     def add_call(call : Call) : Nil
       @scope.registry.add_call(@object, call)
     end
+
+    # Retrieves all calls made to an object.
+    # See: `Registry#calls`
+    def calls : Enumerable
+      @scope.registry.calls(@object)
+    end
   end
 end
