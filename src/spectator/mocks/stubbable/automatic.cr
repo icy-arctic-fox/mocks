@@ -19,7 +19,9 @@ module Spectator::Mocks
       # Add stub support to class methods.
       extend ::Spectator::Mocks::Stubbable
 
-      stub_existing_methods
+      macro finished
+        stub_existing_methods
+      end
 
       # Automatically apply to all sub-types.
       {% if @type.module? %}
