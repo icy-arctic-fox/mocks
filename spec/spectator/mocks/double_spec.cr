@@ -2,9 +2,9 @@ require "../../spec_helper"
 
 alias Double = Spectator::Mocks::Double
 
-Double.define EmptyTestDouble
+private Double.define EmptyTestDouble
 
-Double.define SimpleTestDouble, typed : Symbol, typed_assignment : Symbol = :original, assignment = :value
+private Double.define SimpleTestDouble, typed : Symbol, typed_assignment : Symbol = :original, assignment = :value
 
 private def define_stubs(double : Double, **value_stubs : **T) forall T
   proxy = double.__mocks
