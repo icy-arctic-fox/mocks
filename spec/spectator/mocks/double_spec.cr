@@ -4,6 +4,8 @@ alias Double = Spectator::Mocks::Double
 
 Double.define EmptyTestDouble
 
+Double.define SimpleTestDouble, typed : Symbol, typed_assignment : Symbol = :original, assignment = :value
+
 private def define_stubs(double : Double, **value_stubs : **T) forall T
   proxy = double.__mocks
   # Avoid NamedTuple#each since it produces a union of types for each value.
@@ -19,6 +21,44 @@ describe Double do
     it "defines a double" do
       EmptyTestDouble.new.should be_a(Double)
     end
+
+    it "defines a stubbable method by type declaration" do
+      double = SimpleTestDouble.new
+      typeof(double.typed).should eq(Symbol)
+    end
+
+    it "defines a stubbable method by type declaration with assignment" do
+      double = SimpleTestDouble.new
+      double.typed_assignment.should eq(:original)
+    end
+
+    it "defines a stubbable method by assignment" do
+      double = SimpleTestDouble.new
+      double.assignment.should eq(:value)
+    end
+  end
+
+  it "raises by default for a method without a value" do
+    double = SimpleTestDouble.new
+    expect_raises(UnexpectedMessage, /typed/) { double.typed }
+  end
+
+  it "can have stubs defined for a type declaration" do
+    double = SimpleTestDouble.new
+    define_stubs(double, typed: :stubbed)
+    double.typed.should eq(:stubbed)
+  end
+
+  it "can have stubs defined for a type declaration with assignment" do
+    double = SimpleTestDouble.new
+    define_stubs(double, typed_assignment: :stubbed)
+    double.typed_assignment.should eq(:stubbed)
+  end
+
+  it "can have stubs defined for an assignment" do
+    double = SimpleTestDouble.new
+    define_stubs(double, assignment: :stubbed)
+    double.assignment.should eq(:stubbed)
   end
 
   it "can have stubs defined for standard methods" do
