@@ -6,7 +6,11 @@ module Spectator::Mocks
     macro define(type, **stubs, &block)
       {% if type.is_a?(Call) && type.name == :<.id %}
         {% parent = type.args.first
-           parent = parse_type(parent.id.stringify).resolve
+           parent = if parent.is_a?(Path | TypeNode | Generic | Union | Metaclass)
+                      parent.resolve
+                    else
+                      parse_type(parent.id.stringify).resolve
+                    end
            type = type.receiver
            type_keyword = if parent.class?
                             :class
