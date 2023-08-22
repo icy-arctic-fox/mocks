@@ -6,16 +6,6 @@ private Double.define EmptyTestDouble
 
 private Double.define SimpleTestDouble, typed : Symbol, typed_assignment : Symbol = :original, assignment = :value
 
-private def define_stubs(double : Double, **value_stubs : **T) forall T
-  proxy = double.__mocks
-  # Avoid NamedTuple#each since it produces a union of types for each value.
-  # This may throw-off the types used by stubs.
-  {% for key in T %}
-    stub = Spectator::Mocks::ValueStub.new({{key.symbolize}}, value_stubs[{{key.symbolize}}])
-    proxy.add_stub(stub)
-  {% end %}
-end
-
 describe Double do
   describe ".define" do
     it "defines a double" do
