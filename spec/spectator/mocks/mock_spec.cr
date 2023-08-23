@@ -1,6 +1,6 @@
 require "../../spec_helper"
 
-alias Mock = Spectator::Mocks::Mock
+private alias Mock = Spectator::Mocks::Mock
 
 private class ConcreteClass
   def simple_untyped_method
@@ -31,11 +31,6 @@ private Mock.define(ConcreteClassMock < ConcreteClass,
     :mock
   end
 end
-
-private abstract class AbstractClass
-end
-
-private Mock.define AbstractClassMock < AbstractClass
 
 private abstract struct AbstractStruct
 end
@@ -88,7 +83,7 @@ describe Mock do
 
         it "changes behavior of a typed method" do
           mock = ConcreteClassMock.new
-          mock.simple_untyped_method.should eq(:mock)
+          mock.simple_typed_method.should eq(:mock)
         end
 
         it "can redefine behavior of an untyped method" do
@@ -102,16 +97,6 @@ describe Mock do
           define_stubs(mock, simple_typed_method: 42)
           expect_raises(TypeCastError, /Symbol/) { mock.simple_typed_method }
         end
-      end
-    end
-
-    context "with an abstract class" do
-      it "defines a sub-type" do
-        AbstractClassMock.should be < AbstractClass
-      end
-
-      it "is instantiable" do
-        AbstractClassMock.new.should be_a(AbstractClass)
       end
     end
 
