@@ -191,8 +191,8 @@ module Spectator::Mocks
             {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
           ){% end %}{% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
-            {% if method.abstract? && method.return_type %}
-              stubbed_method_body({{block ? :block : :unexpected}}, as: {{method.return_type}}) {{block}}
+            {% if method.abstract? %}
+                stubbed_method_body({{block ? :block : :unexpected}}, as: {{method.return_type || :infer}}) {{block}}
             {% else %}
               stubbed_method_body({{behavior}}) {{block}}
             {% end %}
