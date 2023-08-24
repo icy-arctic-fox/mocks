@@ -51,25 +51,27 @@ macro def_abstract_instance_methods
   abstract def abstract__untyped_return__untyped_yield__block(& : String -> _) : String
 end
 
-macro def_concrete_instance_methods(return_value = "original")
-  def concrete__typed_return__no_yield__no_default : String
-    {{return_value}}
-  end
-  def concrete__untyped_return__no_yield__no_default
-    {{return_value}}
-  end
-  def concrete__typed_return__typed_yield__no_default(& : String -> String) : String
-    yield {{return_value}}
-  end
-  def concrete__untyped_return__typed_yield__no_default(& : String -> String)
-    yield {{return_value}}
-  end
-  def concrete__typed_return__untyped_yield__no_default(& : String -> _) : String
-    yield {{return_value}}
-  end
-  def concrete__untyped_return__untyped_yield__no_default(& : String -> _) : String
-    yield {{return_value}}
-  end
+macro def_concrete_instance_methods(return_value = "original", is_mock_type = false)
+  {% unless is_mock_type %}
+    def concrete__typed_return__no_yield__no_default : String
+      {{return_value}}
+    end
+    def concrete__untyped_return__no_yield__no_default
+      {{return_value}}
+    end
+    def concrete__typed_return__typed_yield__no_default(& : String -> String) : String
+      yield {{return_value}}
+    end
+    def concrete__untyped_return__typed_yield__no_default(& : String -> String)
+      yield {{return_value}}
+    end
+    def concrete__typed_return__untyped_yield__no_default(& : String -> _) : String
+      yield {{return_value}}
+    end
+    def concrete__untyped_return__untyped_yield__no_default(& : String -> _) : String
+      yield {{return_value}}
+    end
+  {% end %}
 
   def concrete__typed_return__no_yield__kwargs : String
     {{return_value}}
@@ -110,25 +112,27 @@ macro def_concrete_instance_methods(return_value = "original")
   end
 end
 
-macro def_class_methods(return_value = "original")
-  def self.class__typed_return__no_yield__no_default : String
-    {{return_value}}
-  end
-  def self.class__untyped_return__no_yield__no_default
-    {{return_value}}
-  end
-  def self.class__typed_return__typed_yield__no_default(& : String -> String) : String
-    yield {{return_value}}
-  end
-  def self.class__untyped_return__typed_yield__no_default(& : String -> String)
-    yield {{return_value}}
-  end
-  def self.class__typed_return__untyped_yield__no_default(& : String -> _) : String
-    yield {{return_value}}
-  end
-  def self.class__untyped_return__untyped_yield__no_default(& : String -> _) : String
-    yield {{return_value}}
-  end
+macro def_class_methods(return_value = "original", is_mock_type = false)
+  {% unless is_mock_type %}
+    def self.class__typed_return__no_yield__no_default : String
+      {{return_value}}
+    end
+    def self.class__untyped_return__no_yield__no_default
+      {{return_value}}
+    end
+    def self.class__typed_return__typed_yield__no_default(& : String -> String) : String
+      yield {{return_value}}
+    end
+    def self.class__untyped_return__typed_yield__no_default(& : String -> String)
+      yield {{return_value}}
+    end
+    def self.class__typed_return__untyped_yield__no_default(& : String -> _) : String
+      yield {{return_value}}
+    end
+    def self.class__untyped_return__untyped_yield__no_default(& : String -> _) : String
+      yield {{return_value}}
+    end
+  {% end %}
 
   def self.class__typed_return__no_yield__kwargs : String
     {{return_value}}
@@ -174,13 +178,6 @@ macro define_mock(definition, kwargs_groups, block_groups, return_value = "mocke
     ::Spectator::Mocks::Mock.define({{definition}},
       {% for group in kwargs_groups %}
         {% if group.id == :abstract.id %}
-          abstract__typed_return__no_yield__no_default: {{return_value}},
-          abstract__untyped_return__no_yield__no_default: {{return_value}},
-          abstract__typed_return__typed_yield__no_default: {{return_value}},
-          abstract__untyped_return__typed_yield__no_default: {{return_value}},
-          abstract__typed_return__untyped_yield__no_default: {{return_value}},
-          abstract__untyped_return__untyped_yield__no_default: {{return_value}},
-        
           abstract__typed_return__no_yield__kwargs: {{return_value}},
           abstract__untyped_return__no_yield__kwargs: {{return_value}},
           abstract__typed_return__typed_yield__kwargs: {{return_value}},
@@ -195,13 +192,6 @@ macro define_mock(definition, kwargs_groups, block_groups, return_value = "mocke
           abstract__typed_return__untyped_yield__block: {{return_value}},
           abstract__untyped_return__untyped_yield__block: {{return_value}},
         {% elsif group.id == :concrete.id %}
-          concrete__typed_return__no_yield__no_default: {{return_value}},
-          concrete__untyped_return__no_yield__no_default: {{return_value}},
-          concrete__typed_return__typed_yield__no_default: {{return_value}},
-          concrete__untyped_return__typed_yield__no_default: {{return_value}},
-          concrete__typed_return__untyped_yield__no_default: {{return_value}},
-          concrete__untyped_return__untyped_yield__no_default: {{return_value}},
-        
           concrete__typed_return__no_yield__kwargs: {{return_value}},
           concrete__untyped_return__no_yield__kwargs: {{return_value}},
           concrete__typed_return__typed_yield__kwargs: {{return_value}},
@@ -216,31 +206,13 @@ macro define_mock(definition, kwargs_groups, block_groups, return_value = "mocke
           concrete__typed_return__untyped_yield__block: {{return_value}},
           concrete__untyped_return__untyped_yield__block: {{return_value}},
         {% else %}
+          # Class method mocks can't be defined with keyword arguments.
           {% raise "Unrecognized mock function group: #{group}" %}
         {% end %}
       {% end %}
     ) do
       {% for group in block_groups %}
         {% if group.id == :abstract.id %}
-          def abstract__typed_return__no_yield__no_default : String
-            {{return_value}}
-          end
-          def abstract__untyped_return__no_yield__no_default
-            {{return_value}}
-          end
-          def abstract__typed_return__typed_yield__no_default(& : String -> String) : String
-            yield {{return_value}}
-          end
-          def abstract__untyped_return__typed_yield__no_default(& : String -> String)
-            yield {{return_value}}
-          end
-          def abstract__typed_return__untyped_yield__no_default(& : String -> _) : String
-            yield {{return_value}}
-          end
-          def abstract__untyped_return__untyped_yield__no_default(& : String -> _) : String
-            yield {{return_value}}
-          end
-        
           def abstract__typed_return__no_yield__kwargs : String
             {{return_value}}
           end
@@ -279,9 +251,9 @@ macro define_mock(definition, kwargs_groups, block_groups, return_value = "mocke
             yield {{return_value}}
           end
         {% elsif group.id == :concrete.id %}
-          def_concrete_instance_methods({{return_value}})
+          def_concrete_instance_methods({{return_value}}, true)
         {% elsif group == :class.id %}
-          def_class_methods({{return_value}})
+          def_class_methods({{return_value}}, true)
         {% else %}
           {% raise "Unrecognized mock function group: #{group}" %}
         {% end %}
