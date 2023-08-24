@@ -94,10 +94,10 @@ module Spectator::Mocks
         # FIXME: Reuse method signature generation code.
         {% begin %}
           @[::Spectator::Mocks::Stubbed]
-          {{visibility.id if visibility != :public}} def {% if method.receiver %}{{method.receiver}}.{% end %}{{method.name}}{% unless method.args.empty? %}({% for arg, i in method.args %}
+          {{visibility.id if visibility != :public}} def {% if method.receiver %}{{method.receiver}}.{% end %}{{method.name}}({% for arg, i in method.args %}
             {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
-          ){% end %}{% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
+          ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
             {% if method.abstract? %}
               stubbed_method_body(:unexpected, as: {{method.return_type || raise "A return type must be specified for abstract stubbed methods"}})
             {% else %}
@@ -187,10 +187,10 @@ module Spectator::Mocks
            visibility = method.visibility %}
         {% begin %}
           @[::Spectator::Mocks::Stubbed]
-          {{visibility.id if visibility != :public}} def {{"self.".id if receiver}}{{method.name}}{% unless method.args.empty? %}({% for arg, i in method.args %}
+          {{visibility.id if visibility != :public}} def {{"self.".id if receiver}}{{method.name}}({% for arg, i in method.args %}
             {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
-          ){% end %}{% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
+          ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
             {% if method.abstract? %}
                 stubbed_method_body({{block ? :block : :unexpected}}, as: {{method.return_type || :infer}}) {{block}}
             {% else %}
