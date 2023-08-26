@@ -192,7 +192,11 @@ module Spectator::Mocks
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
           ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
             {% if method.abstract? %}
+              {% if block || method.return_type %}
                 stubbed_method_body({{block ? :block : :unexpected}}, as: {{method.return_type || :infer}}) {{block}}
+              {% else %}
+                abstract_untyped_method!
+              {% end %}
             {% else %}
               stubbed_method_body({{behavior}}) {{block}}
             {% end %}
@@ -252,13 +256,17 @@ module Spectator::Mocks
     # This should be provided when the method is expected to return a specific type.
     # It can be `:infer`, which indicates no casting is performed and the compiler should infer the return type.
     private macro stubbed_method_body(behavior = :block, *, as type = :infer, &block)
+      try_call_stub({{behavior}}, as: {{type}}) do
+        stubbed_method_behavior({{behavior}}, as: {{type}}) {{block}}
+      end
+    end
+
+    private macro try_call_stub(behavior = :block, *, as type = :infer)
       %call = ::Spectator::Mocks::Call.capture
       %type = {% if type != :infer %}
                 {{type.id}}
               {% elsif behavior == :block %}
-                typeof(begin
-                  {{block.body}}
-                end)
+                typeof({{yield}})
               {% elsif behavior == :previous_def || behavior == :super %}
                 typeof(adjusted_previous_def({{behavior}}))
               {% else %}
@@ -269,10 +277,12 @@ module Spectator::Mocks
       if %stub = __mocks.find_stub(%call)
         # Stub found for invocation.
         %stub.call(%call.arguments, %type) do
-          stubbed_method_behavior({{behavior}}, as: {{type}}) {{block}}
+          # Stub found and it yielded to default behavior.
+          {{yield}}
         end
       else
-        stubbed_method_behavior({{behavior}}, as: {{type}}) {{block}}
+        # No stub found, use default behavior.
+        {{yield}}
       end
     end
 
@@ -376,6 +386,12 @@ module Spectator::Mocks
            # No block involved, don't need a workaround.
            keyword
          end.id }}
+    end
+
+    private macro abstract_untyped_method!
+      try_call_stub(:unexpected, as: Nil) do
+        raise ::Spectator::Mocks::UnexpectedMessage.new({{@def.name.symbolize}}, "Attempted to call an abstract method `{{@def.name}}` without a default stub and no return type. Define a default stub or return type to enable calling this method.")
+      end
     end
   end
 end
