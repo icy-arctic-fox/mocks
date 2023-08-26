@@ -34,21 +34,21 @@ macro def_abstract_instance_methods
   abstract def abstract__typed_return__typed_yield__no_default(& : String -> String) : String
   abstract def abstract__untyped_return__typed_yield__no_default(& : String -> String)
   abstract def abstract__typed_return__untyped_yield__no_default(& : String -> _) : String
-  abstract def abstract__untyped_return__untyped_yield__no_default(& : String -> _) : String
+  abstract def abstract__untyped_return__untyped_yield__no_default(& : String -> _)
 
   abstract def abstract__typed_return__no_yield__kwargs : String
   abstract def abstract__untyped_return__no_yield__kwargs
   abstract def abstract__typed_return__typed_yield__kwargs(& : String -> String) : String
   abstract def abstract__untyped_return__typed_yield__kwargs(& : String -> String)
   abstract def abstract__typed_return__untyped_yield__kwargs(& : String -> _) : String
-  abstract def abstract__untyped_return__untyped_yield__kwargs(& : String -> _) : String
+  abstract def abstract__untyped_return__untyped_yield__kwargs(& : String -> _)
 
   abstract def abstract__typed_return__no_yield__block : String
   abstract def abstract__untyped_return__no_yield__block
   abstract def abstract__typed_return__typed_yield__block(& : String -> String) : String
   abstract def abstract__untyped_return__typed_yield__block(& : String -> String)
   abstract def abstract__typed_return__untyped_yield__block(& : String -> _) : String
-  abstract def abstract__untyped_return__untyped_yield__block(& : String -> _) : String
+  abstract def abstract__untyped_return__untyped_yield__block(& : String -> _)
 end
 
 macro def_concrete_instance_methods(return_value = "original", is_mock_type = false)
@@ -68,7 +68,7 @@ macro def_concrete_instance_methods(return_value = "original", is_mock_type = fa
     def concrete__typed_return__untyped_yield__no_default(& : String -> _) : String
       yield {{return_value}}
     end
-    def concrete__untyped_return__untyped_yield__no_default(& : String -> _) : String
+    def concrete__untyped_return__untyped_yield__no_default(& : String -> _)
       yield {{return_value}}
     end
   {% end %}
@@ -88,7 +88,7 @@ macro def_concrete_instance_methods(return_value = "original", is_mock_type = fa
   def concrete__typed_return__untyped_yield__kwargs(& : String -> _) : String
     yield {{return_value}}
   end
-  def concrete__untyped_return__untyped_yield__kwargs(& : String -> _) : String
+  def concrete__untyped_return__untyped_yield__kwargs(& : String -> _)
     yield {{return_value}}
   end
   
@@ -107,7 +107,7 @@ macro def_concrete_instance_methods(return_value = "original", is_mock_type = fa
   def concrete__typed_return__untyped_yield__block(& : String -> _) : String
     yield {{return_value}}
   end
-  def concrete__untyped_return__untyped_yield__block(& : String -> _) : String
+  def concrete__untyped_return__untyped_yield__block(& : String -> _)
     yield {{return_value}}
   end
 end
@@ -129,7 +129,7 @@ macro def_class_methods(return_value = "original", is_mock_type = false)
     def self.class__typed_return__untyped_yield__no_default(& : String -> _) : String
       yield {{return_value}}
     end
-    def self.class__untyped_return__untyped_yield__no_default(& : String -> _) : String
+    def self.class__untyped_return__untyped_yield__no_default(& : String -> _)
       yield {{return_value}}
     end
   {% end %}
@@ -149,7 +149,7 @@ macro def_class_methods(return_value = "original", is_mock_type = false)
   def self.class__typed_return__untyped_yield__kwargs(& : String -> _) : String
     yield {{return_value}}
   end
-  def self.class__untyped_return__untyped_yield__kwargs(& : String -> _) : String
+  def self.class__untyped_return__untyped_yield__kwargs(& : String -> _)
     yield {{return_value}}
   end
   
@@ -168,7 +168,7 @@ macro def_class_methods(return_value = "original", is_mock_type = false)
   def self.class__typed_return__untyped_yield__block(& : String -> _) : String
     yield {{return_value}}
   end
-  def self.class__untyped_return__untyped_yield__block(& : String -> _) : String
+  def self.class__untyped_return__untyped_yield__block(& : String -> _)
     yield {{return_value}}
   end
 end
@@ -228,7 +228,7 @@ macro define_mock(definition, kwargs_groups, block_groups, return_value = "mocke
           def abstract__typed_return__untyped_yield__kwargs(& : String -> _) : String
             yield {{return_value}}
           end
-          def abstract__untyped_return__untyped_yield__kwargs(& : String -> _) : String
+          def abstract__untyped_return__untyped_yield__kwargs(& : String -> _)
             yield {{return_value}}
           end
         
@@ -247,7 +247,7 @@ macro define_mock(definition, kwargs_groups, block_groups, return_value = "mocke
           def abstract__typed_return__untyped_yield__block(& : String -> _) : String
             yield {{return_value}}
           end
-          def abstract__untyped_return__untyped_yield__block(& : String -> _) : String
+          def abstract__untyped_return__untyped_yield__block(& : String -> _)
             yield {{return_value}}
           end
         {% elsif group.id == :concrete.id %}
