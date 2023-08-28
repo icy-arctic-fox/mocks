@@ -113,7 +113,26 @@ macro def_concrete_instance_methods(return_value = "original", is_mock_type = fa
 end
 
 macro def_class_methods(return_value = "original", is_mock_type = false)
-  {% unless is_mock_type %}
+  {% if is_mock_type %}
+    def self.class__typed_return__no_yield__kwargs : String
+      {{return_value}}
+    end
+    def self.class__untyped_return__no_yield__kwargs
+      {{return_value}}
+    end
+    def self.class__typed_return__typed_yield__kwargs(& : String -> String) : String
+      yield {{return_value}}
+    end
+    def self.class__untyped_return__typed_yield__kwargs(& : String -> String)
+      yield {{return_value}}
+    end
+    def self.class__typed_return__untyped_yield__kwargs(& : String -> _) : String
+      yield {{return_value}}
+    end
+    def self.class__untyped_return__untyped_yield__kwargs(& : String -> _)
+      yield {{return_value}}
+    end
+  {% else %}
     def self.class__typed_return__no_yield__no_default : String
       {{return_value}}
     end
@@ -133,25 +152,6 @@ macro def_class_methods(return_value = "original", is_mock_type = false)
       yield {{return_value}}
     end
   {% end %}
-
-  def self.class__typed_return__no_yield__kwargs : String
-    {{return_value}}
-  end
-  def self.class__untyped_return__no_yield__kwargs
-    {{return_value}}
-  end
-  def self.class__typed_return__typed_yield__kwargs(& : String -> String) : String
-    yield {{return_value}}
-  end
-  def self.class__untyped_return__typed_yield__kwargs(& : String -> String)
-    yield {{return_value}}
-  end
-  def self.class__typed_return__untyped_yield__kwargs(& : String -> _) : String
-    yield {{return_value}}
-  end
-  def self.class__untyped_return__untyped_yield__kwargs(& : String -> _)
-    yield {{return_value}}
-  end
   
   def self.class__typed_return__no_yield__block : String
     {{return_value}}
@@ -339,7 +339,9 @@ end
 macro context_kwargs_default_stub(mock, method_part, *, original_value, default_mock_value, override_value)
   {% method = "#{method_part.id}__kwargs" %}
   context "[default stub: keyword arguments]" do
-    it_returns_the_default_mock_value({{mock}}, {{method}}, {{default_mock_value}})
+    {% unless method.includes?("class") %}
+      it_returns_the_default_mock_value({{mock}}, {{method}}, {{default_mock_value}})
+    {% end %}
     it_can_have_a_stub_applied({{mock}}, {{method}}, {{override_value}})
     it_compiles_to_the_expected_type({{mock}}, {{method}})
   end
@@ -357,10 +359,10 @@ end
 macro context_no_default_stub(mock, method_part, *, original_value, default_mock_value, override_value)
   {% method = "#{method_part.id}__no_default" %}
   context "[default stub: none]" do
-    it_raises_unexpected_message({{mock}}, {{method}})
     {% if method.starts_with?("abstract") && method.includes?("untyped_return") %}
       it_cannot_have_a_stub_applied({{mock}}, {{method}}, {{override_value}})
     {% else %}
+      it_raises_unexpected_message({{mock}}, {{method}})
       it_can_have_a_stub_applied({{mock}}, {{method}}, {{override_value}})
       it_compiles_to_the_expected_type({{mock}}, {{method}})
     {% end %}
