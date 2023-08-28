@@ -190,7 +190,9 @@ describe Spectator::Mocks::Stubbable do
     context "with an abstract method" do
       it "raises by default" do
         object = StubbableType.new
-        expect_raises(UnexpectedMessage, /abstract_method/) { object.abstract_method }
+        # Notice this doesn't match the method name.
+        # Look explicitly for mention of calling an abstract method.
+        expect_raises(UnexpectedMessage, /abstract method/) { object.abstract_method }
       end
 
       it "can change the method's behavior" do
