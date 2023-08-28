@@ -18,8 +18,8 @@ describe Spectator::Mocks::StubCollection do
       stub2 = proxy.find_stub(method2_call).should_not be_nil
 
       no_args = Spectator::Mocks::Arguments.none
-      value1 = stub1.call(no_args, Int32) { 0 }
-      value2 = stub2.call(no_args, String) { "bar" }
+      value1 = stub1.call(no_args) { 0 }
+      value2 = stub2.call(no_args) { "bar" }
 
       value1.should eq(42)
       value2.should eq("foo")
