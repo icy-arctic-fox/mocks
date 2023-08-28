@@ -21,6 +21,21 @@ module Spectator::Mocks
   #   end
   # end
   # ```
+  #
+  # When defining stubbable methods, a behavior and type are needed.
+  # The behavior is a symbol that specifies how the method behaves without a user-defined stub.
+  # The behavior can be one of:
+  # - `:block` - Yield to the block provided and return its value.
+  # - `:previous_def` - Call the previous definition of the method.
+  # - `:super` - Call the parent's implementation of the method.
+  # - `:unexpected` - Throw an `UnexpectedMessage` error.
+  # - `:abstract` - Throw an `UnexpectedMessage` error indicating an attempt to call the original method, which is abstract.
+  #
+  # The type is needed so that values returned by stubs can be type checked and cast if necessary.
+  # It is also used to inform the compiler the method's type to avoid bloated unions.
+  # The type can be one of:
+  # - *Type name* - Any type name, the return value will be explicitly cast to this type.
+  # - `:infer` - Have the compiler infer the type from a based on the behavior.
   module Stubbable
     # Names of methods to skip defining a stub for.
     # These are typically special methods, such as Crystal built-ins, that would be unsafe to mock.
@@ -76,6 +91,9 @@ module Spectator::Mocks
     # obj.can receive(:do_something)
     # obj.do_something # OK
     # ```
+    # NOTE: Omitting the return type restriction for an abstract method will cause it to return nil.
+    # Specify a non-nil return type with a default stub, such as passing a block to this method,
+    # or by adding a return type restriction to the method.
     macro stub(method)
       {% if method.is_a?(VisibilityModifier)
            visibility = method.visibility
@@ -98,11 +116,7 @@ module Spectator::Mocks
             {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
           ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
-            {% if method.abstract? %}
-              stubbed_method_body(:unexpected, as: {{method.return_type || raise "A return type must be specified for abstract stubbed methods"}})
-            {% else %}
-              stubbed_method_body(:previous_def)
-            {% end %}
+            stubbed_method_body({{method.abstract? ? :abstract : :previous_def}}, as: {{method.return_type || :infer}})
           end
         {% end %}
 
@@ -120,23 +134,45 @@ module Spectator::Mocks
     # All methods in the current type and its ancestors are redefined.
     # Only methods with a specific name can be redefined by providing a *name*.
     #
+    # If *original* is true, then the method's original implementation is called when there are no stubs defined.
+    # This is false By default, which raises `UnexpectedMessage` instead.
+    #
     # A block can be provided, which gives the default implementation.
-    private macro stub_existing(name = nil, &block)
-      {% definitions = [] of {Def, Symbol, Symbol?}
+    private macro stub_existing(name = nil, original = false, &block)
+      {% definitions = [] of {method: Def, behavior: Symbol, type: Symbol, receiver: Symbol?}
          # Find all methods to redefine.
          # Definitions are stored as an array of tuples.
-         # The first element is the method definition.
-         # The next two are the behavior (previous_def or super) and the method receiver (self or nil).
+         # The values are as follows:
+         # method - Original method definition.
+         # behavior - Default behavior of the method without a stub.
+         # type - Type to return by the stub.
+         # receiver - Type name for class methods, nil otherwise.
 
          # Add methods from the current type.
          # This must be done first so that the previous definition is used instead of one from an ancestor.
          definitions = @type.methods.map do |method|
-           {method, method.abstract? ? :unexpected : :previous_def, nil}
+           behavior = if block
+                        :block
+                      elsif method.abstract?
+                        :abstract
+                      elsif original
+                        :previous_def
+                      else
+                        :unexpected
+                      end
+           {method: method, behavior: behavior, type: (method.abstract? ? :infer : :previous_def), receiver: nil}
          end
 
          # Add class methods from the current type.
          definitions += @type.class.methods.map do |method|
-           {method, :previous_def, :self}
+           behavior = if block
+                        :block
+                      elsif original
+                        :previous_def
+                      else
+                        :unexpected
+                      end
+           {method: method, behavior: behavior, type: :previous_def, receiver: :self}
          end
 
          # Add methods from ancestors if they aren't overridden.
@@ -149,7 +185,8 @@ module Spectator::Mocks
            variants.each do |(type, receiver)|
              type.methods.each do |method|
                # Skip methods overridden by a sub-type to prevent unnecessary redefinitions.
-               unless definitions.any? do |(m, _, _)|
+               unless definitions.any? do |d|
+                        m = d[:method]
                         # Method objects can't be directly compared.
                         # Compare each distinguishing attribute separately.
                         m.name == method.name &&
@@ -159,14 +196,24 @@ module Spectator::Mocks
                         m.block_arg == method.block_arg
                       end
                  # Method not overridden, add it to the list.
-                 definitions << {method, method.abstract? ? :unexpected : :super, receiver}
+                 behavior = if block
+                              :block
+                            elsif method.abstract?
+                              :abstract
+                            elsif original
+                              :super
+                            else
+                              :unexpected
+                            end
+                 definitions << {method: method, behavior: behavior, type: (method.abstract? ? :infer : :super), receiver: receiver}
                end
              end
            end
          end
 
          # Filter out methods that should be skipped, are incompatible, or unsafe to stub.
-         definitions = definitions.reject do |(method, _, _)|
+         definitions = definitions.reject do |d|
+           method = d[:method]
            ::Spectator::Mocks::Stubbable::UNSAFE_METHODS.includes?(method.name.symbolize) ||
              method.name.starts_with?("__") ||
              method.annotation(Primitive) || method.annotation(::Spectator::Mocks::Stubbed)
@@ -175,15 +222,15 @@ module Spectator::Mocks
          if name
            # Only redefine methods with the specified name.
            name = name.id
-           definitions = definitions.select do |(method, _, _)|
-             method.name == name
+           definitions = definitions.select do |d|
+             d[:method].name == name
            end
          end %}
 
       # Redefine virtually all methods to support stubs.
       # FIXME: Reuse method signature generation code.
       {% for definition in definitions %}
-        {% method, behavior, receiver = definition
+        {% method, behavior, type, receiver = definition.values
            visibility = method.visibility %}
         {% begin %}
           @[::Spectator::Mocks::Stubbed]
@@ -191,15 +238,7 @@ module Spectator::Mocks
             {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
           ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
-            {% if method.abstract? %}
-              {% if block || method.return_type %}
-                stubbed_method_body({{block ? :block : :unexpected}}, as: {{method.return_type || :infer}}) {{block}}
-              {% else %}
-                abstract_untyped_method!
-              {% end %}
-            {% else %}
-              stubbed_method_body({{behavior}}) {{block}}
-            {% end %}
+            stubbed_method_body({{behavior}}, as: {{method.return_type || type}}) {{block}}
           end
         {% end %}
       {% end %}
@@ -249,81 +288,67 @@ module Spectator::Mocks
     # Constructs the contents of a stubbed method's body.
     # This macro is intended to be used inside a stubbable method.
     #
-    # The *behavior* argument is passed along to the `#stubbed_method_behavior` macro.
-    # It is used by this macro to infer the method's return type if the *as* *type* argument isn't provided.
+    # Captures a method call, looks for a stub, and calls it if one was found.
+    # The block passed to this macro is used as the default/fallback implementation.
     #
-    # A *type* can be specified with the *as* keyword argument.
-    # This should be provided when the method is expected to return a specific type.
-    # It can be `:infer`, which indicates no casting is performed and the compiler should infer the return type.
+    # The *behavior* and *type* arguments are passed along to the `#stubbed_method_behavior` macro.
+    # See `#stubbed_method_behavior` for details on those parameters.
     private macro stubbed_method_body(behavior = :block, *, as type = :infer, &block)
-      try_call_stub({{behavior}}, as: {{type}}) do
-        stubbed_method_behavior({{behavior}}, as: {{type}}) {{block}}
-      end
-    end
-
-    private macro try_call_stub(behavior = :block, *, as type = :infer)
+      # Record call.
       %call = ::Spectator::Mocks::Call.capture
-      %type = {% if type != :infer %}
+      __mocks.add_call(%call)
+
+      %type = {% if type == :previous_def || type == :super %}
+                typeof(adjusted_previous_def({{type}}))
+              {% elsif type != :infer %}
                 {{type.id}}
-              {% elsif behavior == :block %}
+              {% elsif behavior == :block %} # From here on, type == :infer
                 typeof({{yield}})
               {% elsif behavior == :previous_def || behavior == :super %}
                 typeof(adjusted_previous_def({{behavior}}))
               {% else %}
-                ::NoReturn # behavior == :unexpected
+                ::Nil # behavior == :unexpected || :abstract
               {% end %}
 
-      __mocks.add_call(%call) # Record call.
       if %stub = __mocks.find_stub(%call)
         # Stub found for invocation.
         %stub.call(%call.arguments, %type) do
           # Stub found and it yielded to default behavior.
-          {{yield}}
+          stubbed_method_behavior({{behavior}}, as: {{type}}) {{block}}
         end
       else
         # No stub found, use default behavior.
-        {{yield}}
+        stubbed_method_behavior({{behavior}}, as: {{type}}) {{block}}
       end
     end
 
     # Defines the behavior of a stubbed method.
     # This macro is intended to be used inside a stubbable method.
     #
-    # The *behavior* argument can be `:block`, `:previous_def`, `:super`, or `:unexpected`.
+    # The *behavior* argument can be `:block`, `:previous_def`, `:super`, `:unexpected`, or `:abstract`.
     # When the *behavior* is `:block`, a block must be provided.
     # The block's content is used as the method's behavior.
     # For `:previous_def` and `:super`, the original method's implementation is invoked.
-    # Lastly, for `:unexpected`, an `UnexpectedMessage` error is raised.
+    # Lastly, `:unexpected` and `:abstract, raise an `UnexpectedMessage` error.
+    # The `:abstract` behavior indicates in the error message that there was an attempt to call an abstract method.
     #
     # A *type* can be specified with the *as* keyword argument.
     # This should be provided when the method is expected to return a specific type.
     # It can be `:infer`, which indicates no casting is performed and the compiler should infer the return type.
-    private macro stubbed_method_behavior(behavior = :block, *, as type = :infer, &block)
+    # Additionally, `:previous_def` and `:super` can be used to copy the type from those methods.
+    # This is typically used with *behavior* set to `:unexpected`.
+    private macro stubbed_method_behavior(behavior = :block, *, as type = :infer)
       {% if behavior == :block %}
-        %value = begin
-          {{block.body}}
-        end
-        {% if type != :infer %}
-          %value.as({{type.id}})
-        {% end %}
+        {{yield}}
       {% elsif behavior == :previous_def || behavior == :super %}
-        {% if block %}
-          %value = begin
-            {{block.body}}
-          end
-        {% else %}
-          %value = adjusted_previous_def({{behavior}})
-        {% end %}
-        {% if type == :infer %}
-          %value.as(typeof(adjusted_previous_def({{behavior}})))
-        {% else %}
-          %value.as({{type.id}})
-        {% end %}
-      {% elsif behavior == :unexpected %}
-        raise ::Spectator::Mocks::UnexpectedMessage.new({{@def.name.symbolize}})
-        {% if type != :infer %}
-          # Trick compiler into thinking this is the returned type instead of `NoReturn` (from the raise).
-          # This line should not be reached.
+        adjusted_previous_def({{behavior}})
+      {% elsif behavior == :unexpected || behavior == :abstract %}
+        raise ::Spectator::Mocks::UnexpectedMessage.new({{@def.name.symbolize}}, {% if behavior == :abstract %}"Attempted to call abstract method `{{@def.name}}`"{% end %})
+        # Trick compiler into thinking this is the returned type instead of `NoReturn` (from the raise).
+        # This line should not be reached.
+        {% if type == :previous_def || type == :super %}
+          typeof(adjusted_previous_def({{type}})).allocate
+        {% elsif type != :infer %}
           {{type.id}}.allocate
         {% end %}
       {% else %}
@@ -386,12 +411,6 @@ module Spectator::Mocks
            # No block involved, don't need a workaround.
            keyword
          end.id }}
-    end
-
-    private macro abstract_untyped_method!
-      try_call_stub(:unexpected, as: Nil) do
-        raise ::Spectator::Mocks::UnexpectedMessage.new({{@def.name.symbolize}}, "Attempted to call an abstract method `{{@def.name}}` without a default stub and no return type. Define a default stub or return type to enable calling this method.")
-      end
     end
   end
 end
