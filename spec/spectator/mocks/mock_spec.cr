@@ -252,7 +252,7 @@ macro define_mock(definition, kwargs_groups, block_groups, return_value = "mocke
           end
         {% elsif group.id == :concrete.id %}
           def_concrete_instance_methods({{return_value}}, true)
-        {% elsif group == :class.id %}
+        {% elsif group.id == :class.id %}
           def_class_methods({{return_value}}, true)
         {% else %}
           {% raise "Unrecognized mock function group: #{group}" %}
