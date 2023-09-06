@@ -160,7 +160,13 @@ module Spectator::Mocks
                       else
                         :unexpected
                       end
-           {method: method, behavior: behavior, type: (method.abstract? ? :infer : :previous_def), receiver: nil}
+
+           {
+             method:   method,
+             behavior: behavior,
+             type:     (method.abstract? ? :infer : :previous_def),
+             receiver: nil,
+           }
          end
 
          # Add class methods from the current type.
@@ -172,7 +178,13 @@ module Spectator::Mocks
                       else
                         :unexpected
                       end
-           {method: method, behavior: behavior, type: :previous_def, receiver: :self}
+
+           {
+             method:   method,
+             behavior: behavior,
+             type:     :previous_def,
+             receiver: :self,
+           }
          end
 
          # Add methods from ancestors if they aren't overridden.
@@ -205,7 +217,12 @@ module Spectator::Mocks
                             else
                               :unexpected
                             end
-                 definitions << {method: method, behavior: behavior, type: (method.abstract? ? :infer : :super), receiver: receiver}
+                 definitions << {
+                   method:   method,
+                   behavior: behavior,
+                   type:     (method.abstract? ? :infer : :super),
+                   receiver: receiver,
+                 }
                end
              end
            end
