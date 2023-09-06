@@ -26,9 +26,7 @@ module Spectator::Mocks::DSL
     # dbl.the_answer.should eq(42)
     # expect_raises(UnexpectedMessage) { dbl.some_method }
     # ```
-    macro double(name, *stubs, **named_stubs, &block)
-      ::Spectator::Mocks::Double.define({{name}}, {{stubs.splat(", ")}} {{**named_stubs}}) {{block}}
-    end
+    Double.def_define_double double, type: ::Spectator::Mocks::Double
 
     # Defines a test mock.
     #
@@ -58,9 +56,7 @@ module Spectator::Mocks::DSL
     # mock.the_answer.should eq(5)
     # expect_raises(UnexpectedMessage) { mock.some_method(:foo) }
     # ```
-    macro mock(type, **stubs, &block)
-      ::Spectator::Mocks::Mock.define({{type}}, {{**stubs}}) {{block}}
-    end
+    Mock.def_define_mock mock
 
     # Constructs a stub for a method.
     #

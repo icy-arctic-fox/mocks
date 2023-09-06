@@ -11,6 +11,29 @@ module Spectator::Mocks
   abstract class Double
     include Stubbable::Automatic
 
+    # Defines a macro to define a double.
+    # This is a workaround for the DSL methods regarding visibility modifiers.
+    # A type defined by a nested macro loses its visibility modifier from the outer macro invocation.
+    # This is probably a bug in the compiler, but working around for now.
+    # The workaround is to reuse the macro definition code here and in the DSL.
+    macro def_define_double(name, *, type = nil)
+      macro {{name.id}}(name, *stubs, **named_stubs, &block)
+        class \{{name.id}} < {{(type || @type.name).id}}
+          {% verbatim do %}
+            {% for stub in stubs %}
+              stub_any_args {{stub}}
+            {% end %}
+
+            {% for name, value in named_stubs %}
+              stub_any_args {{name}} = {{value}}
+            {% end %}
+
+            {{block.body if block}}
+          {% end %}
+        end
+      end
+    end
+
     # Defines a double type.
     # The new type is a sub-class of `Double`.
     # All methods are stubbable.
@@ -68,19 +91,7 @@ module Spectator::Mocks
     #   end
     # end
     # ```
-    macro define(name, *stubs, **named_stubs, &block)
-      class {{name.id}} < {{@type.name}}
-        {% for stub in stubs %}
-          stub_any_args {{stub}}
-        {% end %}
-
-        {% for name, value in named_stubs %}
-          stub_any_args {{name}} = {{value}}
-        {% end %}
-
-        {{block.body if block}}
-      end
-    end
+    def_define_double define
 
     @name : String?
 
