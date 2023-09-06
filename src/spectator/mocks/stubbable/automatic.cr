@@ -2,6 +2,10 @@ require "../stubbed"
 
 module Spectator::Mocks
   # When included, automatically redefines all methods to be stubbable.
+  # Any newly defined *instance* methods will have stub functionality added to them.
+  #
+  # NOTE: Class methods defined after this module is included *will not* have stub functionality added.
+  #   As a workaround, use the `stub` keyword before the class method definition.
   module Stubbable::Automatic
     include Stubbable
 
@@ -30,6 +34,10 @@ module Spectator::Mocks
 
       {% verbatim do %}
         # Automatically redefine new methods with stub functionality.
+        #
+        # NOTE: The `method_added` macro is not triggered for class methods.
+        #   This prevents them from being redefined with stub functionality.
+        #
         # FIXME: Reuse method signature generation code.
         macro method_added(method)
           {% unless ::Spectator::Mocks::Stubbable::UNSAFE_METHODS.includes?(method.name.symbolize) ||

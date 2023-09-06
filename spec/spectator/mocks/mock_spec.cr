@@ -113,23 +113,44 @@ macro def_concrete_instance_methods(return_value = "original", is_mock_type = fa
 end
 
 macro def_class_methods(return_value = "original", is_mock_type = false)
+  # NOTE: The `stub` keyword (macro) is necessary here.
+  # `Stubbable::Automatic` cannot redefine methods as they're added.
   {% if is_mock_type %}
-    def self.class__typed_return__no_yield__kwargs : String
+    stub def self.class__typed_return__no_yield__kwargs : String
       {{return_value}}
     end
-    def self.class__untyped_return__no_yield__kwargs
+    stub def self.class__untyped_return__no_yield__kwargs
       {{return_value}}
     end
-    def self.class__typed_return__typed_yield__kwargs(& : String -> String) : String
+    stub def self.class__typed_return__typed_yield__kwargs(& : String -> String) : String
       yield {{return_value}}
     end
-    def self.class__untyped_return__typed_yield__kwargs(& : String -> String)
+    stub def self.class__untyped_return__typed_yield__kwargs(& : String -> String)
       yield {{return_value}}
     end
-    def self.class__typed_return__untyped_yield__kwargs(& : String -> _) : String
+    stub def self.class__typed_return__untyped_yield__kwargs(& : String -> _) : String
       yield {{return_value}}
     end
-    def self.class__untyped_return__untyped_yield__kwargs(& : String -> _)
+    stub def self.class__untyped_return__untyped_yield__kwargs(& : String -> _)
+      yield {{return_value}}
+    end
+  
+    stub def self.class__typed_return__no_yield__block : String
+      {{return_value}}
+    end
+    stub def self.class__untyped_return__no_yield__block
+      {{return_value}}
+    end
+    stub def self.class__typed_return__typed_yield__block(& : String -> String) : String
+      yield {{return_value}}
+    end
+    stub def self.class__untyped_return__typed_yield__block(& : String -> String)
+      yield {{return_value}}
+    end
+    stub def self.class__typed_return__untyped_yield__block(& : String -> _) : String
+      yield {{return_value}}
+    end
+    stub def self.class__untyped_return__untyped_yield__block(& : String -> _)
       yield {{return_value}}
     end
   {% else %}
@@ -151,26 +172,26 @@ macro def_class_methods(return_value = "original", is_mock_type = false)
     def self.class__untyped_return__untyped_yield__no_default(& : String -> _)
       yield {{return_value}}
     end
-  {% end %}
   
-  def self.class__typed_return__no_yield__block : String
-    {{return_value}}
-  end
-  def self.class__untyped_return__no_yield__block
-    {{return_value}}
-  end
-  def self.class__typed_return__typed_yield__block(& : String -> String) : String
-    yield {{return_value}}
-  end
-  def self.class__untyped_return__typed_yield__block(& : String -> String)
-    yield {{return_value}}
-  end
-  def self.class__typed_return__untyped_yield__block(& : String -> _) : String
-    yield {{return_value}}
-  end
-  def self.class__untyped_return__untyped_yield__block(& : String -> _)
-    yield {{return_value}}
-  end
+    def self.class__typed_return__no_yield__block : String
+      {{return_value}}
+    end
+    def self.class__untyped_return__no_yield__block
+      {{return_value}}
+    end
+    def self.class__typed_return__typed_yield__block(& : String -> String) : String
+      yield {{return_value}}
+    end
+    def self.class__untyped_return__typed_yield__block(& : String -> String)
+      yield {{return_value}}
+    end
+    def self.class__typed_return__untyped_yield__block(& : String -> _) : String
+      yield {{return_value}}
+    end
+    def self.class__untyped_return__untyped_yield__block(& : String -> _)
+      yield {{return_value}}
+    end
+  {% end %}
 end
 
 macro define_mock(definition, kwargs_groups, block_groups, return_value = "mocked")
