@@ -198,7 +198,10 @@ module Spectator::Mocks
              type.methods.each do |method|
                # Skip methods overridden by a sub-type to prevent unnecessary redefinitions.
                unless definitions.any? do |d|
+                        r = !!d[:receiver]
                         m = d[:method]
+                        # Ensure instance and class methods with the same signature don't collide.
+                        r == !!receiver &&
                         # Method objects can't be directly compared.
                         # Compare each distinguishing attribute separately.
                         m.name == method.name &&
