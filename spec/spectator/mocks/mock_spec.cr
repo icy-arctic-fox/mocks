@@ -153,6 +153,14 @@ macro def_class_methods(return_value = "original", is_mock_type = false)
     stub def self.class__untyped_return__untyped_yield__block(& : String -> _)
       yield {{return_value}}
     end
+
+    # Arguments and return types omitted here due to syntax error.
+    stub self.class__typed_return__no_yield__no_default
+    stub self.class__untyped_return__no_yield__no_default
+    stub self.class__typed_return__typed_yield__no_default
+    stub self.class__untyped_return__typed_yield__no_default
+    stub self.class__typed_return__untyped_yield__no_default
+    stub self.class__untyped_return__untyped_yield__no_default
   {% else %}
     def self.class__typed_return__no_yield__no_default : String
       {{return_value}}
@@ -380,13 +388,13 @@ end
 macro context_no_default_stub(mock, method_part, *, original_value, default_mock_value, override_value)
   {% method = "#{method_part.id}__no_default" %}
   context "[default stub: none]" do
-    {% if method.starts_with?("abstract") && method.includes?("untyped_return") %}
-      it_cannot_have_a_stub_applied({{mock}}, {{method}}, {{override_value}})
+    {% if method.starts_with?("abstract__") && method.includes?("untyped_return") %}
+      it_uses_nil_stub_value({{mock}}, {{method}}, {{override_value}})
     {% else %}
-      it_raises_unexpected_message({{mock}}, {{method}})
       it_can_have_a_stub_applied({{mock}}, {{method}}, {{override_value}})
       it_compiles_to_the_expected_type({{mock}}, {{method}})
     {% end %}
+    it_raises_unexpected_message({{mock}}, {{method}})
   end
 end
 
@@ -404,33 +412,55 @@ end
 
 macro it_returns_the_default_mock_value(mock, method, expected_value)
   it "returns the default mock value" do
-    invoke_mock_method({{mock}}, {{method}}).should eq({{expected_value}})
+    mock = {{mock}}
+    begin
+      invoke_mock_method(mock, {{method}}).should eq({{expected_value}})
+    ensure
+      mock.__mocks.reset
+    end
   end
 end
 
 macro it_can_have_a_stub_applied(mock, method, override_value)
   it "can have a stub applied" do
     mock = {{mock}}
-    stub = ::Spectator::Mocks::ValueStub.new({{method.id.symbolize}}, {{override_value}})
-    mock.__mocks.add_stub(stub)
-    invoke_mock_method(mock, {{method}}).should eq({{override_value}})
+    begin
+      stub = ::Spectator::Mocks::ValueStub.new({{method.id.symbolize}}, {{override_value}})
+      mock.__mocks.add_stub(stub)
+      invoke_mock_method(mock, {{method}}).should eq({{override_value}})
+    ensure
+      mock.__mocks.reset
+    end
   end
 end
 
-macro it_cannot_have_a_stub_applied(mock, method, override_value)
-  it "raises a TypeCastError attempting to call with a stub" do
+macro it_uses_nil_stub_value(mock, method, override_value)
+  it "invokes the stub and ignores the return value" do
+    called = false
     mock = {{mock}}
-    stub = ::Spectator::Mocks::ValueStub.new({{method.id.symbolize}}, {{override_value}})
-    mock.__mocks.add_stub(stub)
-    expect_raises(TypeCastError, /abstract method/) { invoke_mock_method(mock, {{method}}) }
+    begin
+      stub = ::Spectator::Mocks::ProcStub.new({{method.id.symbolize}}) do
+        called = true
+        {{override_value}}
+      end
+      mock.__mocks.add_stub(stub)
+      invoke_mock_method(mock, {{method}}).should be_nil
+      called.should be_true
+    ensure
+      mock.__mocks.reset
+    end
   end
 end
 
 macro it_raises_unexpected_message(mock, method)
-  it "raises an UnexpectedMessage error" do
+  it "raises an UnexpectedMessage error when called without a stub" do
     mock = {{mock}}
-    expect_raises(::Spectator::Mocks::UnexpectedMessage, {{"/#{method.id}/".id}}) do
-      invoke_mock_method({{mock}}, {{method}})
+    begin
+      expect_raises(::Spectator::Mocks::UnexpectedMessage, {{"/#{method.id}/".id}}) do
+        invoke_mock_method(mock, {{method}})
+      end
+    ensure
+      mock.__mocks.reset
     end
   end
 end
