@@ -31,5 +31,11 @@ module Spectator::Mocks
     def calls : Enumerable
       @scope.registry.calls(@object)
     end
+
+    # Clears all previously defined stubs and recorded calls.
+    # See: `Registry#clear`
+    def reset : Nil
+      @scope.registry.clear(@object)
+    end
   end
 end
