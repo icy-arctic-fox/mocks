@@ -125,7 +125,7 @@ module Spectator::Mocks
 
       {% else %}
         # Stub all methods matching the specified name.
-        stub_existing {{method}}
+        stub_existing {{method}}, {{(anno = @type.annotation(::Spectator::Mocks::DefaultBehavior)) && anno[0] == :original}}
       {% end %}
     end
 
