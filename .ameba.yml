@@ -3,6 +3,6 @@
 Lint/UselessAssign:
   Description: Disallows useless variable assignments
   Excluded:
-  - spec/spectator/mocks/dsl/*.cr
+  - spec/**/*.cr
   Enabled: true
   Severity: Warning

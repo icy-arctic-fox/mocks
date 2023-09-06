@@ -91,7 +91,7 @@ macro def_concrete_instance_methods(return_value = "original", is_mock_type = fa
   def concrete__untyped_return__untyped_yield__kwargs(& : String -> _)
     yield {{return_value}}
   end
-  
+
   def concrete__typed_return__no_yield__block : String
     {{return_value}}
   end
@@ -134,7 +134,7 @@ macro def_class_methods(return_value = "original", is_mock_type = false)
     stub def self.class__untyped_return__untyped_yield__kwargs(& : String -> _)
       yield {{return_value}}
     end
-  
+
     stub def self.class__typed_return__no_yield__block : String
       {{return_value}}
     end
@@ -180,7 +180,7 @@ macro def_class_methods(return_value = "original", is_mock_type = false)
     def self.class__untyped_return__untyped_yield__no_default(& : String -> _)
       yield {{return_value}}
     end
-  
+
     def self.class__typed_return__no_yield__block : String
       {{return_value}}
     end
@@ -213,7 +213,7 @@ macro define_mock(definition, kwargs_groups, block_groups, return_value = "mocke
           abstract__untyped_return__typed_yield__kwargs: {{return_value}},
           abstract__typed_return__untyped_yield__kwargs: {{return_value}},
           abstract__untyped_return__untyped_yield__kwargs: {{return_value}},
-        
+
           abstract__typed_return__no_yield__block: {{return_value}},
           abstract__untyped_return__no_yield__block: {{return_value}},
           abstract__typed_return__typed_yield__block: {{return_value}},
@@ -227,7 +227,7 @@ macro define_mock(definition, kwargs_groups, block_groups, return_value = "mocke
           concrete__untyped_return__typed_yield__kwargs: {{return_value}},
           concrete__typed_return__untyped_yield__kwargs: {{return_value}},
           concrete__untyped_return__untyped_yield__kwargs: {{return_value}},
-        
+
           concrete__typed_return__no_yield__block: {{return_value}},
           concrete__untyped_return__no_yield__block: {{return_value}},
           concrete__typed_return__typed_yield__block: {{return_value}},
@@ -260,7 +260,7 @@ macro define_mock(definition, kwargs_groups, block_groups, return_value = "mocke
           def abstract__untyped_return__untyped_yield__kwargs(& : String -> _)
             yield {{return_value}}
           end
-        
+
           def abstract__typed_return__no_yield__block : String
             {{return_value}}
           end
