@@ -238,10 +238,15 @@ module Spectator::Mocks
 
          if name
            # Only redefine methods with the specified name.
-           name = name.id
-           definitions = definitions.select do |d|
-             d[:method].name == name
-           end
+           definitions = if name.is_a?(Call) && name.receiver
+                           definitions.select do |d|
+                             d[:method].name == name.name && d[:receiver]
+                           end
+                         else
+                           definitions.select do |d|
+                             d[:method].name == name.id
+                           end
+                         end
          end %}
 
       # Redefine virtually all methods to support stubs.

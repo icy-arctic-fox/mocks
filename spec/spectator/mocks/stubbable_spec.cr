@@ -39,6 +39,36 @@ private class StubbableType
   stub abstract def abstract_method : Int32
 end
 
+private class StubbableClass
+  extend Spectator::Mocks::Stubbable
+  include Spectator::Mocks::Stubbable
+
+  stub def self.method_syntax
+    :default
+  end
+
+  stub def self.nil_method_syntax : Nil
+  end
+
+  def self.existing_method_syntax(arg)
+    arg
+  end
+
+  def self.existing_method_syntax
+    :existing
+  end
+
+  stub self.existing_method_syntax
+
+  stub private def self.visibility_syntax(arg)
+    arg
+  end
+
+  def self.proxy_visibility_syntax(arg)
+    visibility_syntax(arg)
+  end
+end
+
 private def nil_stub(method_name)
   Spectator::Mocks::NilStub.new(method_name)
 end
@@ -200,6 +230,82 @@ describe Spectator::Mocks::Stubbable do
         stub = value_stub(:abstract_method, 42)
         object.__mocks.add_stub(stub)
         object.abstract_method.should eq(42)
+      end
+    end
+
+    context "with class methods" do
+      context "with a method definition" do
+        it "defines a method with a default implementation" do
+          object = StubbableClass
+          object.method_syntax.should eq(:default)
+        end
+
+        it "can change the method's behavior" do
+          object = StubbableClass
+          stub = value_stub(:method_syntax, :override)
+          object.__mocks.add_stub(stub)
+          object.method_syntax.should eq(:override)
+        end
+
+        it "raises when the stub's return types doesn't match the default implementation's return type" do
+          object = StubbableClass
+          stub = value_stub(:method_syntax, 42)
+          object.__mocks.add_stub(stub)
+          expect_raises(TypeCastError, /Symbol/) { object.method_syntax }
+        end
+
+        it "supports Nil as a type" do
+          object = StubbableClass
+          stub = value_stub(:nil_method_syntax, 42)
+          object.__mocks.add_stub(stub)
+          expect_raises(TypeCastError, /Nil/) { object.nil_method_syntax }
+
+          stub = nil_stub(:nil_method_syntax)
+          object.__mocks.add_stub(stub)
+          object.nil_method_syntax.should be_nil
+        end
+      end
+
+      context "with a method name" do
+        it "raises when no stub is defined" do
+          object = StubbableClass
+          expect_raises(::Spectator::Mocks::UnexpectedMessage, /existing_method_syntax/) { object.existing_method_syntax(:existing) }
+        end
+
+        it "can change the method's behavior" do
+          object = StubbableClass
+          stub = value_stub(:existing_method_syntax, 5)
+          object.__mocks.add_stub(stub)
+          object.existing_method_syntax(42).should eq(5)
+        end
+
+        it "raises when the stub's return type doesn't match the default implementation's return type" do
+          object = StubbableClass
+          stub = value_stub(:existing_method_syntax, :wrong_type)
+          object.__mocks.add_stub(stub)
+          expect_raises(TypeCastError, /Int32/) { object.existing_method_syntax(42) }
+        end
+
+        it "redefines all methods with the same name" do
+          object = StubbableClass
+          stub = value_stub(:existing_method_syntax, :override)
+          object.__mocks.add_stub(stub)
+          object.existing_method_syntax.should eq(:override)
+        end
+      end
+
+      context "with a visibility modifier" do
+        it "redefines a method to be stubbable" do
+          object = StubbableClass
+          object.proxy_visibility_syntax(42).should eq(42)
+        end
+
+        it "can change the method's behavior" do
+          object = StubbableClass
+          stub = value_stub(:visibility_syntax, 5)
+          object.__mocks.add_stub(stub)
+          object.proxy_visibility_syntax(42).should eq(5)
+        end
       end
     end
   end
