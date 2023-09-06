@@ -30,7 +30,7 @@ module Spectator::Mocks
     #   some_method1 : Int32,
     #   some_method2 : Int32 = 42,
     #   some_method3 = 42
-    # MyDouble.method2 # => 42
+    # MyDouble.new.method2 # => 42
     # ```
     # In the example above, 3 methods are defined.
     # Each return an `Int32`, but the last two will return 42 by default.
