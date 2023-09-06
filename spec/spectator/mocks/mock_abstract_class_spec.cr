@@ -10,7 +10,9 @@ end
 private define_mock(AbstractClassMock < AbstractClass, [:abstract, :concrete], [:abstract, :concrete, :class])
 
 describe Spectator::Mocks::Mock do
-  it_supports_abstract_methods(AbstractClassMock.new)
-  it_supports_concrete_methods(AbstractClassMock.new)
-  it_supports_class_methods(AbstractClassMock)
+  context "abstract class" do
+    it_supports_abstract_methods(AbstractClassMock.new)
+    it_supports_concrete_methods(AbstractClassMock.new)
+    it_supports_class_methods(AbstractClassMock)
+  end
 end

@@ -23,12 +23,18 @@ private define_mock(MixedStructMock < MixedStruct, [:abstract, :concrete], [:abs
 private define_mock(MixedModuleMock < MixedModule, [:abstract, :concrete], [:abstract, :concrete])
 
 describe Spectator::Mocks::Mock do
-  it_supports_abstract_methods(MixedClassMock.new)
-  it_supports_concrete_methods(MixedClassMock.new)
+  context "class with mixin module" do
+    it_supports_abstract_methods(MixedClassMock.new)
+    it_supports_concrete_methods(MixedClassMock.new)
+  end
 
-  it_supports_abstract_methods(MixedStructMock.new)
-  it_supports_concrete_methods(MixedStructMock.new)
+  context "struct with mixin module" do
+    it_supports_abstract_methods(MixedStructMock.new)
+    it_supports_concrete_methods(MixedStructMock.new)
+  end
 
-  it_supports_abstract_methods(MixedModuleMock.new)
-  it_supports_concrete_methods(MixedModuleMock.new)
+  context "module with mixin module" do
+    it_supports_abstract_methods(MixedModuleMock.new)
+    it_supports_concrete_methods(MixedModuleMock.new)
+  end
 end

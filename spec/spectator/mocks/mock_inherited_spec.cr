@@ -21,11 +21,15 @@ private define_mock(ChildClassMock < ChildClass, [:abstract, :concrete], [:abstr
 private define_mock(ChildStructMock < ChildStruct, [:abstract, :concrete], [:abstract, :concrete, :class])
 
 describe Spectator::Mocks::Mock do
-  it_supports_abstract_methods(ChildClassMock.new)
-  it_supports_concrete_methods(ChildClassMock.new)
-  it_supports_class_methods(ChildClassMock)
+  context "subtype of class" do
+    it_supports_abstract_methods(ChildClassMock.new)
+    it_supports_concrete_methods(ChildClassMock.new)
+    it_supports_class_methods(ChildClassMock)
+  end
 
-  it_supports_abstract_methods(ChildStructMock.new)
-  it_supports_concrete_methods(ChildStructMock.new)
-  it_supports_class_methods(ChildStructMock)
+  context "subtype of struct" do
+    it_supports_abstract_methods(ChildStructMock.new)
+    it_supports_concrete_methods(ChildStructMock.new)
+    it_supports_class_methods(ChildStructMock)
+  end
 end

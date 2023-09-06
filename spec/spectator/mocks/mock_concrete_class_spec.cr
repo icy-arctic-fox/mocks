@@ -9,6 +9,8 @@ end
 private define_mock(ConcreteClassMock < ConcreteClass, [:concrete], [:concrete, :class])
 
 describe Spectator::Mocks::Mock do
-  it_supports_concrete_methods(ConcreteClassMock.new)
-  it_supports_class_methods(ConcreteClassMock)
+  context "concrete class" do
+    it_supports_concrete_methods(ConcreteClassMock.new)
+    it_supports_class_methods(ConcreteClassMock)
+  end
 end
