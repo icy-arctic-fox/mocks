@@ -12,11 +12,13 @@ module Spectator::Mocks
       macro {{name.id}}(type, **stubs, &block)
         {% verbatim do %}
           {% if type.is_a?(Call) && type.name == :<.id %}
-            {% parent = type.args.first
-               parent = if parent.is_a?(Path | TypeNode | Generic | Union | Metaclass)
-                          parent.resolve
+            {% parent_name = type.args.first
+               parent = if parent_name.is_a?(Path | TypeNode | Union | Metaclass)
+                          parent_name.resolve
+                        elsif parent_name.is_a?(Generic)
+                          parent_name.resolve? || parent_name.name.resolve
                         else
-                          parse_type(parent.id.stringify).resolve
+                          parse_type(parent_name.id.stringify).resolve
                         end
                type = type.receiver
                type_keyword = if parent.class?
@@ -32,7 +34,7 @@ module Spectator::Mocks
             {% begin %}
               {% if type_keyword == :module %}
                 module {{type}}
-                  include {{parent}}
+                  include {{parent_name}}
 
                   class Instance
                     include {{type}}
@@ -47,7 +49,7 @@ module Spectator::Mocks
                     Instance.new
                   end
               {% else %}
-                {{type_keyword.id}} {{type}} < {{parent.name}}
+                {{type_keyword.id}} {{type}} < {{parent_name}}
               {% end %}
                 include ::Spectator::Mocks::Stubbable::Automatic
 
