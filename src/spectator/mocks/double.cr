@@ -68,10 +68,14 @@ module Spectator::Mocks
     #   end
     # end
     # ```
-    macro define(name, *stubs, &block)
+    macro define(name, *stubs, **named_stubs, &block)
       class {{name.id}} < {{@type.name}}
         {% for stub in stubs %}
           stub_any_args {{stub}}
+        {% end %}
+
+        {% for name, value in named_stubs %}
+          stub_any_args {{name}} = {{value}}
         {% end %}
 
         {{block.body if block}}

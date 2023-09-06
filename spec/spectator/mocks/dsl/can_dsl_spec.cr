@@ -4,7 +4,7 @@ private double EmptyTestDouble
 
 private double SimpleTestDouble, value = 1, typed_value : Int32 = 2, typed : Int32
 
-private double ComplexTestDouble, value = 1, override = 2 do
+private double ComplexTestDouble, value: 1, override: 2 do
   def method
     3
   end

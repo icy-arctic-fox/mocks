@@ -1,6 +1,6 @@
 require "../../../spec_helper"
 
-private double TestDouble, test_method = 42
+private double TestDouble, test_method: 42
 
 describe Spectator::Mocks::DSL do
   describe "#have_received" do
