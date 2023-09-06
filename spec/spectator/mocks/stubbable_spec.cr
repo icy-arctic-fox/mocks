@@ -103,7 +103,7 @@ describe Spectator::Mocks::Stubbable do
         object = StubbableType.new
         stub = value_stub(:nil_method_syntax, 42)
         object.__mocks.add_stub(stub)
-        expect_raises(TypeCastError, /Nil/) { object.nil_method_syntax }
+        object.nil_method_syntax.should be_nil # Does not raise, ignores return value.
 
         stub = nil_stub(:nil_method_syntax)
         object.__mocks.add_stub(stub)
@@ -135,7 +135,7 @@ describe Spectator::Mocks::Stubbable do
         object = StubbableType.new
         stub = value_stub(:nil_type_decl_syntax, 42)
         object.__mocks.add_stub(stub)
-        expect_raises(TypeCastError, /Nil/) { object.nil_type_decl_syntax }
+        object.nil_type_decl_syntax.should be_nil # Does not raise, ignores return value.
 
         stub = nil_stub(:nil_type_decl_syntax)
         object.__mocks.add_stub(stub)
@@ -176,9 +176,9 @@ describe Spectator::Mocks::Stubbable do
     end
 
     context "with a method name" do
-      it "redefines a method to be stubbable" do
+      it "raises when no stub is defined" do
         object = StubbableType.new
-        object.existing_method_syntax(:existing).should eq(:existing)
+        expect_raises(::Spectator::Mocks::UnexpectedMessage, /existing_method_syntax/) { object.existing_method_syntax(:existing) }
       end
 
       it "can change the method's behavior" do
@@ -258,7 +258,7 @@ describe Spectator::Mocks::Stubbable do
           object = StubbableClass
           stub = value_stub(:nil_method_syntax, 42)
           object.__mocks.add_stub(stub)
-          expect_raises(TypeCastError, /Nil/) { object.nil_method_syntax }
+          object.nil_method_syntax.should be_nil # Does not raise, ignores return value.
 
           stub = nil_stub(:nil_method_syntax)
           object.__mocks.add_stub(stub)
