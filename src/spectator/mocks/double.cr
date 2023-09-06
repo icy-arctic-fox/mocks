@@ -1,3 +1,4 @@
+require "./default_behavior"
 require "./stub"
 require "./stubbable"
 require "./value_stub"
@@ -6,6 +7,7 @@ module Spectator::Mocks
   # Arbitrary type used as a stand-in for a real object.
   # Doubles are recommended where duck-typing is used.
   # See `#define` for details regarding how to use this type.
+  @[DefaultBehavior(:original)]
   abstract class Double
     include Stubbable::Automatic
 

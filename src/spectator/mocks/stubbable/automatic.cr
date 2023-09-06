@@ -1,3 +1,4 @@
+require "../default_behavior"
 require "../stubbed"
 
 module Spectator::Mocks
@@ -14,7 +15,11 @@ module Spectator::Mocks
       extend ::Spectator::Mocks::Stubbable
 
       macro finished
-        stub_existing
+        {% if (anno = @type.annotation(::Spectator::Mocks::DefaultBehavior)) && anno[0] == :original %}
+          stub_existing nil, true
+        {% else %}
+          stub_existing
+        {% end %}
       end
 
       # Automatically apply to all sub-types.
