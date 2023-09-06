@@ -39,5 +39,18 @@ describe Spectator::Mocks::ProcStub do
       stub = create_stub
       stub.call(no_args) { 0.as(Int32?) }.should eq(42)
     end
+
+    it "ignores the value for Nil types" do
+      stub = create_stub
+      stub.call(no_args) { nil }.should be_nil
+    end
+
+    it "calls the proc even though the return value is ignored (nil)" do
+      called = false
+      stub = Spectator::Mocks::ProcStub.new(:test_method) { called = true }
+      called.should be_false
+      stub.call(no_args) { nil }.should be_nil
+      called.should be_true
+    end
   end
 end

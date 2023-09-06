@@ -39,5 +39,10 @@ describe Spectator::Mocks::ValueStub do
       stub = create_stub
       stub.call(no_args) { 0.as(Int32?) }.should eq(42)
     end
+
+    it "ignores the value for Nil types" do
+      stub = create_stub
+      stub.call(no_args) { nil }.should be_nil
+    end
   end
 end

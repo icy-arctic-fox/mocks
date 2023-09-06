@@ -14,6 +14,9 @@ module Spectator::Mocks
     def call(args : Arguments, return_type : U.class = U, & : -> U) forall U
       {% if T <= U %}
         @proc.call
+      {% elsif U == Nil %}
+        @proc.call # Still call the proc,
+        nil        # but ignore the value.
       {% else %}
         raise TypeCastError.new("Attempted to return a #{T} from stub, but method `#{method_name}` expects type #{U}")
       {% end %}

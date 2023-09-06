@@ -10,6 +10,8 @@ module Spectator::Mocks
     def call(args : Arguments, return_type : U.class = U, & : -> U) forall U
       {% if T <= U %}
         @value
+      {% elsif U == Nil %}
+        nil # Ignore value.
       {% else %}
         raise TypeCastError.new("Attempted to return #{@value.inspect} (#{T}) from stub, but method `#{method_name}` expects type #{U}")
       {% end %}
