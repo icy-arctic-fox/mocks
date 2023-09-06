@@ -1,6 +1,6 @@
 require "../../../spec_helper"
 
-abstract class OriginalClass
+private abstract class OriginalClass
   def method
     :original_class
   end
@@ -10,7 +10,7 @@ abstract class OriginalClass
   abstract def abstract_typed_method : Symbol
 end
 
-abstract struct OriginalStruct
+private abstract struct OriginalStruct
   def method
     :original_struct
   end
@@ -20,7 +20,7 @@ abstract struct OriginalStruct
   abstract def abstract_typed_method : Symbol
 end
 
-module OriginalModule
+private module OriginalModule
   def method
     :original_module
   end
@@ -30,21 +30,21 @@ module OriginalModule
   abstract def abstract_typed_method : Symbol
 end
 
-mock MockSimpleClass < OriginalClass, method: :stubbed_class
+private mock MockSimpleClass < OriginalClass, method: :stubbed_class
 
-mock MockComplexClass < OriginalClass, method: :stubbed_class do
+private mock MockComplexClass < OriginalClass, method: :stubbed_class do
   stub abstract def abstract_method : Symbol
 end
 
-mock MockSimpleStruct < OriginalStruct, method: :stubbed_struct
+private mock MockSimpleStruct < OriginalStruct, method: :stubbed_struct
 
-mock MockComplexStruct < OriginalStruct, method: :stubbed_struct do
+private mock MockComplexStruct < OriginalStruct, method: :stubbed_struct do
   stub abstract def abstract_method : Symbol
 end
 
-mock MockSimpleModule < OriginalModule, method: :stubbed_module
+private mock MockSimpleModule < OriginalModule, method: :stubbed_module
 
-mock MockComplexModule < OriginalModule, method: :stubbed_module do
+private mock MockComplexModule < OriginalModule, method: :stubbed_module do
   stub abstract def abstract_method : Symbol
 end
 
