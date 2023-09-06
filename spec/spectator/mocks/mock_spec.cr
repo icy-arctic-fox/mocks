@@ -114,7 +114,7 @@ end
 
 macro def_class_methods(return_value = "original", is_mock_type = false)
   # NOTE: The `stub` keyword (macro) is necessary here.
-  # `Stubbable::Automatic` cannot redefine methods as they're added.
+  # `Stubbable::Automatic` cannot redefine class methods as they're added.
   {% if is_mock_type %}
     stub def self.class__typed_return__no_yield__kwargs : String
       {{return_value}}
