@@ -33,10 +33,11 @@ module Spectator::Mocks
 
             {% begin %}
               {% if type_keyword == :module %}
+                {% instance_type = (parent.type_vars.empty? ? "Instance" : "Instance(#{parent.type_vars.splat})").id %}
                 module {{type}}
                   include {{parent_name}}
 
-                  class Instance
+                  class {{instance_type}}
                     include {{type}}
 
                     # Empty initializer to override the `.new` method from {{type}}.
@@ -45,8 +46,8 @@ module Spectator::Mocks
                   end
 
                   @[::Spectator::Mocks::Stubbed]
-                  def self.new : Instance
-                    Instance.new
+                  def self.new : {{instance_type}}
+                    {{instance_type}}.new
                   end
               {% else %}
                 {{type_keyword.id}} {{type}} < {{parent_name}}
