@@ -17,8 +17,8 @@ private abstract class ChildClass < BaseClass; end
 
 private abstract struct ChildStruct < BaseStruct; end
 
-private define_mock(ChildClassMock < ChildClass, [:abstract, :concrete], [:abstract, :concrete, :class])
-private define_mock(ChildStructMock < ChildStruct, [:abstract, :concrete], [:abstract, :concrete, :class])
+private define_mock(ChildClassMock < ChildClass, %i[abstract concrete], %i[abstract concrete class])
+private define_mock(ChildStructMock < ChildStruct, %i[abstract concrete], %i[abstract concrete class])
 
 describe Spectator::Mocks::Mock do
   context "subtype of class" do

@@ -7,7 +7,7 @@ private abstract struct AbstractStruct
   def_class_methods
 end
 
-private define_mock(AbstractStructMock < AbstractStruct, [:abstract, :concrete], [:abstract, :concrete, :class])
+private define_mock(AbstractStructMock < AbstractStruct, %i[abstract concrete], %i[abstract concrete class])
 
 describe Spectator::Mocks::Mock do
   context "abstract struct" do

@@ -18,9 +18,9 @@ private module MixedModule
   include MixinModule
 end
 
-private define_mock(MixedClassMock < MixedClass, [:abstract, :concrete], [:abstract, :concrete])
-private define_mock(MixedStructMock < MixedStruct, [:abstract, :concrete], [:abstract, :concrete])
-private define_mock(MixedModuleMock < MixedModule, [:abstract, :concrete], [:abstract, :concrete])
+private define_mock(MixedClassMock < MixedClass, %i[abstract concrete], %i[abstract concrete])
+private define_mock(MixedStructMock < MixedStruct, %i[abstract concrete], %i[abstract concrete])
+private define_mock(MixedModuleMock < MixedModule, %i[abstract concrete], %i[abstract concrete])
 
 describe Spectator::Mocks::Mock do
   context "class with mixin module" do

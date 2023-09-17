@@ -6,7 +6,7 @@ private class ConcreteClass
   def_class_methods
 end
 
-private define_mock(ConcreteClassMock < ConcreteClass, [:concrete], [:concrete, :class])
+private define_mock(ConcreteClassMock < ConcreteClass, %i[concrete], %i[concrete class])
 
 describe Spectator::Mocks::Mock do
   context "concrete class" do

@@ -7,7 +7,7 @@ private module MixinModule
   def_class_methods
 end
 
-private define_mock(MixinModuleMock < MixinModule, [:abstract, :concrete], [:abstract, :concrete])
+private define_mock(MixinModuleMock < MixinModule, %i[abstract concrete], %i[abstract concrete])
 
 describe Spectator::Mocks::Mock do
   context "mixin module" do
