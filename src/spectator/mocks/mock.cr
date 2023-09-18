@@ -33,7 +33,7 @@ module Spectator::Mocks
 
             {% begin %}
               {% if type_keyword == :module %}
-                {% instance_type = (parent.type_vars.empty? ? "Instance" : "Instance(#{parent.type_vars.splat})").id %}
+                {% instance_type = (!type.is_a?(Generic) || type.type_vars.empty? ? "Instance" : "Instance(#{type.type_vars.splat})").id %}
                 module {{type}}
                   include {{parent_name}}
 
