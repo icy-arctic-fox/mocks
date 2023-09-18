@@ -16,7 +16,7 @@ private abstract struct GenericStruct(T)
   def_class_methods
 end
 
-private define_mock(GenericStructMock(T) < GenericStruct(T), %i[abstract concrete], %i[abstract concrete class], return_type: T, yield_return_type: T)
+private define_mock(GenericStructMock(T) < GenericStruct(T), %i[abstract concrete], %i[abstract concrete class], return_type: T, yield_arg_type: T, yield_return_type: T)
 private define_mock(NonGenericStructMock < GenericStruct(String), %i[abstract concrete], %i[abstract concrete class])
 
 private module GenericModule(T)
@@ -25,7 +25,7 @@ private module GenericModule(T)
   def_class_methods
 end
 
-private define_mock(GenericModuleMock(T) < GenericModule(T), %i[abstract concrete], %i[abstract concrete class], return_type: T, yield_return_type: T)
+private define_mock(GenericModuleMock(T) < GenericModule(T), %i[abstract concrete], %i[abstract concrete class], return_type: T, yield_arg_type: T, yield_return_type: T)
 private define_mock(NonGenericModuleMock < GenericModule(String), %i[abstract concrete], %i[abstract concrete class])
 
 describe Spectator::Mocks::Mock do
