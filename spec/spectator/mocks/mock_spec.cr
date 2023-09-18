@@ -36,19 +36,19 @@ macro def_abstract_instance_methods(*, return_type = String, yield_arg_type = St
   abstract def abstract__typed_return__untyped_yield__no_args__no_default(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
   abstract def abstract__untyped_return__untyped_yield__no_args__no_default(& : {{yield_arg_type.id}} -> _)
 
-  abstract def abstract__typed_return__no_yield__no_args__kwargs : {{return_type.id}}
-  abstract def abstract__untyped_return__no_yield__no_args__kwargs
-  abstract def abstract__typed_return__typed_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
-  abstract def abstract__untyped_return__typed_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
-  abstract def abstract__typed_return__untyped_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
-  abstract def abstract__untyped_return__untyped_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> _)
+  abstract def abstract__typed_return__no_yield__no_args__kwargs_default : {{return_type.id}}
+  abstract def abstract__untyped_return__no_yield__no_args__kwargs_default
+  abstract def abstract__typed_return__typed_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
+  abstract def abstract__untyped_return__typed_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
+  abstract def abstract__typed_return__untyped_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
+  abstract def abstract__untyped_return__untyped_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> _)
 
-  abstract def abstract__typed_return__no_yield__no_args__block : {{return_type.id}}
-  abstract def abstract__untyped_return__no_yield__no_args__block
-  abstract def abstract__typed_return__typed_yield__no_args__block(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
-  abstract def abstract__untyped_return__typed_yield__no_args__block(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
-  abstract def abstract__typed_return__untyped_yield__no_args__block(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
-  abstract def abstract__untyped_return__untyped_yield__no_args__block(& : {{yield_arg_type.id}} -> _)
+  abstract def abstract__typed_return__no_yield__no_args__block_default : {{return_type.id}}
+  abstract def abstract__untyped_return__no_yield__no_args__block_default
+  abstract def abstract__typed_return__typed_yield__no_args__block_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
+  abstract def abstract__untyped_return__typed_yield__no_args__block_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
+  abstract def abstract__typed_return__untyped_yield__no_args__block_default(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
+  abstract def abstract__untyped_return__untyped_yield__no_args__block_default(& : {{yield_arg_type.id}} -> _)
 end
 
 macro def_concrete_instance_methods(*, return_value = "original", is_mock_type = false, return_type = String, yield_arg_type = String, yield_return_type = String)
@@ -73,41 +73,41 @@ macro def_concrete_instance_methods(*, return_value = "original", is_mock_type =
     end
   {% end %}
 
-  def concrete__typed_return__no_yield__no_args__kwargs : {{return_type.id}}
+  def concrete__typed_return__no_yield__no_args__kwargs_default : {{return_type.id}}
     {{return_value}}
   end
-  def concrete__untyped_return__no_yield__no_args__kwargs
+  def concrete__untyped_return__no_yield__no_args__kwargs_default
     {{return_value}}
   end
-  def concrete__typed_return__typed_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
+  def concrete__typed_return__typed_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
     yield {{return_value}}
   end
-  def concrete__untyped_return__typed_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
+  def concrete__untyped_return__typed_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
     yield {{return_value}}
   end
-  def concrete__typed_return__untyped_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
+  def concrete__typed_return__untyped_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
     yield {{return_value}}
   end
-  def concrete__untyped_return__untyped_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> _)
+  def concrete__untyped_return__untyped_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> _)
     yield {{return_value}}
   end
 
-  def concrete__typed_return__no_yield__no_args__block : {{return_type.id}}
+  def concrete__typed_return__no_yield__no_args__block_default : {{return_type.id}}
     {{return_value}}
   end
-  def concrete__untyped_return__no_yield__no_args__block
+  def concrete__untyped_return__no_yield__no_args__block_default
     {{return_value}}
   end
-  def concrete__typed_return__typed_yield__no_args__block(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
+  def concrete__typed_return__typed_yield__no_args__block_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
     yield {{return_value}}
   end
-  def concrete__untyped_return__typed_yield__no_args__block(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
+  def concrete__untyped_return__typed_yield__no_args__block_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
     yield {{return_value}}
   end
-  def concrete__typed_return__untyped_yield__no_args__block(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
+  def concrete__typed_return__untyped_yield__no_args__block_default(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
     yield {{return_value}}
   end
-  def concrete__untyped_return__untyped_yield__no_args__block(& : {{yield_arg_type.id}} -> _)
+  def concrete__untyped_return__untyped_yield__no_args__block_default(& : {{yield_arg_type.id}} -> _)
     yield {{return_value}}
   end
 end
@@ -116,41 +116,41 @@ macro def_class_methods(*, return_value = "original", is_mock_type = false, retu
   # NOTE: The `stub` keyword (macro) is necessary here.
   # `Stubbable::Automatic` cannot redefine class methods as they're added.
   {% if is_mock_type %}
-    stub def self.class__typed_return__no_yield__no_args__kwargs : {{return_type.id}}
+    stub def self.class__typed_return__no_yield__no_args__kwargs_default : {{return_type.id}}
       {{return_value}}
     end
-    stub def self.class__untyped_return__no_yield__no_args__kwargs
+    stub def self.class__untyped_return__no_yield__no_args__kwargs_default
       {{return_value}}
     end
-    stub def self.class__typed_return__typed_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
+    stub def self.class__typed_return__typed_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
       yield {{return_value}}
     end
-    stub def self.class__untyped_return__typed_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
+    stub def self.class__untyped_return__typed_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
       yield {{return_value}}
     end
-    stub def self.class__typed_return__untyped_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
+    stub def self.class__typed_return__untyped_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
       yield {{return_value}}
     end
-    stub def self.class__untyped_return__untyped_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> _)
+    stub def self.class__untyped_return__untyped_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> _)
       yield {{return_value}}
     end
 
-    stub def self.class__typed_return__no_yield__no_args__block : {{return_type.id}}
+    stub def self.class__typed_return__no_yield__no_args__block_default : {{return_type.id}}
       {{return_value}}
     end
-    stub def self.class__untyped_return__no_yield__no_args__block
+    stub def self.class__untyped_return__no_yield__no_args__block_default
       {{return_value}}
     end
-    stub def self.class__typed_return__typed_yield__no_args__block(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
+    stub def self.class__typed_return__typed_yield__no_args__block_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
       yield {{return_value}}
     end
-    stub def self.class__untyped_return__typed_yield__no_args__block(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
+    stub def self.class__untyped_return__typed_yield__no_args__block_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
       yield {{return_value}}
     end
-    stub def self.class__typed_return__untyped_yield__no_args__block(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
+    stub def self.class__typed_return__untyped_yield__no_args__block_default(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
       yield {{return_value}}
     end
-    stub def self.class__untyped_return__untyped_yield__no_args__block(& : {{yield_arg_type.id}} -> _)
+    stub def self.class__untyped_return__untyped_yield__no_args__block_default(& : {{yield_arg_type.id}} -> _)
       yield {{return_value}}
     end
 
@@ -181,22 +181,22 @@ macro def_class_methods(*, return_value = "original", is_mock_type = false, retu
       yield {{return_value}}
     end
 
-    def self.class__typed_return__no_yield__no_args__block : {{return_type.id}}
+    def self.class__typed_return__no_yield__no_args__block_default : {{return_type.id}}
       {{return_value}}
     end
-    def self.class__untyped_return__no_yield__no_args__block
+    def self.class__untyped_return__no_yield__no_args__block_default
       {{return_value}}
     end
-    def self.class__typed_return__typed_yield__no_args__block(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
+    def self.class__typed_return__typed_yield__no_args__block_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
       yield {{return_value}}
     end
-    def self.class__untyped_return__typed_yield__no_args__block(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
+    def self.class__untyped_return__typed_yield__no_args__block_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
       yield {{return_value}}
     end
-    def self.class__typed_return__untyped_yield__no_args__block(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
+    def self.class__typed_return__untyped_yield__no_args__block_default(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
       yield {{return_value}}
     end
-    def self.class__untyped_return__untyped_yield__no_args__block(& : {{yield_arg_type.id}} -> _)
+    def self.class__untyped_return__untyped_yield__no_args__block_default(& : {{yield_arg_type.id}} -> _)
       yield {{return_value}}
     end
   {% end %}
@@ -207,33 +207,33 @@ macro define_mock(definition, kwargs_groups, block_groups, *, return_value = "mo
     ::Spectator::Mocks::Mock.define({{definition}},
       {% for group in kwargs_groups %}
         {% if group.id == :abstract.id %}
-          abstract__typed_return__no_yield__no_args__kwargs: ({{return_value}}).as({{return_type.id}}),
-          abstract__untyped_return__no_yield__no_args__kwargs: ({{return_value}}).as({{return_type.id}}),
-          abstract__typed_return__typed_yield__no_args__kwargs: ({{return_value}}).as({{return_type.id}}),
-          abstract__untyped_return__typed_yield__no_args__kwargs: ({{return_value}}).as({{return_type.id}}),
-          abstract__typed_return__untyped_yield__no_args__kwargs: ({{return_value}}).as({{return_type.id}}),
-          abstract__untyped_return__untyped_yield__no_args__kwargs: ({{return_value}}).as({{return_type.id}}),
+          abstract__typed_return__no_yield__no_args__kwargs_default: ({{return_value}}).as({{return_type.id}}),
+          abstract__untyped_return__no_yield__no_args__kwargs_default: ({{return_value}}).as({{return_type.id}}),
+          abstract__typed_return__typed_yield__no_args__kwargs_default: ({{return_value}}).as({{return_type.id}}),
+          abstract__untyped_return__typed_yield__no_args__kwargs_default: ({{return_value}}).as({{return_type.id}}),
+          abstract__typed_return__untyped_yield__no_args__kwargs_default: ({{return_value}}).as({{return_type.id}}),
+          abstract__untyped_return__untyped_yield__no_args__kwargs_default: ({{return_value}}).as({{return_type.id}}),
 
-          abstract__typed_return__no_yield__no_args__block: ({{return_value}}).as({{return_type.id}}),
-          abstract__untyped_return__no_yield__no_args__block: ({{return_value}}).as({{return_type.id}}),
-          abstract__typed_return__typed_yield__no_args__block: ({{return_value}}).as({{return_type.id}}),
-          abstract__untyped_return__typed_yield__no_args__block: ({{return_value}}).as({{return_type.id}}),
-          abstract__typed_return__untyped_yield__no_args__block: ({{return_value}}).as({{return_type.id}}),
-          abstract__untyped_return__untyped_yield__no_args__block: ({{return_value}}).as({{return_type.id}}),
+          abstract__typed_return__no_yield__no_args__block_default: ({{return_value}}).as({{return_type.id}}),
+          abstract__untyped_return__no_yield__no_args__block_default: ({{return_value}}).as({{return_type.id}}),
+          abstract__typed_return__typed_yield__no_args__block_default: ({{return_value}}).as({{return_type.id}}),
+          abstract__untyped_return__typed_yield__no_args__block_default: ({{return_value}}).as({{return_type.id}}),
+          abstract__typed_return__untyped_yield__no_args__block_default: ({{return_value}}).as({{return_type.id}}),
+          abstract__untyped_return__untyped_yield__no_args__block_default: ({{return_value}}).as({{return_type.id}}),
         {% elsif group.id == :concrete.id %}
-          concrete__typed_return__no_yield__no_args__kwargs: ({{return_value}}).as({{return_type.id}}),
-          concrete__untyped_return__no_yield__no_args__kwargs: ({{return_value}}).as({{return_type.id}}),
-          concrete__typed_return__typed_yield__no_args__kwargs: ({{return_value}}).as({{return_type.id}}),
-          concrete__untyped_return__typed_yield__no_args__kwargs: ({{return_value}}).as({{return_type.id}}),
-          concrete__typed_return__untyped_yield__no_args__kwargs: ({{return_value}}).as({{return_type.id}}),
-          concrete__untyped_return__untyped_yield__no_args__kwargs: ({{return_value}}).as({{return_type.id}}),
+          concrete__typed_return__no_yield__no_args__kwargs_default: ({{return_value}}).as({{return_type.id}}),
+          concrete__untyped_return__no_yield__no_args__kwargs_default: ({{return_value}}).as({{return_type.id}}),
+          concrete__typed_return__typed_yield__no_args__kwargs_default: ({{return_value}}).as({{return_type.id}}),
+          concrete__untyped_return__typed_yield__no_args__kwargs_default: ({{return_value}}).as({{return_type.id}}),
+          concrete__typed_return__untyped_yield__no_args__kwargs_default: ({{return_value}}).as({{return_type.id}}),
+          concrete__untyped_return__untyped_yield__no_args__kwargs_default: ({{return_value}}).as({{return_type.id}}),
 
-          concrete__typed_return__no_yield__no_args__block: ({{return_value}}).as({{return_type.id}}),
-          concrete__untyped_return__no_yield__no_args__block: ({{return_value}}).as({{return_type.id}}),
-          concrete__typed_return__typed_yield__no_args__block: ({{return_value}}).as({{return_type.id}}),
-          concrete__untyped_return__typed_yield__no_args__block: ({{return_value}}).as({{return_type.id}}),
-          concrete__typed_return__untyped_yield__no_args__block: ({{return_value}}).as({{return_type.id}}),
-          concrete__untyped_return__untyped_yield__no_args__block: ({{return_value}}).as({{return_type.id}}),
+          concrete__typed_return__no_yield__no_args__block_default: ({{return_value}}).as({{return_type.id}}),
+          concrete__untyped_return__no_yield__no_args__block_default: ({{return_value}}).as({{return_type.id}}),
+          concrete__typed_return__typed_yield__no_args__block_default: ({{return_value}}).as({{return_type.id}}),
+          concrete__untyped_return__typed_yield__no_args__block_default: ({{return_value}}).as({{return_type.id}}),
+          concrete__typed_return__untyped_yield__no_args__block_default: ({{return_value}}).as({{return_type.id}}),
+          concrete__untyped_return__untyped_yield__no_args__block_default: ({{return_value}}).as({{return_type.id}}),
         {% else %}
           # Class method mocks can't be defined with keyword arguments.
           {% raise "Unrecognized mock function group: #{group}" %}
@@ -242,41 +242,41 @@ macro define_mock(definition, kwargs_groups, block_groups, *, return_value = "mo
     ) do
       {% for group in block_groups %}
         {% if group.id == :abstract.id %}
-          def abstract__typed_return__no_yield__no_args__kwargs : {{return_type.id}}
+          def abstract__typed_return__no_yield__no_args__kwargs_default : {{return_type.id}}
             {{return_value}}
           end
-          def abstract__untyped_return__no_yield__no_args__kwargs
+          def abstract__untyped_return__no_yield__no_args__kwargs_default
             {{return_value}}
           end
-          def abstract__typed_return__typed_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
+          def abstract__typed_return__typed_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
             yield {{return_value}}
           end
-          def abstract__untyped_return__typed_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
+          def abstract__untyped_return__typed_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
             yield {{return_value}}
           end
-          def abstract__typed_return__untyped_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
+          def abstract__typed_return__untyped_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
             yield {{return_value}}
           end
-          def abstract__untyped_return__untyped_yield__no_args__kwargs(& : {{yield_arg_type.id}} -> _)
+          def abstract__untyped_return__untyped_yield__no_args__kwargs_default(& : {{yield_arg_type.id}} -> _)
             yield {{return_value}}
           end
 
-          def abstract__typed_return__no_yield__no_args__block : {{return_type.id}}
+          def abstract__typed_return__no_yield__no_args__block_default : {{return_type.id}}
             {{return_value}}
           end
-          def abstract__untyped_return__no_yield__no_args__block
+          def abstract__untyped_return__no_yield__no_args__block_default
             {{return_value}}
           end
-          def abstract__typed_return__typed_yield__no_args__block(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
+          def abstract__typed_return__typed_yield__no_args__block_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}}) : {{return_type.id}}
             yield {{return_value}}
           end
-          def abstract__untyped_return__typed_yield__no_args__block(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
+          def abstract__untyped_return__typed_yield__no_args__block_default(& : {{yield_arg_type.id}} -> {{yield_return_type.id}})
             yield {{return_value}}
           end
-          def abstract__typed_return__untyped_yield__no_args__block(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
+          def abstract__typed_return__untyped_yield__no_args__block_default(& : {{yield_arg_type.id}} -> _) : {{return_type.id}}
             yield {{return_value}}
           end
-          def abstract__untyped_return__untyped_yield__no_args__block(& : {{yield_arg_type.id}} -> _)
+          def abstract__untyped_return__untyped_yield__no_args__block_default(& : {{yield_arg_type.id}} -> _)
             yield {{return_value}}
           end
         {% elsif group.id == :concrete.id %}
@@ -371,7 +371,7 @@ end
 # ----- Default stub ----- #
 
 macro context_kwargs_default_stub(mock, method_part, *, original_value, default_mock_value, override_value)
-  {% method = "#{method_part.id}__kwargs" %}
+  {% method = "#{method_part.id}__kwargs_default" %}
   context "[default stub: keyword arguments]" do
     {% unless method.includes?("class") %}
       it_returns_the_default_mock_value({{mock}}, {{method}}, {{default_mock_value}})
@@ -382,7 +382,7 @@ macro context_kwargs_default_stub(mock, method_part, *, original_value, default_
 end
 
 macro context_block_default_stub(mock, method_part, *, original_value, default_mock_value, override_value)
-  {% method = "#{method_part.id}__block" %}
+  {% method = "#{method_part.id}__block_default" %}
   context "[default stub: block]" do
     it_returns_the_default_mock_value({{mock}}, {{method}}, {{default_mock_value}})
     it_can_have_a_stub_applied({{mock}}, {{method}}, {{override_value}})
