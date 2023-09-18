@@ -7,7 +7,7 @@ private abstract class GenericClass(T)
   def_class_methods
 end
 
-private define_mock(GenericClassMock(T) < GenericClass(T), %i[abstract concrete], %i[abstract concrete class], return_type: T, yield_return_type: T)
+private define_mock(GenericClassMock(T) < GenericClass(T), %i[abstract concrete], %i[abstract concrete class], return_type: T, yield_arg_type: T, yield_return_type: T)
 private define_mock(NonGenericClassMock < GenericClass(String), %i[abstract concrete], %i[abstract concrete class])
 
 private abstract struct GenericStruct(T)
@@ -22,7 +22,7 @@ private define_mock(NonGenericStructMock < GenericStruct(String), %i[abstract co
 private module GenericModule(T)
   def_concrete_instance_methods(return_type: T, yield_return_type: T)
   def_abstract_instance_methods(return_type: T, yield_return_type: T)
-  def_class_methods(return_type: T, yield_return_type: T)
+  def_class_methods
 end
 
 private define_mock(GenericModuleMock(T) < GenericModule(T), %i[abstract concrete], %i[abstract concrete class], return_type: T, yield_return_type: T)
