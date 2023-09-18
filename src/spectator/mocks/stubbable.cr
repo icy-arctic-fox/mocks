@@ -207,8 +207,8 @@ module Spectator::Mocks
                         m.name == method.name &&
                         m.args == method.args &&
                         m.splat_index == method.splat_index &&
-                        m.double_splat == method.double_splat &&
-                        m.block_arg == method.block_arg
+                        !!m.double_splat == !!method.double_splat &&
+                        !!m.block_arg == !!method.block_arg
                       end
                  # Method not overridden, add it to the list.
                  behavior = if block
