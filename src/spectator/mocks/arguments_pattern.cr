@@ -87,7 +87,7 @@ module Spectator::Mocks
           {% for key, i in Args.keys %}
             {% if named_positional_keys.includes?(key) %}
               return false unless compare(@named[{{key.symbolize}}], arguments.args[{{key.symbolize}}])
-            {% else %}
+            {% elsif i < Positional.size %}
               return false unless compare(@positional[{{i}}], arguments.args[{{key.symbolize}}])
             {% end %}
           {% end %}
