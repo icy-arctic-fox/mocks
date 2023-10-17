@@ -7,6 +7,11 @@ module Spectator::Mocks
       ValueStub.new(method_name, value, arguments)
     end
 
+    # Modifies the stub to raise an exception
+    def and_raise(exception : Exception)
+      ExceptionStub.new(method_name, exception, arguments)
+    end
+
     # Modifies the stub to only respond to the specified arguments.
     def with(*args, **kwargs)
       arguments = ArgumentsPattern.new(args, kwargs)
