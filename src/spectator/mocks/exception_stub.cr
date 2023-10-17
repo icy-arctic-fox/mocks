@@ -11,7 +11,8 @@ module Spectator::Mocks
 
     def call(args : Arguments, return_type : U.class = U, & : -> U) forall U
       raise @exception
-      yield # This never reached code is intentional.
+      # This unreachable code is intentional (compiler infers return type from yield).
+      yield # ameba:disable Lint/UnreachableCode
     end
 
     private def with_arguments(arguments : AbstractArgumentsPattern?)
