@@ -16,7 +16,7 @@ module Spectator::Mocks
     end
 
     private def with_arguments(arguments : AbstractArgumentsPattern?)
-      {{@type.name(generic_args: false)}}.new(@exception, method_name, arguments)
+      {{@type.name(generic_args: false)}}.new(method_name, @exception, arguments)
     end
   end
 end
