@@ -33,7 +33,7 @@ module Spectator::Mocks
     end
 
     # Modifies the stub to only response to the specified arguments and invoke a block.
-    def with(*args, **kwargs, &block)
+    def with(*args, **kwargs, &block : -> _)
       arguments = ArgumentsPattern.new(args, kwargs)
       ProcStub.new(method_name, block, arguments)
     end
