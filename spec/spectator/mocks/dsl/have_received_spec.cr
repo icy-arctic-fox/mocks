@@ -42,4 +42,3 @@ describe Spectator::Mocks::DSL do
     end
   end
 end
-8

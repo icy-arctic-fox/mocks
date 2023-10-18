@@ -33,7 +33,7 @@ module Spectator::Mocks
 
     # Error message displayed when the expectation fails.
     def failure_message(actual_value)
-      "Expected:    #{actual_value.inspect}\nto receive: #{@stub}"
+      "Expected:   #{actual_value.inspect}\nto receive: #{@stub}"
     end
 
     # Error message displayed when the expectation fails in the negated case.
