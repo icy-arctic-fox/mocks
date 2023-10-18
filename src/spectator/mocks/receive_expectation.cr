@@ -1,10 +1,13 @@
 require "./nil_stub"
+require "./receive_expectation_modifiers"
 require "./stub"
 require "./stubbable"
 
 module Spectator::Mocks
   # Expectation that checks if a stubbable object received a method call.
   class ReceiveExpectation(T)
+    include ReceiveExpectationModifiers
+
     # Creates an expectation with a stub.
     # A stub is used to pattern match calls made to an object.
     def initialize(@stub : T)
@@ -36,6 +39,10 @@ module Spectator::Mocks
     # Error message displayed when the expectation fails in the negated case.
     def negative_failure_message(actual_value)
       "Expected:       #{actual_value.inspect}\nnot to receive: #{@stub}"
+    end
+
+    private def with_stub(& : Stub -> Stub)
+      {{@type.name(generic_args: false)}}.new(yield @stub)
     end
   end
 end
