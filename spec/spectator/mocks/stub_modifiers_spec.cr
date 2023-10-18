@@ -42,6 +42,13 @@ describe Spectator::Mocks::StubModifiers do
       end
     end
 
+    it "creates an exception of the type specified" do
+      stub = create_stub.and_raise(ArgumentError)
+      expect_raises(ArgumentError) do
+        invoke_stub(stub)
+      end
+    end
+
     it "passes arguments to the exception's initializer" do
       stub = create_stub.and_raise(ArgumentError, "Test exception")
       expect_raises(ArgumentError, "Test exception") do
