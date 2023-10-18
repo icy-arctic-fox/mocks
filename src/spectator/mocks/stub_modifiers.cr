@@ -7,9 +7,23 @@ module Spectator::Mocks
       ValueStub.new(method_name, value, arguments)
     end
 
-    # Modifies the stub to raise an exception
+    # Modifies the stub to raise an exception.
     def and_raise(exception : Exception)
       ExceptionStub.new(method_name, exception, arguments)
+    end
+
+    # Modifies the stub to raise an exception.
+    # Creates a new exception of the specified type and forwards additional arguments to it.
+    def and_raise(exception_type : Exception.class, *args, **kwargs)
+      exception = exception_type.new(*args, **kwargs)
+      and_raise(exception)
+    end
+
+    # Modifies the stub to raise an exception.
+    # A `RuntimeError` with the specified message will be raised when the stub is called.
+    def and_raise(message : String? = nil)
+      exception = RuntimeError.new(message)
+      and_raise(exception)
     end
 
     # Modifies the stub to only respond to the specified arguments.
