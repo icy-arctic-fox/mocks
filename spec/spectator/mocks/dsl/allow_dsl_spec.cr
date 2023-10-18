@@ -18,6 +18,32 @@ private double ComplexTestDouble, value: 1, override: 2 do
   end
 end
 
+private double ArgumentsDouble do
+  def no_args
+    0
+  end
+
+  def positional(arg1, arg2)
+    0
+  end
+
+  def keywords(*, key1, key2)
+    0
+  end
+
+  def splat(*args)
+    0
+  end
+
+  def double_splat(**kwargs)
+    0
+  end
+
+  def mixed(arg1, arg2, *args, key1, key2, **kwargs)
+    0
+  end
+end
+
 private class EmptyClass; end
 
 private mock EmptyClassMock < EmptyClass
@@ -63,6 +89,34 @@ private mock ComplexClassMock < ComplexClass, value: 1, typed_value: 2 do
     4
   end
 end
+
+private class ArgumentsClass
+  def no_args
+    0
+  end
+
+  def positional(arg1, arg2)
+    0
+  end
+
+  def keywords(*, key1, key2)
+    0
+  end
+
+  def splat(*args)
+    0
+  end
+
+  def double_splat(**kwargs)
+    0
+  end
+
+  def mixed(arg1, arg2, *args, key1, key2, **kwargs)
+    0
+  end
+end
+
+private mock ArgumentsClassMock < ArgumentsClass
 
 describe Spectator::Mocks::DSL do
   describe "#allow" do
@@ -110,6 +164,53 @@ describe Spectator::Mocks::DSL do
         double.typed_value.should eq(4)
         double.typed.should eq(5)
       end
+
+      describe "#with" do
+        context "positional arguments" do
+          it "modifies the accepted arguments" do
+            double = ArgumentsDouble.new
+            allow(double).to receive(:positional).with(1, 2).and_return(5)
+            double.positional(1, 2).should eq(5)
+            double.positional(3, 4).should eq(0)
+          end
+        end
+
+        context "keyword arguments" do
+          it "modifies the accepted arguments" do
+            double = ArgumentsDouble.new
+            allow(double).to receive(:keywords).with(key1: 1, key2: 2).and_return(5)
+            double.keywords(key1: 1, key2: 2).should eq(5)
+            double.keywords(key1: 3, key2: 4).should eq(0)
+          end
+        end
+
+        context "splat arguments" do
+          it "modifies the accepted arguments" do
+            double = ArgumentsDouble.new
+            allow(double).to receive(:splat).with(1, 2).and_return(5)
+            double.splat(1, 2).should eq(5)
+            double.splat(3, 4).should eq(0)
+          end
+        end
+
+        context "double splat arguments" do
+          it "modifies the accepted arguments" do
+            double = ArgumentsDouble.new
+            allow(double).to receive(:double_splat).with(key1: 1, key2: 2).and_return(5)
+            double.double_splat(key1: 1, key2: 2).should eq(5)
+            double.double_splat(key1: 3, key2: 4).should eq(0)
+          end
+        end
+
+        context "mixed arguments" do
+          it "modifies the accepted arguments" do
+            double = ArgumentsDouble.new
+            allow(double).to receive(:mixed).with(1, 2, 3, 4, key1: 5, key2: 6, key3: 7, key4: 8).and_return(5)
+            double.mixed(1, 2, 3, 4, key1: 5, key2: 6, key3: 7, key4: 8).should eq(5)
+            double.mixed(3, 4, 5, 6, key1: 7, key2: 8, key3: 9, key4: 0).should eq(0)
+          end
+        end
+      end
     end
 
     context "with a mock" do
@@ -155,6 +256,63 @@ describe Spectator::Mocks::DSL do
         mock.value.should eq(3)
         mock.typed_value.should eq(4)
         mock.typed.should eq(5)
+      end
+
+      describe "#with" do
+        context "positional arguments" do
+          it "modifies the accepted arguments" do
+            mock = ArgumentsClassMock.new
+            allow(mock).to receive(:positional).with(1, 2).and_return(5)
+            mock.positional(1, 2).should eq(5)
+            expect_raises(Spectator::Mocks::UnexpectedMessage) do
+              mock.positional(3, 4)
+            end
+          end
+        end
+
+        context "keyword arguments" do
+          it "modifies the accepted arguments" do
+            mock = ArgumentsClassMock.new
+            allow(mock).to receive(:keywords).with(key1: 1, key2: 2).and_return(5)
+            mock.keywords(key1: 1, key2: 2).should eq(5)
+            expect_raises(Spectator::Mocks::UnexpectedMessage) do
+              mock.keywords(key1: 3, key2: 4)
+            end
+          end
+        end
+
+        context "splat arguments" do
+          it "modifies the accepted arguments" do
+            mock = ArgumentsClassMock.new
+            allow(mock).to receive(:splat).with(1, 2).and_return(5)
+            mock.splat(1, 2).should eq(5)
+            expect_raises(Spectator::Mocks::UnexpectedMessage) do
+              mock.splat(3, 4)
+            end
+          end
+        end
+
+        context "double splat arguments" do
+          it "modifies the accepted arguments" do
+            mock = ArgumentsClassMock.new
+            allow(mock).to receive(:double_splat).with(key1: 1, key2: 2).and_return(5)
+            mock.double_splat(key1: 1, key2: 2).should eq(5)
+            expect_raises(Spectator::Mocks::UnexpectedMessage) do
+              mock.double_splat(key1: 3, key2: 4)
+            end
+          end
+        end
+
+        context "mixed arguments" do
+          it "modifies the accepted arguments" do
+            mock = ArgumentsClassMock.new
+            allow(mock).to receive(:mixed).with(1, 2, 3, 4, key1: 5, key2: 6, key3: 7, key4: 8).and_return(5)
+            mock.mixed(1, 2, 3, 4, key1: 5, key2: 6, key3: 7, key4: 8).should eq(5)
+            expect_raises(Spectator::Mocks::UnexpectedMessage) do
+              mock.mixed(3, 4, 5, 6, key1: 7, key2: 8, key3: 9, key4: 0)
+            end
+          end
+        end
       end
     end
   end
