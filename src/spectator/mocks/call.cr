@@ -3,6 +3,8 @@ require "./arguments"
 module Spectator::Mocks
   # Base class for all method call types.
   abstract class AbstractCall
+    # Dispatch for comparing a concrete call to a concrete stub.
+    abstract def match?(stub : Stub) : Bool
   end
 
   # Information about a method call and the arguments passed to it.
@@ -27,6 +29,10 @@ module Spectator::Mocks
     macro capture
       %args = ::Spectator::Mocks::Arguments.capture
       {{@type.name(generic_args: false)}}.new({{@def.name.symbolize}}, %args)
+    end
+
+    def match?(stub : Stub) : Bool
+      stub === self
     end
 
     # Produces the string representation of the method call.

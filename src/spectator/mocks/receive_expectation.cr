@@ -20,7 +20,7 @@ module Spectator::Mocks
     # Checks if a stubbable object received a call defined by this expectation.
     def match(actual_value : Stubbable)
       proxy = actual_value.__mocks
-      proxy.calls.any? { |call| @stub === call }
+      proxy.calls.any? &.match?(@stub)
     end
 
     # Fallback method that produces a compiler error message when attempting to check a non-stubbable object.
