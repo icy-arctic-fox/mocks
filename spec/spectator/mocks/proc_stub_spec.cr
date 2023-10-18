@@ -53,4 +53,11 @@ describe Spectator::Mocks::ProcStub do
       called.should be_true
     end
   end
+
+  describe "#with" do
+    it "sets the arguments pattern" do
+      stub = create_stub.with(42)
+      stub.arguments.to_s.should eq("(42)")
+    end
+  end
 end

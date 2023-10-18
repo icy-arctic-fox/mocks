@@ -35,4 +35,11 @@ describe Spectator::Mocks::NilStub do
       stub.call(no_args) { 42.as(Int32?) }.should be_nil
     end
   end
+
+  describe "#with" do
+    it "sets the arguments pattern" do
+      stub = create_stub.with(42)
+      stub.arguments.to_s.should eq("(42)")
+    end
+  end
 end
