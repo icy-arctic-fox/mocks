@@ -4,7 +4,7 @@ module Spectator::Mocks
   # Provides isolation between logical areas.
   # Each area has its own registry.
   class Scope
-    @@stack = [new]
+    @@stack = [] of self
 
     # Retrieves the active scope.
     def self.current : self
@@ -32,7 +32,7 @@ module Spectator::Mocks
     # Ends a previous scope.
     # This should be called for each `#push` without a block.
     def self.pop : Nil
-      raise "Cannot pop from root scope" if @@stack.size <= 1
+      raise "Cannot pop scope - not in a scope (unbalanced push/pop?)" if @@stack.empty?
 
       @@stack.pop
     end
