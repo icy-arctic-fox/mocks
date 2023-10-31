@@ -62,4 +62,11 @@ describe Spectator::Mocks::DSL do
       expect_raises(UnexpectedMessage, /abstract_method/) { double.abstract_method }
     end
   end
+
+  describe "#as_null_object" do
+    pending "creates a chainable double" do
+      double = EmptyTestDouble.new.as_null_object
+      double.one.two.three.should be(double)
+    end
+  end
 end

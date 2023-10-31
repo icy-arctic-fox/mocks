@@ -1,4 +1,5 @@
 require "./default_behavior"
+require "./null_object"
 require "./stub"
 require "./stubbable"
 require "./value_stub"
@@ -127,6 +128,12 @@ module Spectator::Mocks
     # ```
     def self.new(name = nil, **value_stubs)
       new(name, value_stubs)
+    end
+
+    # Creates a null object wrapper for the current double.
+    @[Stubbed]
+    def as_null_object
+      raise NotImplementedError.new("Double#as_null_object")
     end
 
     # Constructs a string representation of the double.
