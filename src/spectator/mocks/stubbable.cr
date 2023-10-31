@@ -389,53 +389,60 @@ module Spectator::Mocks
     # Additionally, methods with keyword arguments aren't handled correctly.
     # See: https://github.com/crystal-lang/crystal/issues/13176
     private macro adjusted_previous_def(keyword = :previous_def)
-      {{ if @def.accepts_block? || @def.splat_index || @def.double_splat
-           # A block or keyword arguments is involved, manually reconstruct the call with all arguments and the block.
-           call = keyword + "("
+      {% if @def.accepts_block? || @def.splat_index || @def.double_splat %}
+        delegate_current_call({{keyword}})
+      {% else %}
+        {{keyword.id}}
+      {% end %}
+    end
 
-           # Iterate through all of the arguments,
-           # but the logic is slightly different when a splat it used.
-           if @def.splat_index
-             @def.args.each_with_index do |arg, i|
-               if i == @def.splat_index && arg.internal_name && !arg.internal_name.empty?
-                 # Encountered the splat, prefix its name (if any).
-                 call += "*#{arg.internal_name}, "
-                 # Insert the double-splat immediately after.
-                 # Any additional explicit keyword arguments will override these values.
-                 call += "**#{@def.double_splat}, " if @def.double_splat
-               elsif i > @def.splat_index
-                 # After the splat, arguments must be named.
-                 call += "#{arg.name}: #{arg.internal_name}, "
-               elsif arg.internal_name && !arg.internal_name.empty?
-                 # Before the splat, use positional syntax.
-                 call += "#{arg.internal_name}, "
-               end
-             end
-           else
-             # No splat, add each argument.
-             call += @def.args.map(&.internal_name).join(", ")
-             call += ", " unless @def.args.empty?
-             # Add double-splat if it exists.
-             call += "**#{@def.double_splat}, " if @def.double_splat
-           end
+    # Constructs a method call that forwards the arguments passed to the surrounding method to another method.
+    # The *target* indicates the destination method.
+    # This could be `super`, `previous_def`, a method name, or a method name of another object such as `other.something`.
+    private macro delegate_current_call(target)
+      {%
+        call = target + "("
 
-           # If the block is captured (`&block` syntax), it must be passed along as an argument.
-           # Otherwise, use `yield` to forward the block.
-           captured = if @def.block_arg && @def.block_arg.name && @def.block_arg.name.size > 0
-                        @def.block_arg.name
-                      else
-                        nil
-                      end
+        # Iterate through all of the arguments,
+        # but the logic is slightly different when a splat it used.
+        if @def.splat_index
+          @def.args.each_with_index do |arg, i|
+            if i == @def.splat_index && arg.internal_name && !arg.internal_name.empty?
+              # Encountered the splat, prefix its name (if any).
+              call += "*#{arg.internal_name}, "
+              # Insert the double-splat immediately after.
+              # Any additional explicit keyword arguments will override these values.
+              call += "**#{@def.double_splat}, " if @def.double_splat
+            elsif i > @def.splat_index
+              # After the splat, arguments must be named.
+              call += "#{arg.name}: #{arg.internal_name}, "
+            elsif arg.internal_name && !arg.internal_name.empty?
+              # Before the splat, use positional syntax.
+              call += "#{arg.internal_name}, "
+            end
+          end
+        else
+          # No splat, add each argument.
+          call += @def.args.map(&.internal_name).join(", ")
+          call += ", " unless @def.args.empty?
+          # Add double-splat if it exists.
+          call += "**#{@def.double_splat}, " if @def.double_splat
+        end
 
-           # Append the block.
-           call += "&#{captured}" if captured
-           call += ")"
-           call += " { |*__args| yield *__args }" if !captured && @def.accepts_block?
-           call
-         else
-           # No block involved, don't need a workaround.
-           keyword
-         end.id }}
+        # If the block is captured (`&block` syntax), it must be passed along as an argument.
+        # Otherwise, use `yield` to forward the block.
+        captured = if @def.block_arg && @def.block_arg.name && @def.block_arg.name.size > 0
+                     @def.block_arg.name
+                   else
+                     nil
+                   end
+
+        # Append the block.
+        call += "&#{captured}" if captured
+        call += ")"
+        call += " { |*__args| yield *__args }" if !captured && @def.accepts_block?
+      %}
+      {{call.id}}
     end
   end
 end
