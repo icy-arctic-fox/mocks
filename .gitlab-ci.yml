@@ -17,9 +17,10 @@ nightly:
   script:
   - crystal spec
 
-format:
+lint:
   script:  
   - crystal tool format --check
+  - bin/ameba
 
 pages:
   stage: deploy
