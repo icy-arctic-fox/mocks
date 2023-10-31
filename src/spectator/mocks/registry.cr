@@ -13,12 +13,14 @@ module Spectator::Mocks
   #
   # See: https://crystal-lang.org/reference/1.7/syntax_and_semantics/structs.html
   class Registry
-    # Entry keys consist of two elements - the type's name and it's location in memory.
+    # Entry keys consist of two elements - the type ID and it's location in memory.
     # For value-types, it's byte-representation is is stored in a pool and that location is used.
     #
-    # NOTE: Ideally, the type's ID would be used as the first element of the tuple.
+    # WARNING: The `Class#crystal_type_id` method, which is undocumented, is used to retrieve the first part of the key.
+    #
+    # NOTE: Ideally, the type would be used as the first element of the tuple.
     #   `Object.class` cannot be used due to https://github.com/crystal-lang/crystal/issues/9667
-    alias Key = {String, UInt64}
+    alias Key = {Int32, UInt64}
 
     # Structure used to store stubs and calls for an object.
     private struct Entry
@@ -102,7 +104,7 @@ module Spectator::Mocks
     # Generates the hash key used for the specified object.
     # This uses the object's type name and its ID.
     private def generate_key(object : Reference) : Key
-      {object.class.name, object.object_id}
+      {object.class.crystal_type_id, object.object_id}
     end
 
     # Generates the hash key used for the specified object.
@@ -122,7 +124,7 @@ module Spectator::Mocks
       # This may allocate memory, but the value's bytes will be safely stored in the string pool.
       string = @pool.get(bytes)
 
-      {object.class.name, string.object_id}
+      {object.class.crystal_type_id, string.object_id}
     end
   end
 end
