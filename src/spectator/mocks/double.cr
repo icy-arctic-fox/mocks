@@ -134,9 +134,9 @@ module Spectator::Mocks
       io << "#<" << self.class << ":0x"
       object_id.to_s(io, 16)
       if name = @name
-        io << "\"#{name}\""
+        io << " \"#{name}\""
       else
-        io << "anonymous"
+        io << " anonymous"
       end
       io << '>'
     end
