@@ -8,7 +8,7 @@ module Spectator::Mocks
 
     # Retrieves the active scope.
     def self.current : self
-      @@stack.last
+      @@stack.last { raise "Mocks and related functionality cannot be used outside of a test scope" }
     end
 
     # Starts a new scope.
