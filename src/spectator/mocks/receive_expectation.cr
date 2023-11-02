@@ -1,4 +1,5 @@
 require "./nil_stub"
+require "./receive_count_expectation"
 require "./receive_expectation_modifiers"
 require "./stub"
 require "./stubbable"
@@ -43,6 +44,10 @@ module Spectator::Mocks
 
     private def with_stub(& : Stub -> Stub)
       {{@type.name(generic_args: false)}}.new(yield @stub)
+    end
+
+    private def with_count(count : Range(Int32?, Int32?))
+      ReceiveCountExpectation.new(@stub, count)
     end
   end
 end
