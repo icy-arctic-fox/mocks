@@ -98,7 +98,8 @@ module Spectator::Mocks
     end
 
     private def with_stub(& : Stub -> Stub)
-      {{@type.name(generic_args: false)}}.new(yield @stub)
+      stub = yield @stub
+      {{@type.name(generic_args: false)}}.new(stub, @count)
     end
   end
 end
