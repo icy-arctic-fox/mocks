@@ -36,6 +36,16 @@ module Spectator::Mocks
       with_count(n..n)
     end
 
+    # Modifies the expectation to check for an exact number of calls.
+    #
+    # ```
+    # double.some_method
+    # double.should have_received(:some_method).exactly(:once)
+    # ```
+    def exactly(count : ReceiveCountKeyword)
+      exactly(count.to_i)
+    end
+
     # Modifies the expectation to check for at least a specified number of calls.
     #
     # ```

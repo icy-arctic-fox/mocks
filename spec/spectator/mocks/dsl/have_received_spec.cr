@@ -99,6 +99,45 @@ describe Spectator::Mocks::DSL do
       end
     end
 
+    describe "#exactly(:once)" do
+      it "detects a method was called exactly once" do
+        dbl = TestDouble.new
+        dbl.test_method
+        dbl.should have_received(:test_method).exactly(:once)
+      end
+
+      it "detects a method wasn't called" do
+        dbl = TestDouble.new
+        dbl.should_not have_received(:test_method).exactly(:once)
+      end
+
+      it "detect a method was called more than once" do
+        dbl = TestDouble.new
+        2.times { dbl.test_method }
+        dbl.should_not have_received(:test_method).exactly(:once)
+      end
+    end
+
+    describe "#exactly(:twice)" do
+      it "detects a method was called exactly twice" do
+        dbl = TestDouble.new
+        2.times { dbl.test_method }
+        dbl.should have_received(:test_method).exactly(:twice)
+      end
+
+      it "detects a method wasn't called enough" do
+        dbl = TestDouble.new
+        dbl.test_method
+        dbl.should_not have_received(:test_method).exactly(:twice)
+      end
+
+      it "detect a method was called more than twice" do
+        dbl = TestDouble.new
+        3.times { dbl.test_method }
+        dbl.should_not have_received(:test_method).exactly(:twice)
+      end
+    end
+
     describe "#at_least" do
       it "detects a method was called an amount" do
         dbl = TestDouble.new
@@ -119,6 +158,45 @@ describe Spectator::Mocks::DSL do
       end
     end
 
+    describe "#at_least(:once)" do
+      it "detects a method was called exactly once" do
+        dbl = TestDouble.new
+        dbl.test_method
+        dbl.should have_received(:test_method).at_least(:once)
+      end
+
+      it "detects a method wasn't called" do
+        dbl = TestDouble.new
+        dbl.should_not have_received(:test_method).at_least(:once)
+      end
+
+      it "detect a method was called more than once" do
+        dbl = TestDouble.new
+        2.times { dbl.test_method }
+        dbl.should have_received(:test_method).at_least(:once)
+      end
+    end
+
+    describe "#at_least(:twice)" do
+      it "detects a method was called exactly twice" do
+        dbl = TestDouble.new
+        2.times { dbl.test_method }
+        dbl.should have_received(:test_method).at_least(:twice)
+      end
+
+      it "detects a method wasn't called enough" do
+        dbl = TestDouble.new
+        dbl.test_method
+        dbl.should_not have_received(:test_method).at_least(:twice)
+      end
+
+      it "detect a method was called more than twice" do
+        dbl = TestDouble.new
+        3.times { dbl.test_method }
+        dbl.should have_received(:test_method).at_least(:twice)
+      end
+    end
+
     describe "#at_most" do
       it "detects a method was called an amount" do
         dbl = TestDouble.new
@@ -136,6 +214,45 @@ describe Spectator::Mocks::DSL do
         dbl = TestDouble.new
         4.times { dbl.test_method }
         dbl.should_not have_received(:test_method).at_most(3).times
+      end
+    end
+
+    describe "#at_most(:once)" do
+      it "detects a method was called exactly once" do
+        dbl = TestDouble.new
+        dbl.test_method
+        dbl.should have_received(:test_method).at_most(:once)
+      end
+
+      it "detects a method wasn't called" do
+        dbl = TestDouble.new
+        dbl.should have_received(:test_method).at_most(:once)
+      end
+
+      it "detect a method was called more than once" do
+        dbl = TestDouble.new
+        2.times { dbl.test_method }
+        dbl.should_not have_received(:test_method).at_most(:once)
+      end
+    end
+
+    describe "#at_most(:twice)" do
+      it "detects a method was called exactly twice" do
+        dbl = TestDouble.new
+        2.times { dbl.test_method }
+        dbl.should have_received(:test_method).at_most(:twice)
+      end
+
+      it "detects a method was called once" do
+        dbl = TestDouble.new
+        dbl.test_method
+        dbl.should have_received(:test_method).at_most(:twice)
+      end
+
+      it "detect a method was called more than twice" do
+        dbl = TestDouble.new
+        3.times { dbl.test_method }
+        dbl.should_not have_received(:test_method).at_most(:twice)
       end
     end
   end
