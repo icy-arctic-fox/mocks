@@ -1,5 +1,6 @@
 require "./nil_stub"
 require "./receive_count_expectation"
+require "./receive_count_expectation_modifiers"
 require "./receive_expectation_modifiers"
 require "./stub"
 require "./stubbable"
@@ -7,6 +8,7 @@ require "./stubbable"
 module Spectator::Mocks
   # Expectation that checks if a stubbable object received a method call.
   class ReceiveExpectation(T)
+    include ReceiveCountExpectationModifiers
     include ReceiveExpectationModifiers
 
     # Creates an expectation with a stub.
@@ -46,7 +48,7 @@ module Spectator::Mocks
       {{@type.name(generic_args: false)}}.new(yield @stub)
     end
 
-    private def with_count(count : Range(Int32?, Int32?))
+    private def with_count(count)
       ReceiveCountExpectation.new(@stub, count)
     end
   end

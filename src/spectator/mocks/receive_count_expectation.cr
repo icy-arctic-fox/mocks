@@ -4,14 +4,24 @@ require "./stub"
 require "./stubbable"
 
 module Spectator::Mocks
+  alias Count = Range(Int32?, Int32?)
+  alias CountUnion = Range(Int32, Int32) | Range(Int32?, Int32) | Range(Int32, Int32?) | Range(Int32?, Int32?)
+
   # Expectation that checks if a stubbable object received a method call the specified number of times.
   class ReceiveCountExpectation(T)
     include ReceiveExpectationModifiers
 
     # Creates an expectation with a stub.
     # A stub is used to pattern match calls made to an object.
-    def initialize(@stub : T, @count : Range(Int32?, Int32?))
+    def initialize(@stub : T, @count : Count)
       {% raise "Type argument T must be a Stub" unless T < Stub %}
+    end
+
+    # Creates an expectation with a stub.
+    # A stub is used to pattern match calls made to an object.
+    def initialize(@stub : T, count : CountUnion)
+      {% raise "Type argument T must be a Stub" unless T < Stub %}
+      @count = Count.new(count.begin.as(Int32?), count.end.as(Int32?), count.exclusive?)
     end
 
     # Creates an expectation that will match all calls with a specific method name.
@@ -21,7 +31,7 @@ module Spectator::Mocks
     end
 
     # Creates an expectation that will match all calls with a specific method name.
-    def self.new(method_name : Symbol, count : Range(Int32?, Int32?))
+    def self.new(method_name : Symbol, count : CountUnion)
       stub = NilStub.new(method_name)
       new(stub, count)
     end
