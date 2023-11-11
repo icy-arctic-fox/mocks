@@ -26,7 +26,7 @@ lint:
 pages:
   stage: deploy
   script:
-  - crystal docs -o public src/spectator-mocks.cr
+  - crystal docs -o public src/mocks.cr
   artifacts:
     paths:
     - public

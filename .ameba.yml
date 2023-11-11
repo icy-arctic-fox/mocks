@@ -3,12 +3,12 @@
 Lint/UselessAssign:
   Description: Disallows useless variable assignments
   Excluded:
-  - spec/**/*.cr
+    - spec/**/*.cr
   Enabled: true
   Severity: Warning
 
 # The scope spec uses non-nil to (lazily) ensure a shared instance is initialized before a test.
 Lint/NotNil:
   Excluded:
-  - spec/spectator/mocks/scope_spec.cr
+    - spec/mocks/scope_spec.cr
   Enabled: true

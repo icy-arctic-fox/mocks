@@ -1,0 +1,74 @@
+require "./stubbable"
+require "./stubbed"
+
+module Mocks
+  module Mock
+    # Defines a macro to define a mock.
+    # This is a workaround for the DSL methods regarding visibility modifiers.
+    # A type defined by a nested macro loses its visibility modifier from the outer macro invocation.
+    # This is probably a bug in the compiler, but working around for now.
+    # The workaround is to reuse the macro definition code here and in the DSL.
+    macro def_define_mock(name)
+      macro {{name.id}}(type, **stubs, &block)
+        {% verbatim do %}
+          {% if type.is_a?(Call) && type.name == :<.id %}
+            {% parent_name = type.args.first
+               parent = if parent_name.is_a?(Path | TypeNode | Union | Metaclass)
+                          parent_name.resolve
+                        elsif parent_name.is_a?(Generic)
+                          parent_name.resolve? || parent_name.name.resolve
+                        else
+                          parse_type(parent_name.id.stringify).resolve
+                        end
+               type = type.receiver
+               type_keyword = if parent.class?
+                                :class
+                              elsif parent.struct?
+                                :struct
+                              elsif parent.module?
+                                :module
+                              else
+                                raise "Unsupported mock type for #{parent.name}"
+                              end %}
+
+            {% begin %}
+              {% if type_keyword == :module %}
+                {% instance_type = (!type.is_a?(Generic) || type.type_vars.empty? ? "Instance" : "Instance(#{type.type_vars.splat})").id %}
+                module {{type}}
+                  include {{parent_name}}
+
+                  class {{instance_type}}
+                    include {{type}}
+
+                    # Empty initializer to override the `.new` method from {{type}}.
+                    def initialize
+                    end
+                  end
+
+                  @[::Mocks::Stubbed]
+                  def self.new : {{instance_type}}
+                    {{instance_type}}.new
+                  end
+              {% else %}
+                {{type_keyword.id}} {{type}} < {{parent_name}}
+              {% end %}
+                include ::Mocks::Stubbable::Automatic
+
+                {% for name, value in stubs %}
+                  stub_existing({{name}}) { {{value}} }
+                {% end %}
+
+                {{block.body if block}}
+              end
+            {% end %}
+
+          {% else %}
+            {% raise "Syntax error in mock definition. Must be: `NewType < OriginalType`" %}
+          {% end %}
+        {% end %}
+      end
+    end
+
+    def_define_mock define
+  end
+end
