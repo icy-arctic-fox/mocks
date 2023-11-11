@@ -1,0 +1,44 @@
+name: Crystal CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: crystallang/crystal
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: shards install
+    - name: Run tests
+      run: crystal spec
+      
+  lint:
+    runs-on: ubuntu-latest
+    container:
+      image: crystallang/crystal
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: shards install
+    - name: Check Formatting
+      run: crystal tool format --check
+    - name: Lint
+      run: bin/ameba
+
+  nightly:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    container:
+      image: crystallang/crystal:nightly
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: shards install
+    - name: Run tests
+      run: crystal spec
