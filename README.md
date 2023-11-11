@@ -52,6 +52,7 @@ The following instructions work for Crystal's Spec [Spec](https://crystal-lang.o
 
 Add the following to your `spec_helper.cr`:
 
+<!-- no-spec -->
 ```crystal
 require "mocks"
 ```
@@ -72,6 +73,7 @@ This defines the double `MyDouble` that returns `42` when `value` is called.
 
 Then to use the double in a test, simply initialize it.
 
+<!-- continue-spec -->
 ```crystal
 it "works" do
   double = MyDouble.new
@@ -105,6 +107,7 @@ The `value` method is redefined to return 0 instead of 42.
 
 Then, similar to doubles, to use a mock in a test, initialize it.
 
+<!-- continue-spec -->
 ```crystal
 it "works" do
   mock = MockMyClass.new
@@ -201,6 +204,7 @@ For more information on how to expect method calls, see the [documentation on ex
 
 The following code does not work:
 
+<!-- no-spec -->
 ```crystal
 module Nested
   class Sibling
@@ -240,6 +244,7 @@ See issue [#1](https://github.com/icy-arctic-fox/mocks/issues/1) for details.
 
 The following code does not work:
 
+<!-- no-spec -->
 ```crystal
 struct MyStruct
 end
