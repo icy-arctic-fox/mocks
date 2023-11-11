@@ -1,6 +1,9 @@
 # Mocks
 
-TODO: Write a description here
+A utility library providing mock functionality in [Crystal](https://crystal-lang.org).
+Intended to be used for testing, but can be used anywhere.
+Integrates seamlessly with Crystal's default [Spec](https://crystal-lang.org/reference/1.10/guides/testing.html) library.
+Inspired by [RSpec's mocks](https://rspec.info/features/3-12/rspec-mocks/).
 
 ## Installation
 
