@@ -81,7 +81,7 @@ it "works" do
 end
 ```
 
-For more information on doubles, see the [documentation on doubles](docs/doubles.md).
+For more information on doubles, see the [documentation on doubles](doc/doubles.md).
 
 #### Mocks
 
@@ -115,7 +115,7 @@ it "works" do
 end
 ```
 
-For more information on mocks, see the [documentation on mocks](docs/mocks.md).
+For more information on mocks, see the [documentation on mocks](doc/mocks.md).
 
 #### Stubs
 
@@ -153,7 +153,7 @@ By default, stubs return `nil` if the `and_return` portion is omitted.
 
 **Important note:** When defining a stub, its return value *must match* the type of the original method.
 
-For more information on stubs, see the [documentation on stubs](docs/stubs.md).
+For more information on stubs, see the [documentation on stubs](doc/stubs.md).
 
 #### Expecting Behavior
 
@@ -196,7 +196,7 @@ The syntax for expecting behavior is as follows:
     + Stubbable object
 ```
 
-For more information on how to expect method calls, see the [documentation on expectations](docs/expectations.md).
+For more information on how to expect method calls, see the [documentation on expectations](doc/expectations.md).
 
 ### Known Limitations
 

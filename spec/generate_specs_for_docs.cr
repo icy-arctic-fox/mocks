@@ -4,6 +4,7 @@
 # and produces test specs for them.
 
 files = %w[README.md]
+files += Dir.glob("doc/**/*.md")
 
 # Regular expression that looks for Markdown code blocks with Crystal syntax.
 # Captures any HTML comments before the code block, which may contain a directive.
@@ -12,7 +13,7 @@ files = %w[README.md]
 code_block_regex = /^(?:<!-- ([^>]+) -->\n)?```cr(?:ystal)?\n(?!```)(.*?)```$/m
 
 def spec_file_name(source_file, id)
-  File.join("spec", "doc", "#{source_file.tr(".", "_")}_#{id}_spec.cr")
+  File.join("spec", "doc", "#{File.basename(source_file).tr(".", "_")}_#{id}_spec.cr")
 end
 
 def write_spec_file(path, code)
