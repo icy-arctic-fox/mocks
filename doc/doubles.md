@@ -29,6 +29,86 @@ See [Private top-level types](https://crystal-lang.org/reference/1.10/syntax_and
 private double MyDouble
 ```
 
+## Stubbing doubles
+
+A double must have the methods that will called on it defined.
+That is, a double doesn't implement a method without being told to.
+The following does not work:
+
+<!-- no-spec -->
+```crystal
+private double TestDouble
+
+it "doesn't have a method" do
+  double = TestDouble.new
+  double.some_method # Error!
+end
+```
+
+This results in the error:
+
+    Error: undefined method 'some_method' for TestDouble
+
+To define a stubbable method, provide a block to the double's definition. In the block's body, define an abstract method with the `stub` modifier keyword.
+
+```crystal
+private double TestDouble do
+  stub abstract def some_method
+end
+```
+
+This is a plain method definition and can have arguments and type restrictions.
+
+Now `TestDouble` can have `some_method` called on it.
+
+<!-- no-spec -->
+```crystal
+it "does have a method" do
+  double = TestDouble.new
+  double.some_method # Compiles!
+end
+```
+
+However, running this code results in a runtime error.
+
+    Attempted to call abstract method `some_method` (Mocks::UnexpectedMessage)
+
+This is because no behavior was defined for the method.
+Doubles are strict by default.
+They *do not* respond to methods unless they are explicitly told to do so.
+A `Mocks::UnexpectedMessage` error is raised whenever a double has a method called and no behavior was specified.
+
+**NOTE:** Sending and receiving messages is an alternate way to think of calling methods on objects.
+This nomenclature was copied from RSpec and is where `UnexpectedMessage` comes from.
+
+A stub is used to specify the behavior of the method.
+
+<!-- continue-spec -->
+```crystal
+it "does have a method" do
+  double = TestDouble.new
+  double.can receive(:some_method)
+  double.some_method # Works!
+end
+```
+
+For more details on stubs, see [stubs](stubs.md).
+
+The standard methods that are defined on all objects, such as `to_s` and `==`, *do* respond by default.
+These methods have reasonable default behaviors and can be changed if needed.
+
+```crystal
+private double TestDouble
+
+it "responds to standard methods" do
+  double = TestDouble.new
+  double.to_s.should contain("Double")
+end
+```
+
+So far, this is a fairly verbose way to define stubs.
+There are easier ways, which are explained shortly.
+
 ## Default stubs
 
 A double can have default stubs assigned to it.
@@ -104,6 +184,8 @@ it "defines methods in a block" do
   double.stringify(42).should eq("42")
 end
 ```
+
+NOTE: The `stub` keyword in the block body is optional for instance methods.
 
 Default stubs declared in this way only accept arguments in the method definition.
 Attempting to call a stubbed method with mismatched arguments will fail to compile.
@@ -217,10 +299,6 @@ end
 The error in this case is:
 
     Attempted to return "Not a number" (String) from stub, but method `value` expects type Int32 (TypeCastError)
-
-## Modifying double behavior
-
-See [stubs](stubs.md).
 
 ## Practical example
 
