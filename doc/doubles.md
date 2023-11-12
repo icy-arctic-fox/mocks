@@ -163,7 +163,7 @@ Stubs declared in the block body override (take precedence) over the stubs decla
 This can be useful for fallback behavior and changing the return type.
 
 ```crystal
-private double TestDouble, value: 5, stringify: "Test" do
+private double TestDouble, value: 0, stringify: "Test" do
   def stringify(value)
     value.to_s
   end
@@ -175,7 +175,7 @@ end
 
 it "allows mixing styles" do
   double = TestDouble.new
-  double.value.should eq(5)
+  double.value.should eq(0)
   double.stringify.should eq("Test")   # Uses stub from the keyword arguments.
   double.stringify(42).should eq("42") # Uses stub from the block body.
   double.another_method.should eq("Another Test")

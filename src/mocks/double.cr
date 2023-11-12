@@ -13,10 +13,8 @@ module Mocks
     include Stubbable::Automatic
 
     # Defines a macro to define a double.
-    # This is a workaround for the DSL methods regarding visibility modifiers.
-    # A type defined by a nested macro loses its visibility modifier from the outer macro invocation.
-    # This is probably a bug in the compiler, but working around for now.
-    # The workaround is to reuse the macro definition code here and in the DSL.
+    # This produces the standard `double` keyword
+    # that accepts default stubs from the keyword arguments and block body.
     macro def_define_double(name, *, type = nil)
       macro {{name.id}}(name, *stubs, **named_stubs, &block)
         class \{{name.id}} < {{(type || @type.name).id}}
