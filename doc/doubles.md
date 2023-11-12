@@ -29,6 +29,19 @@ See [Private top-level types](https://crystal-lang.org/reference/1.10/syntax_and
 private double MyDouble
 ```
 
+Additionally, doubles can be given a name.
+This may be useful for tracking what they represent.
+The first argument to the double's initializer is its name.
+
+<!-- no-spec -->
+```crystal
+it "can have a name" do
+  MyDouble.new("Example")
+end
+```
+
+The name argument can be anything, even a type literal, such as `Array`.
+
 ## Stubbing doubles
 
 A double must have the methods that will called on it defined.
