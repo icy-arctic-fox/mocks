@@ -52,12 +52,22 @@ module Mocks
     #   some_method1 : Int32,
     #   some_method2 : Int32 = 42,
     #   some_method3 = 42
-    # MyDouble.new.method2 # => 42
+    # MyDouble.new.some_method2 # => 42
     # ```
     # In the example above, 3 methods are defined.
     # Each return an `Int32`, but the last two will return 42 by default.
     # The first method will raise `UnexpectedMessage` unless it is stubbed.
     # All methods will accept any arguments and an optional block.
+    #
+    # Additionally, these simple stubs can be defined with *named_stubs*.
+    # These are keyword arguments where the keyword is the method name and its value is the default return value.
+    # ```
+    # Double.define MyDouble,
+    #   some_method1: 1,
+    #   some_method2: 2,
+    #   some_method3: 3,
+    # MyDouble.new.some_method2 # => 2
+    # ```
     #
     # More complex methods can be defined with a block.
     # ```
@@ -72,7 +82,7 @@ module Mocks
     #
     # Simple and complex methods can be mixed.
     # ```
-    # Double.define(MyDouble, some_method1 = 42) do
+    # Double.define(MyDouble, some_method1 = 42, some_method2: 42) do
     #   def label(arg)
     #     "Value: #{arg}"
     #   end
