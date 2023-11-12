@@ -313,6 +313,53 @@ The error in this case is:
 
     Attempted to return "Not a number" (String) from stub, but method `value` expects type Int32 (TypeCastError)
 
+## Class doubles
+
+Not only can instance doubles be stubbed, the class itself can be stubbed as well.
+Class methods for a double cannot be defined with [keyword arguments](#keyword-arguments).
+Instead, they're defined in the double's definition block body.
+
+```crystal
+private double TestDouble do
+  stub def self.add_one(value)
+    value + 1
+  end
+end
+
+it "can use the double's class type" do
+  TestDouble.add_one(2).should eq(3)
+end
+```
+
+**NOTE:** The `stub` keyword is required for class methods.
+See [#3](https://github.com/icy-arctic-fox/mocks/issues/3).
+
+The behavior of the method can be changed as well.
+Stub changes persist only for the duration of the test.
+
+<!-- continue-spec -->
+```crystal
+it "can change the behavior" do
+  TestDouble.can receive(:add_one).and_return(0)
+  TestDouble.add_one(2).should eq(0)
+end
+
+it "reverts stubs between tests" do
+  TestDouble.add_one(2).should eq(3)
+end
+```
+
+The `class` method behaves as expected on a double.
+
+<!-- continue-spec -->
+```crystal
+it "can use the double's class" do
+  TestDouble.can receive(:add_one).and_return(0)
+  double = TestDouble.new
+  double.class.add_one(2).should eq(0)
+end
+```
+
 ## Practical example
 
 Given this class:
