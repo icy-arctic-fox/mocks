@@ -29,10 +29,10 @@ In other words, mocks extend from real, existing types and doubles are generic o
 
 **As a rule of thumb:** use a double unless a type restriction is involved, then use a mock.
 
-If you're familiar with [RSpec's mocks](https://rspec.info/features/3-12/rspec-mocks/), doubles can be considered equivalent to a basic [double](https://rspec.info/features/3-12/rspec-mocks/basics/test-doubles/).
+If you're familiar with [RSpec's mocks](https://rspec.info/features/3-12/rspec-mocks/), doubles can be thought of as a basic [double](https://rspec.info/features/3-12/rspec-mocks/basics/test-doubles/).
 And mocks can be thought of as a [verifying double](https://rspec.info/features/3-12/rspec-mocks/verifying-doubles/).
-RSpec provides a variety of doubles for different functionality, for example spies, and partial doubles.
-This shard has distilled it down to two types and included that functionality into a module shared by both mocks and doubles.
+RSpec provides a variety of doubles for different functionality, for example spies and partial doubles.
+This shard has distilled them down to two types and includes that functionality into a module shared by mocks and doubles.
 
 Both mocks and doubles must be defined before they're instantiated and used.
 This is typically done with the the `mock` and `double` keyword
