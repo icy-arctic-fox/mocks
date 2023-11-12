@@ -69,6 +69,90 @@ module Mocks
       end
     end
 
+    # Defines a mock type.
+    # The new type inherits from the type being mocked.
+    # All methods are stubbable.
+    #
+    # A simple mock of an existing type can be defined with:
+    # ```
+    # class MyClass
+    # end
+    #
+    # Mock.define MyMock < MyClass
+    # mock = MyMock.new
+    # ```
+    # The *type* argument must be in the form `MockType < OriginalType`,
+    # similar to defining a class that extends another.
+    #
+    # Simple stubs can be defined via *stubs*.
+    # Each keyword should be an existing method and its value is its stubbed return value.
+    # For instance:
+    # ```
+    # class MyClass
+    #   def some_method1
+    #     0
+    #   end
+    #
+    #   def some_method2
+    #     "Original"
+    #   end
+    #
+    #   def some_method3
+    #     :xyz
+    #   end
+    # end
+    #
+    # Mock.define MyMock < MyClass,
+    #   some_method1: 42,
+    #   some_method2: "Mock",
+    # MyMock.new.some_method1 # => 42
+    # ```
+    # In the example above, 3 methods are defined.
+    # The first returns 42 by default in the mock.
+    # The second returns "Mock" instead of "Original".
+    # And the third method will raise `UnexpectedMessage` unless it is stubbed.
+    #
+    # More complex methods can be defined with a block.
+    # ```
+    # class MyClass
+    #   def label(arg)
+    #     "Label: #{arg}"
+    #   end
+    # end
+    #
+    # Mock.define(MyMock < MyClass) do
+    #   def label(arg)
+    #     "Value: #{arg}"
+    #   end
+    # end
+    # MyMock.new.label(42) # => "Value: 42"
+    # ```
+    # The contents of a method will be used as the default behavior.
+    #
+    # Simple and complex methods can be mixed.
+    # ```
+    # Mock.define(MyMock < MyClass, some_method1: 42) do
+    #   def label(arg)
+    #     "Value: #{arg}"
+    #   end
+    # end
+    # ```
+    #
+    # The contents of the block are dumped as-is into the class body of the mock.
+    # This allows for more complex behavior if needed.
+    # ```
+    # abstract class MyClass
+    #   abstract def add(amount)
+    # end
+    #
+    # Mock.define(MyMock < MyClass) do
+    #   getter accumulator = 0
+    #
+    #   def add(amount)
+    #     @accumulator += amount
+    #   end
+    # end
+    # ```
     def_define_mock define
   end
 end
