@@ -61,6 +61,17 @@ module Mocks
               end
             {% end %}
           {% end %}
+
+          # Add `new` class method if `initialize` was defined.
+          {% if method.name == :initialize.id %}
+            @[::Mocks::Stubbed]
+            {{method.visibility.id if method.visibility != :public}} def self.new({% for arg, i in method.args %}
+              {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
+              {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
+            ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
+              stubbed_method_body(:previous_def)
+            end
+          {% end %}
         end
       {% end %}
     end
