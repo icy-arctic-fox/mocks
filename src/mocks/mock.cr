@@ -53,6 +53,7 @@ module Mocks
                 {{type_keyword.id}} {{type}} < {{parent_name}}
               {% end %}
                 include ::Mocks::Stubbable::Automatic
+                include ::Mocks::StubbedStandardMethods
 
                 {% for name, value in stubs %}
                   stub_existing({{name}}) { {{value}} }

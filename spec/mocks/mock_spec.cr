@@ -722,3 +722,28 @@ macro it_compiles_to_the_expected_type(mock, method, type = String)
     typeof(invoke_mock_method({{mock}}, {{method}})).should eq({{type.id}})
   end
 end
+
+macro it_allows_calling_standard_methods(mock)
+  it "allows calling standard methods" do
+    mock = {{mock}}
+
+    p! mock
+
+    (mock == mock).should eq(true), "`mock == mock` was not true"
+    (mock == nil).should eq(false), "`mock == nil` was not false"
+    (mock == "foo").should eq(false), "`mock == \"foo\"` was not false"
+
+    (mock === mock).should eq(true), "`mock === mock` was not true"
+    (mock === nil).should eq(false), "`mock === nil` was not false"
+    (mock === "foo").should eq(false), "`mock === \"foo\" was not false"
+
+    mock.to_s.should contain(mock.class.name), "`mock.to_s` should contain its type name"
+    mock.inspect.should contain(mock.class.name), "`mock.inspect` should contain its type name"
+
+    if mock.is_a?(Reference)
+      mock.same?(mock).should eq(true), "`mock.same?(mock)` was not true"
+      mock.same?(nil).should eq(false), "`mock.same?(nil)` was not false"
+      mock.same?("foo").should eq(false), "`mock.same?(\"foo\")` was not false"
+    end
+  end
+end

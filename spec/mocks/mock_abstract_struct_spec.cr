@@ -14,5 +14,6 @@ describe Mocks::Mock do
     it_supports_abstract_methods(AbstractStructMock.new)
     it_supports_concrete_methods(AbstractStructMock.new)
     it_supports_class_methods(AbstractStructMock)
+    it_allows_calling_standard_methods(AbstractStructMock.new)
   end
 end

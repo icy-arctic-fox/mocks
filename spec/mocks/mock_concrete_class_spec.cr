@@ -12,5 +12,6 @@ describe Mocks::Mock do
   context "concrete class" do
     it_supports_concrete_methods(ConcreteClassMock.new)
     it_supports_class_methods(ConcreteClassMock)
+    it_allows_calling_standard_methods(ConcreteClassMock.new)
   end
 end

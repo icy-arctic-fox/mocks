@@ -25,11 +25,13 @@ describe Mocks::Mock do
     it_supports_abstract_methods(ChildClassMock.new)
     it_supports_concrete_methods(ChildClassMock.new)
     it_supports_class_methods(ChildClassMock)
+    it_allows_calling_standard_methods(ChildClassMock.new)
   end
 
   context "subtype of struct" do
     it_supports_abstract_methods(ChildStructMock.new)
     it_supports_concrete_methods(ChildStructMock.new)
     it_supports_class_methods(ChildStructMock)
+    it_allows_calling_standard_methods(ChildStructMock.new)
   end
 end

@@ -15,5 +15,6 @@ describe Mocks::Mock do
     it_supports_concrete_methods(MixinModuleMock.new)
     # Class methods on modules are not supported (yet).
     # it_supports_class_methods(MixinModuleMock)
+    it_allows_calling_standard_methods(MixinModuleMock.new)
   end
 end

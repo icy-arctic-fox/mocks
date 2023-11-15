@@ -94,4 +94,23 @@ describe Double do
       double.to_s.should contain("anonymous")
     end
   end
+
+  it "allows calling standard methods by default" do
+    double = EmptyTestDouble.new
+
+    (double == double).should eq(true), "`double == double` was not true"
+    (double == nil).should eq(false), "`double == nil` was not false"
+    (double == "foo").should eq(false), "`double == \"foo\"` was not false"
+
+    (double === double).should eq(true), "`double === double` was not true"
+    (double === nil).should eq(false), "`double === nil` was not false"
+    (double === "foo").should eq(false), "`double === \"foo\" was not false"
+
+    double.to_s.should contain(double.class.name), "`double.to_s` should contain its type name"
+    double.inspect.should contain(double.class.name), "`double.inspect` should contain its type name"
+
+    double.same?(double).should eq(true), "`double.same?(mock)` was not true"
+    double.same?(nil).should eq(false), "`double.same?(nil)` was not false"
+    double.same?("foo").should eq(false), "`double.same?(\"foo\")` was not false"
+  end
 end

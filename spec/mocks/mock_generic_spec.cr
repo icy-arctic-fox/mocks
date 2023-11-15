@@ -33,24 +33,28 @@ describe Mocks::Mock do
     it_supports_concrete_methods(GenericClassMock(String).new)
     it_supports_abstract_methods(GenericClassMock(String).new)
     it_supports_class_methods(GenericClassMock(String))
+    it_allows_calling_standard_methods(GenericClassMock(String).new)
   end
 
   context "generic class with explicit type" do
     it_supports_concrete_methods(NonGenericClassMock.new)
     it_supports_abstract_methods(NonGenericClassMock.new)
     it_supports_class_methods(NonGenericClassMock)
+    it_allows_calling_standard_methods(NonGenericClassMock.new)
   end
 
   context "generic struct" do
     it_supports_concrete_methods(GenericStructMock(String).new)
     it_supports_abstract_methods(GenericStructMock(String).new)
     it_supports_class_methods(GenericStructMock(String))
+    it_allows_calling_standard_methods(GenericStructMock(String).new)
   end
 
   context "generic struct with explicit type" do
     it_supports_concrete_methods(NonGenericStructMock.new)
     it_supports_abstract_methods(NonGenericStructMock.new)
     it_supports_class_methods(NonGenericStructMock)
+    it_allows_calling_standard_methods(NonGenericStructMock.new)
   end
 
   context "generic module" do
@@ -58,6 +62,7 @@ describe Mocks::Mock do
     it_supports_abstract_methods(GenericModuleMock(String).new)
     # Class methods on modules are not supported (yet).
     # it_supports_class_methods(GenericModuleMock(String))
+    it_allows_calling_standard_methods(GenericModuleMock(String).new)
   end
 
   context "generic module with explicit type" do
@@ -65,5 +70,6 @@ describe Mocks::Mock do
     it_supports_abstract_methods(NonGenericModuleMock.new)
     # Class methods on modules are not supported (yet).
     # it_supports_class_methods(NonGenericModuleMock)
+    it_allows_calling_standard_methods(NonGenericModuleMock.new)
   end
 end
