@@ -727,18 +727,25 @@ macro it_allows_calling_standard_methods(mock)
   it "allows calling standard methods" do
     mock = {{mock}}
 
-    p! mock
-
     (mock == mock).should eq(true), "`mock == mock` was not true"
     (mock == nil).should eq(false), "`mock == nil` was not false"
     (mock == "foo").should eq(false), "`mock == \"foo\"` was not false"
 
-    (mock === mock).should eq(true), "`mock === mock` was not true"
-    (mock === nil).should eq(false), "`mock === nil` was not false"
-    (mock === "foo").should eq(false), "`mock === \"foo\" was not false"
+    unless mock.is_a?(Class)
+      (mock === mock).should eq(true), "`mock === mock` was not true"
+      (mock === nil).should eq(false), "`mock === nil` was not false"
+      (mock === "foo").should eq(false), "`mock === \"foo\" was not false"
+    end
 
     mock.to_s.should contain(mock.class.name), "`mock.to_s` should contain its type name"
     mock.inspect.should contain(mock.class.name), "`mock.inspect` should contain its type name"
+
+    buffer = IO::Memory.new
+    mock.to_s(buffer)
+    buffer.to_s.should contain(mock.class.name), "`mock.to_s(io)` should contain its type name"
+    buffer = IO::Memory.new
+    mock.inspect(buffer)
+    buffer.to_s.should contain(mock.class.name), "`mock.inspect(io)` should contain its type name"
 
     if mock.is_a?(Reference)
       mock.same?(mock).should eq(true), "`mock.same?(mock)` was not true"

@@ -43,6 +43,20 @@ module Mocks
                     # Empty initializer to override the `.new` method from {{type}}.
                     def initialize
                     end
+
+                    def ==(other : self) : Bool
+                      \{% if @type < Reference %}
+                        same?(other)
+                      \{% else %}
+                        this = self
+                        this_ptr = pointerof(this)
+                        LibC.memcmp(this_ptr, pointerof(other), sizeof(self)) == 0
+                      \{% end %}
+                    end
+
+                    def ===(other : self) : Bool
+                      self == other
+                    end
                   end
 
                   @[::Mocks::Stubbed]

@@ -22,16 +22,14 @@ module Mocks
         end
 
         stub def inspect(io : IO) : Nil
-          io << "#<" << self.class.name << ":0x"
-          object_id.to_s(io, 16)
-          io << '>'
+          to_s(io)
         end
 
-        stub def ==(other : self)
+        stub def ==(other : self) : Bool
           same?(other)
         end
 
-        stub def ===(other : self)
+        stub def ===(other : self) : Bool
           same?(other)
         end
       {% elsif @type < Value %}
@@ -68,33 +66,16 @@ module Mocks
           io << '>'
         end
 
-        stub def ==(other : Value)
-          size = sizeof(self)
-          return false if sizeof(typeof(other)) != size
+        stub def ==(other : Value) : Bool
+          return false if typeof(self) != typeof(other)
 
           this = self
           this_ptr = pointerof(this)
-          LibC.memcmp(this_ptr, pointerof(other), size) == 0
+          LibC.memcmp(this_ptr, pointerof(other), sizeof(self)) == 0
         end
 
-        stub def ===(other : Value)
+        stub def ===(other : Value) : Bool
           self == other
-        end
-      {% else %} # Class/Module
-        stub def to_s(io : IO) : Nil
-          io << {{@type.name.stringify}}
-        end
-
-        stub def inspect(io : IO) : Nil
-          io << {{@type.name.stringify}}
-        end
-
-        def ==(other : Class)
-          crystal_type_id == other.crystal_type_id
-        end
-
-        def ===(other)
-          other.is_a?(self)
         end
       {% end %}
 
@@ -110,11 +91,19 @@ module Mocks
         end
       end
 
-      stub def ==(other)
+      stub def ==(other) : Bool
         false
       end
 
-      stub def ===(other)
+      stub def ==(other : Nil) : Bool
+        false
+      end
+
+      stub def ===(other) : Bool
+        false
+      end
+
+      stub def ===(other : Nil) : Bool
         false
       end
     end
