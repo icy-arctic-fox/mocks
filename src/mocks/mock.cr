@@ -5,10 +5,8 @@ require "./stubbed"
 module Mocks
   module Mock
     # Defines a macro to define a mock.
-    # This is a workaround for the DSL methods regarding visibility modifiers.
-    # A type defined by a nested macro loses its visibility modifier from the outer macro invocation.
-    # This is probably a bug in the compiler, but working around for now.
-    # The workaround is to reuse the macro definition code here and in the DSL.
+    # This produces the standard `mock` keyword
+    # that accepts default stubs from the keyword arguments and block body.
     macro def_define_mock(name)
       macro {{name.id}}(type, **stubs, &block)
         {% verbatim do %}
