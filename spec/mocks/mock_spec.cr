@@ -547,18 +547,18 @@ end
 macro context_typed_return(mock, method_part, **values)
   {% method = "#{method_part.id}__typed_return" %}
   context "[return: typed]" do
-    context_typed_yield({{mock}}, {{method}}, {{**values}})
-    context_untyped_yield({{mock}}, {{method}}, {{**values}})
-    context_no_yield({{mock}}, {{method}}, {{**values}})
+    context_typed_yield({{mock}}, {{method}}, {{values.double_splat}})
+    context_untyped_yield({{mock}}, {{method}}, {{values.double_splat}})
+    context_no_yield({{mock}}, {{method}}, {{values.double_splat}})
   end
 end
 
 macro context_untyped_return(mock, method_part, **values)
   {% method = "#{method_part.id}__untyped_return" %}
   context "[return: untyped]" do
-    context_typed_yield({{mock}}, {{method}}, {{**values}})
-    context_untyped_yield({{mock}}, {{method}}, {{**values}})
-    context_no_yield({{mock}}, {{method}}, {{**values}})
+    context_typed_yield({{mock}}, {{method}}, {{values.double_splat}})
+    context_untyped_yield({{mock}}, {{method}}, {{values.double_splat}})
+    context_no_yield({{mock}}, {{method}}, {{values.double_splat}})
   end
 end
 
@@ -567,21 +567,21 @@ end
 macro context_typed_yield(mock, method_part, **values)
   {% method = "#{method_part.id}__typed_yield" %}
   context "[yield: typed]" do
-    context_no_args({{mock}}, {{method}}, {{**values}})
+    context_no_args({{mock}}, {{method}}, {{values.double_splat}})
   end
 end
 
 macro context_untyped_yield(mock, method_part, **values)
   {% method = "#{method_part.id}__untyped_yield" %}
   context "[yield: untyped]" do
-    context_no_args({{mock}}, {{method}}, {{**values}})
+    context_no_args({{mock}}, {{method}}, {{values.double_splat}})
   end
 end
 
 macro context_no_yield(mock, method_part, **values)
   {% method = "#{method_part.id}__no_yield" %}
   context "[yield: none]" do
-    context_no_args({{mock}}, {{method}}, {{**values}})
+    context_no_args({{mock}}, {{method}}, {{values.double_splat}})
   end
 end
 
@@ -590,18 +590,18 @@ end
 macro context_no_args(mock, method_part, **values)
   {% method = "#{method_part.id}__no_args" %}
   context "[args: none]" do
-    context_kwargs_default_stub({{mock}}, {{method}}, {{**values}})
-    context_block_default_stub({{mock}}, {{method}}, {{**values}})
-    context_no_default_stub({{mock}}, {{method}}, {{**values}})
+    context_kwargs_default_stub({{mock}}, {{method}}, {{values.double_splat}})
+    context_block_default_stub({{mock}}, {{method}}, {{values.double_splat}})
+    context_no_default_stub({{mock}}, {{method}}, {{values.double_splat}})
   end
 end
 
 macro context_no_args(mock, method_part, **values)
   {% method = "#{method_part.id}__positional_args" %}
   context "[args: positional]" do
-    context_kwargs_default_stub({{mock}}, {{method}}, {{**values}})
-    context_block_default_stub({{mock}}, {{method}}, {{**values}})
-    context_no_default_stub({{mock}}, {{method}}, {{**values}})
+    context_kwargs_default_stub({{mock}}, {{method}}, {{values.double_splat}})
+    context_block_default_stub({{mock}}, {{method}}, {{values.double_splat}})
+    context_no_default_stub({{mock}}, {{method}}, {{values.double_splat}})
   end
 end
 

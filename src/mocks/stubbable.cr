@@ -115,7 +115,7 @@ module Mocks
           {{visibility.id if visibility != :public}} def {% if method.receiver %}{{method.receiver}}.{% end %}{{method.name}}({% for arg, i in method.args %}
             {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
-          ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
+          ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{method.free_vars.splat}}{% end %}
             stubbed_method_body({{method.abstract? ? :abstract : :previous_def}}, as: {{method.return_type || :infer}})
           end
         {% end %}
@@ -262,7 +262,7 @@ module Mocks
           {{visibility.id if visibility != :public}} def {{"self.".id if receiver}}{{method.name}}({% for arg, i in method.args %}
             {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
-          ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
+          ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{method.free_vars.splat}}{% end %}
             stubbed_method_body({{behavior}}, as: {{method.return_type || type}}) {{block}}
           end
         {% end %}

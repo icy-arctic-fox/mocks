@@ -53,7 +53,7 @@ module Mocks
               {{method.visibility.id if method.visibility != :public}} def {{"#{method.receiver}.".id if method.receiver}}{{method.name}}({% for arg, i in method.args %}
                 {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
                 {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
-              ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
+              ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{method.free_vars.splat}}{% end %}
                 # For abstract methods, if no return type is specified, it will be `NoReturn`.
                 # It is expected that the method is overridden if something else is needed.
                 # Requiring a return type is not allowed here since it could require changes outside the user's code.
@@ -68,7 +68,7 @@ module Mocks
             {{method.visibility.id if method.visibility != :public}} def self.new({% for arg, i in method.args %}
               {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
               {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
-            ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{*method.free_vars}}{% end %}
+            ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{method.free_vars.splat}}{% end %}
               stubbed_method_body(:previous_def)
             end
           {% end %}
