@@ -1,3 +1,4 @@
+require "./standard_stubs"
 require "./stubbable"
 require "./stubbed"
 
@@ -67,7 +68,7 @@ module Mocks
                 {{type_keyword.id}} {{type}} < {{parent_name}}
               {% end %}
                 include ::Mocks::Stubbable::Automatic
-                include ::Mocks::StubbedStandardMethods
+                include ::Mocks::StandardStubs
 
                 {% for name, value in stubs %}
                   stub_existing({{name}}) { {{value}} }

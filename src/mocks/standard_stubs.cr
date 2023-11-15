@@ -4,7 +4,7 @@ module Mocks
   # Their behavior can be redefined with a new stub.
   # NOTE: These methods are sensitive to changes in the core library.
   #   For instance, if the type restrictions don't align, these stubs won't apply.
-  module StubbedStandardMethods
+  module StandardStubs
     macro included
       {% if @type < Reference %}
         stub def same?(other : Reference) : Bool
