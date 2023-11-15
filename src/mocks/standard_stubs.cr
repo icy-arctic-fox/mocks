@@ -39,13 +39,13 @@ module Mocks
           size = sizeof(self)
           bytes = Bytes.new(ptr, size, read_only: true)
 
-          io << "#<" << self.class.name 
+          io << "#<" << self.class.name
           bytes.each_with_index do |byte, i|
             if i >= 8
               io << " ... "
               break
             end
-    
+
             io << ' '
             byte.to_s(io, 16)
           end
@@ -57,8 +57,8 @@ module Mocks
           ptr = pointerof(this).as(UInt8*)
           size = sizeof(self)
           bytes = Bytes.new(ptr, size, read_only: true)
- 
-          io << "#<" << self.class.name 
+
+          io << "#<" << self.class.name
           bytes.each_with_index do |byte, i|
             io << ' '
             byte.to_s(io, 16)
