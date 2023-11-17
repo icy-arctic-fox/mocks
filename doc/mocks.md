@@ -409,10 +409,15 @@ end
 
 Mocks for modules are defined the same way as classes and structs.
 A type is defined that includes the module to mock.
+Unlike class and struct mocks, module mocks are not strict by default.
+All methods from the original module can be called, except for abstract methods.
+Abstract methods must be stubbed or an error will be raised.
+
+    Attempted to call abstract method `each` (Mocks::UnexpectedMessage)
 
 ### Testing against mixin modules
 
-One way to use this is for type restrictions that utilized a module as a mixin.
+One way to use a mock module is for type restrictions that utilized a module as a mixin.
 To give a concrete example, say a method requires an [`Enumerable`](https://crystal-lang.org/api/current/Enumerable.html) object.
 
 ```crystal
@@ -441,11 +446,6 @@ private mock MockEnumerable < Enumerable(String) do
   end
 end
 ```
-
-The abstract methods must have a stub defined.
-Otherwise, a `Mocks::UnexpectedMessage` error would be raised when the abstract method is called.
-
-    Attempted to call abstract method `each` (Mocks::UnexpectedMessage)
 
 The `build_list` method from above could be tested like so:
 
