@@ -32,25 +32,9 @@ module Mocks
 
             {% begin %}
               {% if type_keyword == :module %}
-                {% instance_type = (!type.is_a?(Generic) || type.type_vars.empty? ? "Instance" : "Instance(#{type.type_vars.splat})").id %}
-                module {{type}}
+                @[::Mocks::DefaultBehavior(:original)]
+                class {{type}}
                   include {{parent_name}}
-
-                  @[::Mocks::DefaultBehavior(:original)]
-                  class {{instance_type}}
-                    include {{parent_name}}
-                    include ::Mocks::Stubbable::Automatic
-                    include ::Mocks::StandardStubs
-
-                    # Empty initializer to override the `.new` method from {{type}}.
-                    def initialize
-                    end
-                  end
-
-                  @[::Mocks::Stubbed]
-                  def self.new : {{instance_type}}
-                    {{instance_type}}.new
-                  end
               {% else %}
                 {{type_keyword.id}} {{type}} < {{parent_name}}
               {% end %}
