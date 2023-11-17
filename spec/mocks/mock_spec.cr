@@ -636,7 +636,11 @@ macro context_no_default_stub(mock, method_part, *, original_value, default_mock
       it_can_have_a_stub_applied({{mock}}, {{method}}, {{override_value}})
       it_compiles_to_the_expected_type({{mock}}, {{method}})
     {% end %}
-    it_raises_unexpected_message({{mock}}, {{method}})
+    {% if mock.id.includes?("Module") && !method.starts_with?("abstract__") %}
+      it_calls_the_original_method({{mock}}, {{method}}, {{original_value}})
+    {% else %}
+      it_raises_unexpected_message({{mock}}, {{method}})
+    {% end %}
   end
 end
 
@@ -698,6 +702,17 @@ macro it_uses_nil_stub_value(mock, method, override_value)
       mock.__mocks.add_stub(stub)
       invoke_mock_method(mock, {{method}}).should be_nil
       called.should be_true
+    ensure
+      mock.__mocks.reset
+    end
+  end
+end
+
+macro it_calls_the_original_method(mock, method, original_value)
+  it "calls the original method" do
+    mock = {{mock}}
+    begin
+      invoke_mock_method(mock, {{method}}).should eq({{original_value}})
     ensure
       mock.__mocks.reset
     end
