@@ -181,7 +181,6 @@ end
 ### Definition body
 
 Another way to declare default stubs is in the definition body of `double`.
-So far, the body has been omitted, but the `double` keyword accepts a block.
 This allows for finer control of arguments and types.
 Additionally, the code run by the stub can be specified.
 
@@ -253,7 +252,7 @@ it "accepts a block" do
 end
 ```
 
-The two styles can be mixed.
+The two styles of default stubs can be mixed.
 Stubs declared in the block body override (take precedence) over the stubs declared with keyword arguments.
 This can be useful for fallback behavior and changing the return type.
 
