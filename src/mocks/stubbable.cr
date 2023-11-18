@@ -1,6 +1,7 @@
 require "./call"
 require "./proxy"
 require "./stubbed"
+require "./unexpected_message"
 
 module Mocks
   # Adds support for method stubs to a type.
@@ -375,23 +376,30 @@ module Mocks
         {% else %}
           %type = ::NoReturn
         {% end %}
-        ::Mocks::Stubbable.unexpected_message_call({{@def.name.symbolize}}, {{behavior == :abstract}}, %type)
+        ::Mocks::Stubbable.unexpected_method_call({{@def.name.symbolize}}, {{behavior == :abstract}}, %type)
       {% else %}
         {% raise "Unknown stubbed method body behavior: #{behavior}" %}
       {% end %}
     end
 
-    def self.unexpected_message_call(method_name : Symbol, abstract_call : Bool, type : T.class) : T forall T
-      unexpected_message_call(method_name, abstract_call, NoReturn)
-      # Trick compiler into thinking this is the returned type instead of `NoReturn` (from the raise).
+    # Raises an error that indicates an method was called unexpectedly.
+    #
+    # The return type of this method matches the *type* passed in.
+    # Set *abstract_call* to true to change the error message to indicate an abstract method was "called".
+    def self.unexpected_method_call(method_name : Symbol, abstract_call : Bool, type : T.class) : T forall T
+      unexpected_method_call(method_name, abstract_call, NoReturn)
+      # Trick compiler into thinking this is the returned type instead of `NoReturn` (from the previous line).
       type.allocate # This line should not be reached.
     end
 
-    def self.unexpected_message_call(method_name : Symbol, abstract_call : Bool, type : NoReturn.class) : NoReturn
+    # Raises an error that indicates an method was called unexpectedly.
+    #
+    # Set *abstract_call* to true to change the error message to indicate an abstract method was "called".
+    def self.unexpected_method_call(method_name : Symbol, abstract_call : Bool, type : NoReturn.class) : NoReturn
       if abstract_call
-        raise ::Mocks::UnexpectedMessage.new(method_name, "Attempted to call abstract method `#{method_name}`")
+        raise UnexpectedMessage.new(method_name, "Attempted to call abstract method `#{method_name}`")
       else
-        raise ::Mocks::UnexpectedMessage.new(method_name)
+        raise UnexpectedMessage.new(method_name)
       end
     end
 
