@@ -368,17 +368,31 @@ module Mocks
       {% elsif behavior == :previous_def || behavior == :super %}
         adjusted_previous_def({{behavior}})
       {% elsif behavior == :unexpected || behavior == :abstract %}
-        raise ::Mocks::UnexpectedMessage.new({{@def.name.symbolize}}, {% if behavior == :abstract %}"Attempted to call abstract method `{{@def.name}}`"{% end %})
-        # Trick compiler into thinking this is the returned type instead of `NoReturn` (from the raise).
-        # This line should not be reached.
         {% if type == :previous_def || type == :super %}
-          typeof(adjusted_previous_def({{type}})).allocate
+          %type = typeof(adjusted_previous_def({{type}}))
         {% elsif type != :infer %}
-          {{type.id}}.allocate
+          %type = {{type.id}}
+        {% else %}
+          %type = ::NoReturn
         {% end %}
+        ::Mocks::Stubbable.unexpected_message_call({{@def.name.symbolize}}, {{behavior == :abstract}}, %type)
       {% else %}
         {% raise "Unknown stubbed method body behavior: #{behavior}" %}
       {% end %}
+    end
+
+    def self.unexpected_message_call(method_name : Symbol, abstract_call : Bool, type : T.class) : T forall T
+      unexpected_message_call(method_name, abstract_call, NoReturn)
+      # Trick compiler into thinking this is the returned type instead of `NoReturn` (from the raise).
+      type.allocate # This line should not be reached.
+    end
+
+    def self.unexpected_message_call(method_name : Symbol, abstract_call : Bool, type : NoReturn.class) : NoReturn
+      if abstract_call
+        raise ::Mocks::UnexpectedMessage.new(method_name, "Attempted to call abstract method `#{method_name}`")
+      else
+        raise ::Mocks::UnexpectedMessage.new(method_name)
+      end
     end
 
     # Reconstructs a `previous_def` or `super` call.

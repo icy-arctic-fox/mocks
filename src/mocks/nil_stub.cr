@@ -7,6 +7,7 @@ module Mocks
     def call(args : Arguments, return_type : U.class = U, & : -> U) forall U
       {% if U <= NoReturn %}
         # NoReturn <= Nil is true, an explicit check for it is required.
+        return nil
         raise TypeCastError.new("Attempted to return nil from stub, but method `#{method_name}` must not return")
       {% elsif !(Nil <= U) %}
         # A non-nil value is expected to be returned.
