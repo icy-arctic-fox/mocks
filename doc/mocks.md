@@ -456,7 +456,7 @@ it "produces a numbered list" do
   build_list(mock).should eq("1. one\n2. two\n3. three\n")
 end
 
-it "produces '(empty)' when's there are no elements" do
+it "produces '(empty)' when there are no elements" do
   mock = MockEnumerable.new
   mock.can receive(:each) # Causes method to not yield.
   build_list(mock).should eq("(empty)")
