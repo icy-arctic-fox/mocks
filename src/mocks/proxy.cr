@@ -14,6 +14,12 @@ module Mocks
       @scope.registry.add_stub(@object, stub)
     end
 
+    # Removes a stub from the object this proxy represents.
+    # See: `Registry#remove_stub`
+    def remove_stub(stub : Stub) : Nil
+      @scope.registry.remove_stub(@object, stub)
+    end
+
     # Finds a stub to the object this proxy represents.
     # See: `Registry#find_stub`
     def find_stub(call : Call) : Stub?

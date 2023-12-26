@@ -45,6 +45,12 @@ module Mocks
       @entries[key].stubs << stub
     end
 
+    # Removes a stub from an object.
+    def remove_stub(object, stub : Stub) : Nil
+      key = generate_key(object)
+      @entries[key].stubs.delete(stub)
+    end
+
     # Finds a stub suitable stub for a method call.
     # Returns nil if no stub was found.
     # Stubs are searched in *reverse* order so that newly define stubs take precedence.
