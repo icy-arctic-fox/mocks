@@ -88,6 +88,15 @@ describe Mocks::Arguments do
     end
   end
 
+  describe ".any" do
+    it "returns a value indicating 'any arguments' to a stub" do
+      any = Mocks::Arguments.any
+      stub = Mocks::NilStub.new(:test, any)
+      call = Mocks::Call.new(:test)
+      (stub === call).should be_true
+    end
+  end
+
   describe ".capture" do
     it "captures empty arguments" do
       arguments = capture0
