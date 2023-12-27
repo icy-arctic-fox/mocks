@@ -272,15 +272,16 @@ module Mocks
 
     # Defines stubbable methods that can accept any arguments (and block).
     #
-    # Three syntaxes are supported:
+    # Four syntaxes are supported:
     # ```
     # stub_any_args some_method1 : Int32
     # stub_any_args some_method2 : Int32 = 42
     # stub_any_args some_method3 = 42
+    # stub_any_args some_method4, 42
     # ```
     # The type returned by the method must be known at compile-time,
-    # either from the type restriction or by inferring from the assignment.
-    private macro stub_any_args(name)
+    # either from the type restriction or by inferring from the assigned value.
+    private macro stub_any_args(name, value = nil)
       {% if name.is_a?(TypeDeclaration)
            type = name.type
            value = name.value
@@ -289,6 +290,9 @@ module Mocks
            type = :infer
            value = name.value
            name = name.target
+         elsif name.is_a?(SymbolLiteral) || name.is_a?(StringLiteral)
+           type = :infer
+           name = name.id
          else
            raise "Unexpected stub syntax"
          end %}

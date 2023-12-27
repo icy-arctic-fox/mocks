@@ -24,7 +24,7 @@ module Mocks
             {% end %}
 
             {% for name, value in named_stubs %}
-              stub_any_args {{name}} = {{value}}
+              stub_any_args {{name.id.symbolize}}, {{value}}
             {% end %}
 
             {{block.body if block}}
