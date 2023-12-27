@@ -24,13 +24,14 @@ module Mocks
 
     macro method_missing(call)
       {% verbatim do %}
-      stubbed_method_body(as: :infer) do
-        {% if T.has_method?(@def.name.stringify) %} # The `.has_method?` macro method does not inspect parent types.
-          delegate_current_call({{"@object." + @def.name.stringify}})
-        {% else %}
-          self
-        {% end %}
-      end
+        stubbed_method_body(as: :infer) do
+          {% if T.has_method?(@def.name.stringify) ||
+                  @type.ancestors.any? { |ancestor| ancestor.has_method?(@def.name.stringify) } %}
+            delegate_current_call({{"@object." + @def.name.stringify}})
+          {% else %}
+            self
+          {% end %}
+        end
       {% end %}
     end
 
