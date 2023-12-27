@@ -141,7 +141,7 @@ module Mocks
     # Creates a null object wrapper for the current double.
     @[Stubbed]
     def as_null_object
-      raise NotImplementedError.new("Double#as_null_object")
+      NullObject.new(self)
     end
 
     # Constructs a string representation of the double.

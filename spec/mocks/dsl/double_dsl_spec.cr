@@ -64,7 +64,7 @@ describe Mocks::DSL do
   end
 
   describe "#as_null_object" do
-    pending "creates a chainable double" do
+    it "creates a chainable double" do
       double = EmptyTestDouble.new.as_null_object
       double.one.two.three.should be(double)
     end
