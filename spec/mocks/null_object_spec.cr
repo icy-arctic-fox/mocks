@@ -8,42 +8,42 @@ end
 
 describe Mocks::NullObject do
   context "with one level deep" do
-    pending "returns itself for non-existent methods" do
+    it "returns itself for non-existent methods" do
       double = null_double
       double.nonexistent.should be(double)
     end
 
-    pending "supports block arguments" do
+    it "supports block arguments" do
       double = null_double
       double.nonexistent { 0 }.should be(double)
     end
   end
 
   context "with multiple levels deep" do
-    pending "returns itself for non-existent methods" do
+    it "returns itself for non-existent methods" do
       double = null_double
       double.one.two.three.nonexistent.should be(double)
     end
 
-    pending "supports block arguments" do
+    it "supports block arguments" do
       double = null_double
       double.one.two.three.nonexistent { 0 }.should be(double)
     end
   end
 
-  pending "supports stubs specific to the double's methods" do
+  it "supports stubs specific to the double's methods" do
     double = null_double
     stub = Mocks::ValueStub.new(:value, 1)
     double.__mocks.add_stub(stub)
     double.value.should eq(1)
   end
 
-  pending "forwards methods calls to the underlying double" do
+  it "forwards methods calls to the underlying double" do
     double = null_double
     double.value.should eq(0)
   end
 
-  pending "supports stubs on standard methods" do
+  it "supports stubs on standard methods" do
     double = null_double
     stub = Mocks::ValueStub.new(:to_s, "This is a test")
     double.__mocks.add_stub(stub)
@@ -55,5 +55,22 @@ describe Mocks::NullObject do
     stub = Mocks::ValueStub.new(:nonexistent, "This is a test")
     double.__mocks.add_stub(stub)
     double.nonexistent.should eq("This is a test")
+  end
+
+  context "equality" do
+    it "works with ==" do
+      double = null_double
+      (double == double).should be_true
+    end
+
+    it "works with ===" do
+      double = null_double
+      (double === double).should be_true
+    end
+
+    it "works with same?" do
+      double = null_double
+      double.same?(double).should be_true
+    end
   end
 end

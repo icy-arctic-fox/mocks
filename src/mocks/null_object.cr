@@ -2,7 +2,7 @@ require "./stubbable"
 require "./stubbed"
 
 module Mocks
-  struct NullObject(T)
+  class NullObject(T)
     include Stubbable
 
     delegate __mocks, to: @object
@@ -32,6 +32,22 @@ module Mocks
         {% end %}
       end
       {% end %}
+    end
+
+    stub def ==(other : self)
+      @object == other.@object
+    end
+
+    stub def ===(other : self)
+      @object == other.@object
+    end
+
+    stub def same?(other : Reference)
+      if other.is_a?(self)
+        @object.same?(other.@object)
+      else
+        @object.same?(other)
+      end
     end
   end
 end
