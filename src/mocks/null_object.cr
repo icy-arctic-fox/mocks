@@ -26,7 +26,7 @@ module Mocks
       {% verbatim do %}
         stubbed_method_body(as: :infer) do
           {% if T.has_method?(@def.name.stringify) ||
-                  @type.ancestors.any? { |ancestor| ancestor.has_method?(@def.name.stringify) } %}
+                  @type.ancestors.any? &.has_method?(@def.name.stringify) %}
             delegate_current_call({{"@object." + @def.name.stringify}})
           {% else %}
             self
