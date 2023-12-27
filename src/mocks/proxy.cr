@@ -26,6 +26,12 @@ module Mocks
       @scope.registry.find_stub(@object, call)
     end
 
+    # Checks if an object has a stub configured for the specified method.
+    # See: `Registry#has_stub?`
+    def has_stub?(method_name : Symbol)
+      @scope.registry.has_stub?(@object, method_name)
+    end
+
     # Records a method call made to the object this proxy represents.
     # See: `Registry#call_call`
     def add_call(call : Call) : Nil
