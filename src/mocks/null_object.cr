@@ -2,6 +2,16 @@ require "./stubbable"
 require "./stubbed"
 
 module Mocks
+  # Double that responds to all methods, typically used for method chains.
+  # Calling a method that exists on the underlying double will delegate to that method.
+  # Conversely, calling a method that doesn't exist will return the same instance.
+  # ```
+  # double(TestDouble, some_method: 42)
+  # TestDouble.new.some_method # => 42
+  # null_object = NullObject.new(TestDouble.new)
+  # null_object.some_method  # => 42
+  # null_object.other_method # => null_object
+  # ```
   class NullObject(T)
     include Stubbable
 
@@ -25,6 +35,7 @@ module Mocks
     macro method_missing(call)
       {% verbatim do %}
         stubbed_method_body(as: :infer) do
+          # Call original method if it exists.
           {% if T.has_method?(@def.name.stringify) ||
                   @type.ancestors.any? &.has_method?(@def.name.stringify) %}
             delegate_current_call({{"@object." + @def.name.stringify}})

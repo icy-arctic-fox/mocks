@@ -359,6 +359,90 @@ it "can use the double's class" do
 end
 ```
 
+## Null objects
+
+A *null object* is a variant of a double that responds to all method calls.
+Methods that already exist on the double behave the same on the null object.
+However, non-existent methods will return the null object.
+
+To create a null object, call `#as_null_object` on an existing double.
+
+```crystal
+private double TestDouble
+
+it "creates a null object" do
+  double = TestDouble.new.as_null_object
+end
+```
+
+This has two practical uses:
+
+1. Stubbing method chains
+2. Responding to unknown method calls
+
+For method chains, it can reduce the amount of stubs needed for testing.
+For instance:
+
+```crystal
+private double TestChainDouble, value: 42
+
+it "supports method chains" do
+  double = TestChainDouble.new.as_null_object
+  double.one.two.three.value.should eq(42)
+end
+```
+
+These doubles are also useful when an unknown method will be called and the return value is insignificant.
+In this example, `Wrapper#do_something` is being tested.
+However, it calls methods on another object, which are irrelevant to the test.
+The object and methods called on it are irrelevant, the only important thing is the result of `Wrapper#do_something`.
+
+```crystal
+private double TestDouble
+
+private class Wrapper(T)
+  def initialize(@object : T)
+  end
+
+  def do_something
+    @object.do_something_else("Test")
+    42
+  end
+end
+
+it "can be used as a stand-in for arbitrary methods" do
+  double = TestDouble.new.as_null_object
+  wrapper = Wrapper.new(double)
+  wrapper.do_something.should eq(42)
+end
+```
+
+Stubs can be defined on the null object as normal.
+
+```crystal
+private double TestChainDouble, value: 42
+
+it "can stub existing methods" do
+  double = TestChainDouble.new.as_null_object
+  double.can receive(:value).and_return(0)
+  double.one.two.three.value.should eq(0)
+end
+```
+
+The non-existent methods in the chain can also be stubbed.
+However, their return type must be the same as the null object.
+
+```crystal
+private double TestChainDouble, value: 42
+
+it "can stub existing methods" do
+  double = TestChainDouble.new(value: 0).as_null_object
+  branch = TestChainDouble.new(value: 5).as_null_object
+  double.can receive(:three).and_return(branch)
+  double.one.two.three.value.should eq(5)
+end
+```
+
 ## Practical example
 
 Given this class:
