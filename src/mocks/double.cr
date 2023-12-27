@@ -24,7 +24,7 @@ module Mocks
             {% end %}
 
             {% for name, value in named_stubs %}
-              stub_any_args {{name}} = {{value}}
+              stub_any_args {{name.id.symbolize}}, {{value}}
             {% end %}
 
             {{block.body if block}}
@@ -141,7 +141,7 @@ module Mocks
     # Creates a null object wrapper for the current double.
     @[Stubbed]
     def as_null_object
-      raise NotImplementedError.new("Double#as_null_object")
+      NullObject.new(self)
     end
 
     # Constructs a string representation of the double.

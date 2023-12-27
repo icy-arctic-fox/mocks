@@ -2,7 +2,17 @@ require "./stubbable"
 require "./stubbed"
 
 module Mocks
-  struct NullObject(T)
+  # Double that responds to all methods, typically used for method chains.
+  # Calling a method that exists on the underlying double will delegate to that method.
+  # Conversely, calling a method that doesn't exist will return the same instance.
+  # ```
+  # double(TestDouble, some_method: 42)
+  # TestDouble.new.some_method # => 42
+  # null_object = NullObject.new(TestDouble.new)
+  # null_object.some_method  # => 42
+  # null_object.other_method # => null_object
+  # ```
+  class NullObject(T)
     include Stubbable
 
     delegate __mocks, to: @object
@@ -24,14 +34,32 @@ module Mocks
 
     macro method_missing(call)
       {% verbatim do %}
-      stubbed_method_body(as: :infer) do
-        {% if T.has_method?(@def.name.stringify) %} # The `.has_method?` macro method does not inspect parent types.
-          delegate_current_call({{"@object." + @def.name.stringify}})
-        {% else %}
-          self
-        {% end %}
-      end
+        stubbed_method_body(as: :infer) do
+          # Call original method if it exists.
+          {% if T.has_method?(@def.name.stringify) ||
+                  @type.ancestors.any? &.has_method?(@def.name.stringify) %}
+            delegate_current_call({{"@object." + @def.name.stringify}})
+          {% else %}
+            self
+          {% end %}
+        end
       {% end %}
+    end
+
+    stub def ==(other : self)
+      @object == other.@object
+    end
+
+    stub def ===(other : self)
+      @object == other.@object
+    end
+
+    stub def same?(other : Reference)
+      if other.is_a?(self)
+        @object.same?(other.@object)
+      else
+        @object.same?(other)
+      end
     end
   end
 end

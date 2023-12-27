@@ -28,15 +28,51 @@ private class OtherTestType; end
 
 describe Mocks::Registry do
   context "with reference types" do
-    it "stores a stub for an object" do
-      registry = create_registry
-      object = %w[foo bar]
+    describe "#add_stub" do
+      it "stores a stub for an object" do
+        registry = create_registry
+        object = %w[foo bar]
 
-      stub = create_example_stub
-      call = create_example_call
+        stub = create_example_stub
+        call = create_example_call
 
-      registry.add_stub(object, stub)
-      registry.find_stub(object, call).should be(stub)
+        registry.add_stub(object, stub)
+        registry.find_stub(object, call).should be(stub)
+      end
+    end
+
+    describe "#remove_stub" do
+      it "removes a stub for an object" do
+        registry = create_registry
+        object = %w[foo bar]
+
+        stub = create_example_stub
+        call = create_example_call
+
+        registry.add_stub(object, stub)
+        registry.remove_stub(object, stub)
+        registry.find_stub(object, call).should be_nil
+      end
+    end
+
+    describe "#has_stub?" do
+      it "finds a stub with the specified method name" do
+        registry = create_registry
+        object = %w[foo bar]
+        stub = create_example_stub
+
+        registry.add_stub(object, stub)
+        registry.has_stub?(object, stub.method_name).should be_truthy
+      end
+
+      it "does not find a stub with a different method name" do
+        registry = create_registry
+        object = %w[foo bar]
+        stub = create_example_stub
+
+        registry.add_stub(object, stub)
+        registry.has_stub?(object, :unrelated).should be_falsey
+      end
     end
 
     describe "#find_stub" do
@@ -278,15 +314,51 @@ describe Mocks::Registry do
   end
 
   context "with value types" do
-    it "stores a stub for an object" do
-      registry = create_registry
-      object = 42
+    describe "#add_stub" do
+      it "stores a stub for an object" do
+        registry = create_registry
+        object = 42
 
-      stub = create_example_stub
-      call = create_example_call
+        stub = create_example_stub
+        call = create_example_call
 
-      registry.add_stub(object, stub)
-      registry.find_stub(object, call).should be(stub)
+        registry.add_stub(object, stub)
+        registry.find_stub(object, call).should be(stub)
+      end
+    end
+
+    describe "#remove_stub" do
+      it "removes a stub for an object" do
+        registry = create_registry
+        object = 42
+
+        stub = create_example_stub
+        call = create_example_call
+
+        registry.add_stub(object, stub)
+        registry.remove_stub(object, stub)
+        registry.find_stub(object, call).should be_nil
+      end
+    end
+
+    describe "#has_stub?" do
+      it "finds a stub with the specified method name" do
+        registry = create_registry
+        object = 42
+        stub = create_example_stub
+
+        registry.add_stub(object, stub)
+        registry.has_stub?(object, stub.method_name).should be_truthy
+      end
+
+      it "does not find a stub with a different method name" do
+        registry = create_registry
+        object = 42
+        stub = create_example_stub
+
+        registry.add_stub(object, stub)
+        registry.has_stub?(object, :unrelated).should be_falsey
+      end
     end
 
     describe "#find_stub" do
@@ -595,15 +667,51 @@ describe Mocks::Registry do
   end
 
   context "with a type (Class)" do
-    it "stores a stub for a type" do
-      registry = create_registry
-      object = TestType
+    describe "#add_stub" do
+      it "stores a stub for a type" do
+        registry = create_registry
+        object = TestType
 
-      stub = create_example_stub
-      call = create_example_call
+        stub = create_example_stub
+        call = create_example_call
 
-      registry.add_stub(object, stub)
-      registry.find_stub(object, call).should be(stub)
+        registry.add_stub(object, stub)
+        registry.find_stub(object, call).should be(stub)
+      end
+    end
+
+    describe "#remove_stub" do
+      it "removes a stub for a type" do
+        registry = create_registry
+        object = TestType
+
+        stub = create_example_stub
+        call = create_example_call
+
+        registry.add_stub(object, stub)
+        registry.remove_stub(object, stub)
+        registry.find_stub(object, call).should be_nil
+      end
+    end
+
+    describe "#has_stub?" do
+      it "finds a stub with the specified method name" do
+        registry = create_registry
+        object = TestType
+        stub = create_example_stub
+
+        registry.add_stub(object, stub)
+        registry.has_stub?(object, stub.method_name).should be_truthy
+      end
+
+      it "does not find a stub with a different method name" do
+        registry = create_registry
+        object = TestType
+        stub = create_example_stub
+
+        registry.add_stub(object, stub)
+        registry.has_stub?(object, :unrelated).should be_falsey
+      end
     end
 
     describe "#find_stub" do
