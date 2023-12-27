@@ -48,7 +48,7 @@ module Mocks
     # Removes a stub from an object.
     def remove_stub(object, stub : Stub) : Nil
       key = generate_key(object)
-      @entries[key].stubs.delete(stub)
+      @entries[key]?.try &.stubs.delete(stub)
     end
 
     # Checks if an object has a stub configured for the specified method.
