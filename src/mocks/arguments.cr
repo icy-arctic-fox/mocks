@@ -36,11 +36,6 @@ module Mocks
       Arguments.new(NamedTuple.new, nil, nil, NamedTuple.new)
     end
 
-    # Returns a value that represents "any arguments" when used by a stub.
-    def self.any
-      nil
-    end
-
     # Creates arguments from the ones passed to the containing method.
     macro capture
       {% if splat_index = @def.splat_index
