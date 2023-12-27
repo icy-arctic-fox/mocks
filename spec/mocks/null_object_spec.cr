@@ -50,11 +50,12 @@ describe Mocks::NullObject do
     double.to_s.should eq("This is a test")
   end
 
-  pending "supports stubs on non-existent methods" do
+  it "supports stubs on non-existent methods" do
     double = null_double
-    stub = Mocks::ValueStub.new(:nonexistent, "This is a test")
+    other = null_double
+    stub = Mocks::ValueStub.new(:nonexistent, other)
     double.__mocks.add_stub(stub)
-    double.nonexistent.should eq("This is a test")
+    double.nonexistent.should be(other)
   end
 
   context "equality" do
