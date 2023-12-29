@@ -443,6 +443,68 @@ it "can stub existing methods" do
 end
 ```
 
+## Lazy doubles
+
+Lazy doubles can be used to quickly create a stand-in object.
+They are more restrictive in what they can do, but are easy to make.
+Lazy doubles do not need to be defined before they are used.
+That is, they don't need a `double` definition block outside of the test case.
+They can be created inside of a test case with a simple call to `new_double`.
+
+```crystal
+it "uses lazy doubles" do
+  double = new_double(value: 42)
+  double.value.should eq(42)
+end
+```
+
+Keyword arguments are used to define default stubs.
+Each keyword "creates" a method in the double that returns the corresponding value.
+An optional name can be passed as the first argument to `new_double`.
+This is useful for tracking and debugging with the double.
+
+```crystal
+it "can have a name" do
+  double = new_double("My Lazy Double")
+  double.to_s.should contain("My Lazy Double")
+end
+```
+
+The values specified in `new_double` can be overridden with new stubs.
+
+```crystal
+it "can change a method's behavior" do
+  double = new_double(value: 0)
+  double.can receive(:value).and_return(5)
+  double.value.should eq(5)
+end
+```
+
+Lazy doubles respond to all methods calls (uses `macro method_missing`).
+This includes methods with different parameters.
+Method calls that are not defined with a default stub in `new_double` will raise an `UnexpectedMessage` error.
+
+```crystal
+it "responds to all method calls" do
+  double = new_double(add_one: 1)
+  double.add_one.should eq(1)
+  double.add_one(1).should eq(1) # Same stub, different arguments.
+  expect_raises(Mocks::UnexpectedMessage) { double.nonexistent }
+end
+```
+
+**WARNING:** Stubs cannot be added to methods not specified in the call to `new_double`.
+An `UnexpectedMessage` error will be raised even after adding a stub.
+
+<!-- no-spec -->
+```crystal
+it "does not allow stubs on new methods" do
+  double = new_double(add_one: 1)
+  double.can receive(:add_two).and_return(2)
+  double.add_two # Error!
+end
+```
+
 ## Practical example
 
 Given this class:
