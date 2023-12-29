@@ -1,4 +1,5 @@
 require "../double"
+require "../lazy_double"
 require "../mock"
 require "../nil_stub"
 require "../proc_stub"
@@ -115,6 +116,19 @@ module Mocks::DSL
     # ```
     def receive(**value_stubs)
       StubCollection.new(value_stubs)
+    end
+
+    # Creates a new lazy double.
+    #
+    # The double returned by this method will respond to methods with the values specified in *values*.
+    # An optional name can be given to the double to help with debugging.
+    #
+    # ```
+    # double = new_double(:test_double, test_method: 42)
+    # double.test_method # => 42
+    # ```
+    def new_double(name = nil, **values) : LazyDouble
+      LazyDouble.new(name, values)
     end
   end
 end

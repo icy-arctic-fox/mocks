@@ -63,6 +63,18 @@ describe Mocks::DSL do
     end
   end
 
+  describe "#new_double" do
+    it "creates a lazy double" do
+      double = new_double(test_method: 42)
+      double.test_method.should eq(42)
+    end
+
+    it "uses the name for the double" do
+      double = new_double(:dsl_test)
+      double.to_s.should contain("dsl_test")
+    end
+  end
+
   describe "#as_null_object" do
     it "creates a chainable double" do
       double = EmptyTestDouble.new.as_null_object
