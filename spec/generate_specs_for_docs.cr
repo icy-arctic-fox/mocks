@@ -32,6 +32,15 @@ def wrap_snippet_with_location(snippet, file, line = 1, char = 1)
   END_SNIPPET
 end
 
+def fake_spectator(snippet)
+  <<-END_SNIPPET
+  require "../fake_spectator"
+  include FakeSpectator
+
+  #{snippet}
+  END_SNIPPET
+end
+
 files.each do |file|
   content = File.read(file)
   snippets = [] of String
@@ -49,9 +58,10 @@ files.each do |file|
     snippet = wrap_snippet_with_location(snippet, file, line)
 
     case directive
-    when "no-spec"       then next
-    when "continue-spec" then snippets[-1] += "\n#{snippet}"
-    else                      snippets << snippet
+    when "no-spec"             then next
+    when "continue-spec"       then snippets[-1] += "\n#{snippet}"
+    when "framework:spectator" then snippets << fake_spectator(snippet)
+    else                            snippets << snippet
     end
   end
 
