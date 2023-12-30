@@ -1,6 +1,7 @@
 require "./default_behavior"
-require "./null_object"
 require "./stubbable"
+require "./stubbed"
+require "./value_stub"
 
 module Mocks
   # Double that can be quickly created and used within a test (function) without needing to define it in advance.
@@ -26,7 +27,9 @@ module Mocks
     # Creates a new lazy double with initial stubs.
     # The *name* can be anything or nil for an anonymous double.
     # The *values* must be a `NamedTuple`.
-    def initialize(name, @values : Methods)
+    # The *null_object* flag controls the behavior for when an undefined method is called.
+    # True is to return self (null object behavior) and false is to raise an `UnexpectedMessage` error.
+    def initialize(name, @values : Methods, @null_object : Bool = false)
       {% raise "Type argument for #{LazyDouble} must be a NamedTuple" unless Methods <= NamedTuple %}
 
       @name = name.try &.to_s
@@ -47,6 +50,7 @@ module Mocks
     # ```
     # LazyDouble.new(:fake, some_method: 42, another_method: "foo")
     # ```
+    @[Stubbed]
     def self.new(name = nil, **values)
       new(name, values)
     end
@@ -60,13 +64,14 @@ module Mocks
       else
         io << " anonymous"
       end
+      io << " (null object)" if @null_object
       io << '>'
     end
 
     # Creates a null object wrapper for the current double.
     @[Stubbed]
     def as_null_object
-      NullObject.new(self)
+      self.class.new(@name, @values, true)
     end
 
     macro method_missing(call)
@@ -76,6 +81,7 @@ module Mocks
             @values[{{@def.name.symbolize}}]
           end
         {% else %}
+          return self if @null_object
           raise UnexpectedMessage.new({{@def.name.symbolize}})
         {% end %}
       {% end %}
