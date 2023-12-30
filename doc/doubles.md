@@ -505,6 +505,18 @@ it "does not allow stubs on new methods" do
 end
 ```
 
+A [null object](#null-objects) can be used with lazy doubles.
+Call `as_null_object` on the lazy double to wrap it.
+Previously undefined methods will return the double instead of raising `UnexpectedMessage`.
+
+```crystal
+it "works with null objects" do
+  double = new_double(value: 42).as_null_object
+  double.value.should eq(42)
+  double.nonexistent.should be(double)
+end
+```
+
 ## Practical example
 
 Given this class:

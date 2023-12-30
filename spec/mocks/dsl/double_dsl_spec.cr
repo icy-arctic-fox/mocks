@@ -80,5 +80,22 @@ describe Mocks::DSL do
       double = EmptyTestDouble.new.as_null_object
       double.one.two.three.should be(double)
     end
+
+    context "with a lazy double" do
+      it "uses the initial stubs" do
+        double = new_double(test_method: 42).as_null_object
+        double.test_method.should eq(42)
+      end
+
+      it "uses the name for the double" do
+        double = new_double(:dsl_test).as_null_object
+        double.to_s.should contain("dsl_test")
+      end
+
+      it "returns itself for undefined methods" do
+        double = new_double.as_null_object
+        double.nonexistent.should be(double)
+      end
+    end
   end
 end

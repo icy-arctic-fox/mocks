@@ -1,4 +1,5 @@
 require "./default_behavior"
+require "./null_object"
 require "./stubbable"
 
 module Mocks
@@ -60,6 +61,12 @@ module Mocks
         io << " anonymous"
       end
       io << '>'
+    end
+
+    # Creates a null object wrapper for the current double.
+    @[Stubbed]
+    def as_null_object
+      NullObject.new(self)
     end
 
     macro method_missing(call)
