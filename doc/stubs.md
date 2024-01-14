@@ -10,7 +10,7 @@ Stubs are normally created with the fluent language (DSL) methods.
 The language to create a stub typically starts with `receive`.
 The `receive` method takes the name of the method to stub as a symbol.
 
-For instance, with the "can" syntax used by Spec:
+For instance, with the "can" syntax used by [Spec](spec.md):
 
 ```crystal
 private double TestDouble, value: 0
@@ -24,7 +24,7 @@ it "creates a stub" do
 end
 ```
 
-And similarly with the "allow" syntax used by Spectator:
+And similarly with the "allow" syntax used by [Spectator](spectator.md):
 
 <!-- framework:spectator -->
 ```crystal
