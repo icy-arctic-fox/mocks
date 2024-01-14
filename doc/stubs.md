@@ -35,7 +35,7 @@ it "creates a stub" do
   allow(my_double).to receive(:value)
   # ^       ^      ^     ^ Starts the creation of a stub.
   # |       |      + Accepts a stub and applies it to `my_double`.
-  # |       + Thing to apply the stub to.
+  # |       + Object to apply the stub to.
   # + Wraps an object to be stubbed.
 end
 ```
