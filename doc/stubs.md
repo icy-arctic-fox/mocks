@@ -140,4 +140,103 @@ end
 
 ### `with` Modifier
 
-**TODO**
+The `with` modifier changes the arguments that must be matched to trigger the stub.
+The default stub is used if none of the other argument patterns match.
+
+```crystal
+private double TestDouble, do_something: 0
+
+it "can change the expected arguments" do
+  my_double = TestDouble.new
+  my_double.can receive(:do_something).with(1).and_return(42)
+  my_double.do_something(1).should eq(42) # Matches the stub above.
+  my_double.do_something(2).should eq(0)  # Uses the default stub.
+end
+```
+
+All arguments are compared with the case-equality operator (`===`).
+
+```crystal
+private double TestDouble, do_something: 0
+
+it "can pattern match arguments" do
+  my_double = TestDouble.new
+  my_double.can receive(:do_something).with(/foo/).and_return(42)
+  my_double.do_something("foobar").should eq(42)
+  my_double.do_something("baz").should eq(0)
+end
+```
+
+The `with` modifier accepts multiple arguments.
+They will be matched against the positional arguments in order.
+
+```crystal
+private double TestDouble, do_something: 0
+
+it "can match multiple arguments" do
+  my_double = TestDouble.new
+  my_double.can receive(:do_something).with(1, /foo/).and_return(42)
+  my_double.do_something(1, "foobar").should eq(42)
+  my_double.do_something(0, "foobar").should eq(0) # First argument doesn't match.
+  my_double.do_something(1, "baz").should eq(0)    # Second argument doesn't match.
+end
+```
+
+Keyword arguments can also be matched by using key-value pairs as arguments in `with`.
+
+```crystal
+private double TestDouble, do_something: 0
+
+it "can match keyword arguments" do
+  my_double = TestDouble.new
+  my_double.can receive(:do_something).with(arg: /foo/).and_return(42)
+  my_double.do_something(arg: "foobar").should eq(42)
+  my_double.do_something(arg: "baz").should eq(0)    # Value doesn't match.
+  my_double.do_something(foo: "foobar").should eq(0) # Key argument doesn't match.
+end
+```
+
+Positional arguments and keyword arguments can be mixed.
+
+```crystal
+private double TestDouble, do_something: 0
+
+it "can match positional and keyword arguments" do
+  my_double = TestDouble.new
+  my_double.can receive(:do_something).with(1, arg: /foo/).and_return(42)
+  my_double.do_something(1, arg: "foobar").should eq(42)
+  my_double.do_something(0, arg: "foobar").should eq(0) # Positional argument doesn't match.
+  my_double.do_something(1, arg: "baz").should eq(0)    # Keyword argument doesn't match.
+end
+```
+
+Positional arguments can be matched with keyword arguments.
+This is more explicit.
+It may be useful to use the `anything` keyword to match the other arguments.
+
+```crystal
+private double LoggerDouble do
+  def log(level, message)
+    false
+  end
+end
+
+it "can match positional arguments with keyword arguments" do
+  my_double = LoggerDouble.new
+  my_double.can receive(:log).with(level: :warn, message: anything).and_return(true)
+  my_double.log(:warn, "oof").should be_true
+  my_double.log(:info, "foo").should be_false
+end
+```
+
+The `with` modifier can take a block, which is used for the return value.
+
+```crystal
+private double TestDouble, do_something: 0
+
+it "accepts a block" do
+  my_double = TestDouble.new
+  my_double.can receive(:do_something).with(1) { 42 }
+  my_double.do_something(1).should eq(42)
+end
+```
