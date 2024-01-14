@@ -1,3 +1,4 @@
+require "../anything"
 require "../double"
 require "../lazy_double"
 require "../mock"
@@ -129,6 +130,11 @@ module Mocks::DSL
     # ```
     def new_double(name = nil, **values) : LazyDouble
       LazyDouble.new(name, values)
+    end
+
+    # Returns an object that returns true when compared to anything.
+    def anything
+      Anything.new
     end
   end
 end
