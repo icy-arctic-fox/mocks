@@ -7,6 +7,11 @@ module Mocks
       ValueStub.new(method_name, value, arguments)
     end
 
+    # Modifies the stub to return different values.
+    def and_return(value, *values)
+      MultiValueStub.new(method_name, {value, *values}.to_a, arguments)
+    end
+
     # Modifies the stub to raise an exception.
     def and_raise(exception : Exception)
       ExceptionStub.new(method_name, exception, arguments)

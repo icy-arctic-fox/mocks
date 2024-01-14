@@ -76,6 +76,38 @@ In the example above, the following error is given at runtime:
 
     Attempted to return "not a number" (String) from stub, but method `value` expects type Int32 (TypeCastError)
 
+The `and_return` modifier can accept a list of arguments.
+Each call to the stub returns the next argument.
+
+```crystal
+private double TestDouble, value: 0
+
+it "returns multiple values" do
+  my_double = TestDouble.new
+  my_double.can receive(:value).and_return(1, 2, 3)
+  my_double.value.should eq(1)
+  my_double.value.should eq(2)
+  my_double.value.should eq(3)
+end
+```
+
+After all of the arguments are exhausted, the last one is returned for additional calls.
+
+```crystal
+private double TestDouble, value: 0
+
+it "returns multiple values" do
+  my_double = TestDouble.new
+  my_double.can receive(:value).and_return(1, 2, 3)
+  my_double.value.should eq(1)
+  my_double.value.should eq(2)
+  my_double.value.should eq(3)
+
+  my_double.value.should eq(3)
+  my_double.value.should eq(3)
+end
+```
+
 ### Block Modifier
 
 The `receive` method can accept a block.

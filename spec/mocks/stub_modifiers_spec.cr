@@ -26,6 +26,16 @@ describe Mocks::StubModifiers do
       stub = create_stub.and_return(42)
       invoke_stub(stub) { 0 }.should eq(42)
     end
+
+    it "produces a stub that returns multiple values" do
+      stub = create_stub.and_return(1, 3, 5, 7, 13)
+      invoke_stub(stub) { 0 }.should eq(1)
+      invoke_stub(stub) { 0 }.should eq(3)
+      invoke_stub(stub) { 0 }.should eq(5)
+      invoke_stub(stub) { 0 }.should eq(7)
+      invoke_stub(stub) { 0 }.should eq(13)
+      invoke_stub(stub) { 0 }.should eq(13)
+    end
   end
 
   describe "#and_raise" do
