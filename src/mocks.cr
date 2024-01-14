@@ -1,8 +1,7 @@
 require "./mocks/*"
 
-# TODO: Write documentation for `Mocks`
+# A utility library providing mock functionality.
+# Intended to be used for testing, but can be used anywhere.
 module Mocks
-  VERSION = "0.1.0"
-
-  # TODO: Put your code here
+  VERSION = {{ `shards version "#{__DIR__}"`.stringify.chomp }}
 end
