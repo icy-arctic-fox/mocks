@@ -5,9 +5,11 @@ This page contains documentation specific to using the [Spec](https://crystal-la
 ## Enabling Mocks
 
 To enable mocks, require the shard from inside `spec_helper.cr`.
+It should be required after Spec so that the Mocks shard can detect it.
 
 <!-- no-spec -->
 ```crystal
+require "spec"
 require "mocks"
 ```
 
