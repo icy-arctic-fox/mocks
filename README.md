@@ -19,6 +19,8 @@ Inspired by [RSpec's mocks](https://rspec.info/features/3-12/rspec-mocks/).
 
 ## Usage
 
+For detailed usage instructions, check the [docs](doc/index.md).
+
 ### Mocks and Doubles
 
 This shard provides two types implementations - *mocks* and *doubles*.
