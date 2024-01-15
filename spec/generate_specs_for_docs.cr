@@ -1,10 +1,16 @@
 #!/usr/bin/env crystal
+require "file_utils"
 
 # This script extracts example code from the documentation
 # and produces test specs for them.
 
+OUTPUT_DIR = File.join("spec", "doc")
+
 files = %w[README.md]
 files += Dir.glob("doc/**/*.md")
+
+# Remove any existing spec files.
+FileUtils.rm_rf(OUTPUT_DIR)
 
 # Regular expression that looks for Markdown code blocks with Crystal syntax.
 # Captures any HTML comments before the code block, which may contain a directive.
@@ -13,7 +19,7 @@ files += Dir.glob("doc/**/*.md")
 code_block_regex = /^(?:<!-- ([^>]+) -->\n)?```cr(?:ystal)?\n(?!```)(.*?)```$/m
 
 def spec_file_name(source_file, id)
-  File.join("spec", "doc", "#{File.basename(source_file).tr(".", "_")}_#{id}_spec.cr")
+  File.join(OUTPUT_DIR, "#{File.basename(source_file).tr(".", "_")}_#{id}_spec.cr")
 end
 
 def write_spec_file(path, code)
