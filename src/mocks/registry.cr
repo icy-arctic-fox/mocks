@@ -14,7 +14,7 @@ module Mocks
   # See: https://crystal-lang.org/reference/1.7/syntax_and_semantics/structs.html
   class Registry
     # Entry keys consist of two elements - the type ID and it's location in memory.
-    # For value-types, it's byte-representation is is stored in a pool and that location is used.
+    # For value-types, its byte-representation is stored in a pool and that location is used.
     #
     # WARNING: The `Class#crystal_type_id` method, which is undocumented, is used to retrieve the first part of the key.
     #
