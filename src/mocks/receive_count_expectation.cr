@@ -79,7 +79,7 @@ module Mocks
       else
         matching_calls = relevant_calls.map &.match?(@stub)
         message << matching_calls.count(&.itself) << " matching calls\n\n"
-        Call.build_call_list(relevant_calls, message) do |call, i|
+        Call.build_call_list(relevant_calls, message) do |_call, i|
           matching_calls[i]
         end
       end
