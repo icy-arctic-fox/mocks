@@ -28,7 +28,7 @@ module Mocks
 
     # Constructs the string representation of the stub.
     def to_s(io : IO) : Nil
-      io << "#" << method_name
+      io << '#' << method_name
       if args = @arguments
         io << args
       else
