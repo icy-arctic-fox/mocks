@@ -224,7 +224,7 @@ it "can match keyword arguments" do
   my_double.can receive(:do_something).with(arg: /foo/).and_return(42)
   my_double.do_something(arg: "foobar").should eq(42)
   my_double.do_something(arg: "baz").should eq(0)    # Value doesn't match.
-  my_double.do_something(foo: "foobar").should eq(0) # Key argument doesn't match.
+  my_double.do_something(foo: "foobar").should eq(0) # Key doesn't match.
 end
 ```
 
