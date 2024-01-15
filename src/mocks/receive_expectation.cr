@@ -36,12 +36,36 @@ module Mocks
 
     # Error message displayed when the expectation fails.
     def failure_message(actual_value)
-      "Expected:   #{actual_value.inspect}\nto receive: #{@stub}"
+      String.build do |message|
+        message << "  Expected: " << actual_value.inspect << '\n'
+        message << "to receive: " << @stub << '\n'
+        message << "       got: "
+
+        calls = actual_value.__mocks.calls
+        relevant_calls = calls.select { |call| call.method_name == @stub.method_name }
+        if calls.empty?
+          message << "no calls"
+        elsif relevant_calls.empty?
+          message << calls.size << " unrelated call(s)\n\n"
+          Call.build_call_list(calls, message)
+        else
+          message << relevant_calls.size << " call(s)\n\n"
+          Call.build_call_list(relevant_calls, message)
+        end
+      end
     end
 
     # Error message displayed when the expectation fails in the negated case.
     def negative_failure_message(actual_value)
-      "Expected:       #{actual_value.inspect}\nnot to receive: #{@stub}"
+      String.build do |message|
+        message << "      Expected: " << actual_value.inspect << '\n'
+        message << "not to receive: " << @stub << '\n'
+
+        calls = actual_value.__mocks.calls.select &.match?(@stub)
+        message << "           got: " << calls.size << " call(s)\n\n"
+
+        Call.build_call_list(calls, message)
+      end
     end
 
     private def with_stub(& : Stub -> Stub)

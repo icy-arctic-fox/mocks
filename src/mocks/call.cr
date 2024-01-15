@@ -5,6 +5,28 @@ module Mocks
   abstract class AbstractCall
     # Dispatch for comparing a concrete call to a concrete stub.
     abstract def match?(stub : Stub) : Bool
+
+    # Produces a string containing a list of calls.
+    protected def self.build_call_list(calls : Indexable, io : IO | String::Builder) : Nil
+      digits = (Math.log10(calls.size) + 1).to_i
+      template = "%#{digits}d. "
+      calls.each_with_index(1) do |call, i|
+        io.printf(template, i)
+        io.puts call
+      end
+    end
+
+    # Produces a string containing a list of calls.
+    # Yields each call - true should be returned to preface the call's list item with a marker.
+    protected def self.build_call_list(calls : Indexable, io : IO | String::Builder, &) : Nil
+      digits = (Math.log10(calls.size) + 1).to_i
+      template = "%#{digits}d. "
+      calls.each_with_index do |call, i|
+        io.print(yield(call, i) ? " > " : "   ")
+        io.printf(template, i + 1)
+        io.puts call
+      end
+    end
   end
 
   # Information about a method call and the arguments passed to it.

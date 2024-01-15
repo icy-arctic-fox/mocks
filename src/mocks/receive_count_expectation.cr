@@ -50,12 +50,39 @@ module Mocks
 
     # Error message displayed when the expectation fails.
     def failure_message(actual_value)
-      "Expected:   #{actual_value.inspect}\nto receive: #{@stub} #{humanize_count}"
+      String.build do |message|
+        message << "  Expected: " << actual_value.inspect << '\n'
+        message << "to receive: " << @stub << ' ' << humanize_count << '\n'
+        message << "       got: "
+        call_list_message(actual_value, message)
+      end
     end
 
     # Error message displayed when the expectation fails in the negated case.
     def negative_failure_message(actual_value)
-      "Expected:       #{actual_value.inspect}\nnot to receive: #{@stub} #{humanize_count}"
+      String.build do |message|
+        message << "      Expected: " << actual_value.inspect << '\n'
+        message << "not to receive: " << @stub << ' ' << humanize_count << '\n'
+        message << "           got: "
+        call_list_message(actual_value, message)
+      end
+    end
+
+    private def call_list_message(actual_value, message)
+      calls = actual_value.__mocks.calls
+      relevant_calls = calls.select { |call| call.method_name == @stub.method_name }
+
+      if calls.empty?
+        message << "no calls"
+      elsif relevant_calls.empty?
+        message << "no calls to #" << @stub.method_name
+      else
+        matching_calls = relevant_calls.map &.match?(@stub)
+        message << matching_calls.count(&.itself) << " matching calls\n\n"
+        Call.build_call_list(relevant_calls, message) do |call, i|
+          matching_calls[i]
+        end
+      end
     end
 
     # Returns itself - this is for the fluent syntax.
