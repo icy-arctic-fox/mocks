@@ -167,6 +167,7 @@ module Mocks
              behavior: behavior,
              type:     (method.abstract? ? :infer : :previous_def),
              receiver: nil,
+             original: :previous_def,
            }
          end
 
@@ -185,6 +186,7 @@ module Mocks
              behavior: behavior,
              type:     :previous_def,
              receiver: :self,
+             original: :previous_def,
            }
          end
 
@@ -226,6 +228,7 @@ module Mocks
                    behavior: behavior,
                    type:     (method.abstract? ? :infer : :super),
                    receiver: receiver,
+                   original: :super,
                  }
                end
              end
@@ -256,7 +259,7 @@ module Mocks
       # Redefine virtually all methods to support stubs.
       # FIXME: Reuse method signature generation code.
       {% for definition in definitions %}
-        {% method, behavior, type, receiver = definition.values
+        {% method, behavior, type, receiver, original = definition.values
            visibility = method.visibility %}
         {% begin %}
           @[::Mocks::Stubbed]
@@ -264,7 +267,7 @@ module Mocks
             {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
           ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{method.free_vars.splat}}{% end %}
-            stubbed_method_body({{behavior}}, as: {{method.return_type || type}}) {{block}}
+            stubbed_method_body({{behavior}}, as: {{method.return_type || type}}{% if !method.abstract? %}, original: {{original}}{% end %}) {{block}}
           end
         {% end %}
       {% end %}
@@ -323,7 +326,12 @@ module Mocks
     #
     # The *behavior* and *type* arguments are passed along to the `#stubbed_method_behavior` macro.
     # See `#stubbed_method_behavior` for details on those parameters.
-    private macro stubbed_method_body(behavior = :block, *, as type = :infer, &block)
+    #
+    # The *original* argument indicates how the original method can be invoked.
+    # It should be one of: `:previous_def`, `:super`, or `nil`.
+    # Omitting this argument (or passing `nil`) indicates that the original method cannot be invoked.
+    # In this case, *behavior* is used instead and must be one of: `:block`, `:unexpected`, or `:abstract`.
+    private macro stubbed_method_body(behavior = :block, *, as type = :infer, original = nil, &block)
       # Record call.
       %call = ::Mocks::Call.capture
       __mocks.add_call(%call)
@@ -344,7 +352,7 @@ module Mocks
         # Stub found for invocation.
         %stub.call(%call.arguments, %type) do
           # Stub found and it yielded to default behavior.
-          stubbed_method_behavior({{behavior}}, as: {{type}}) {{block}}
+          stubbed_method_behavior({{original || behavior}}, as: {{type}}) {{block}}
         end
       else
         # No stub found, use default behavior.
