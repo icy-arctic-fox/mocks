@@ -400,8 +400,10 @@ module Mocks
     # Set *abstract_call* to true to change the error message to indicate an abstract method was "called".
     def self.unexpected_method_call(method_name : Symbol, abstract_call : Bool, type : T.class) : T forall T
       unexpected_method_call(method_name, abstract_call, NoReturn)
-      # Trick compiler into thinking this is the returned type instead of `NoReturn` (from the previous line).
-      type.allocate # This line should not be reached.
+      {% unless T <= NoReturn %}
+        # Trick compiler into thinking this is the returned type instead of `NoReturn` (from the previous line).
+        ::Pointer(T).new(0).value # This line should not be reached.
+      {% end %}
     end
 
     # Raises an error that indicates an method was called unexpectedly.
