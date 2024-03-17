@@ -74,6 +74,13 @@ describe Mocks::StubModifiers do
     end
   end
 
+  describe "#and_call_original" do
+    it "produces a stub that calls the original method" do
+      stub = create_stub.and_call_original
+      invoke_stub(stub) { 42 }.should eq(42)
+    end
+  end
+
   describe "#with (no block)" do
     it "produces a stub that matches arguments" do
       stub = create_stub.with(42)

@@ -31,6 +31,11 @@ module Mocks
       and_raise(exception)
     end
 
+    # Modifies the stub to call the original method.
+    def and_call_original
+      CallOriginalStub.new(method_name, arguments)
+    end
+
     # Modifies the stub to only respond to the specified arguments.
     def with(*args, **kwargs)
       arguments = ArgumentsPattern.new(args, kwargs)
