@@ -48,6 +48,68 @@ private mock MockComplexModule < OriginalModule, method: :stubbed_module do
   stub abstract def abstract_method : Symbol
 end
 
+class InjectedClass
+  def kwargs
+    :original
+  end
+
+  def block
+    :original
+  end
+
+  def test_method
+    :original
+  end
+end
+
+struct InjectedStruct
+  def kwargs
+    :original
+  end
+
+  def block
+    :original
+  end
+
+  def test_method
+    :original
+  end
+end
+
+module InjectedModule
+  extend self
+
+  def kwargs
+    :original
+  end
+
+  def block
+    :original
+  end
+
+  def test_method
+    :original
+  end
+end
+
+mock!(InjectedClass, kwargs: :default) do
+  def block
+    :default
+  end
+end
+
+mock!(InjectedStruct, kwargs: :default) do
+  def block
+    :default
+  end
+end
+
+mock!(InjectedModule, kwargs: :default) do
+  def block
+    :default
+  end
+end
+
 private def value_stub(method_name, value)
   Mocks::ValueStub.new(method_name, value)
 end
@@ -180,6 +242,116 @@ describe Mocks::DSL do
         stub = value_stub(:abstract_typed_method, :override)
         obj.__mocks.add_stub(stub)
         obj.abstract_typed_method.should eq(:override)
+      end
+    end
+  end
+
+  describe "#mock!" do
+    context "with a class" do
+      it "injects mock functionality" do
+        obj = InjectedClass.new
+        obj.__mocks.should_not be_nil
+      end
+
+      it "prevents calls the original method" do
+        obj = InjectedClass.new
+        expect_raises(::Mocks::UnexpectedMessage, /test_method/) { obj.test_method }
+      end
+
+      it "can allow calling the original method" do
+        obj = InjectedClass.new
+        stub = ::Mocks::CallOriginalStub.new(:test_method)
+        obj.__mocks.add_stub(stub)
+        obj.test_method.should eq(:original)
+      end
+
+      it "can redefine existing methods" do
+        obj = InjectedClass.new
+        stub = value_stub(:test_method, :override)
+        obj.__mocks.add_stub(stub)
+        obj.test_method.should eq(:override)
+      end
+
+      it "defines default stubs with keyword arguments" do
+        obj = InjectedClass.new
+        obj.kwargs.should eq(:default)
+      end
+
+      it "defines default stubs with a block" do
+        obj = InjectedClass.new
+        obj.block.should eq(:default)
+      end
+    end
+
+    context "with a struct" do
+      it "injects mock functionality" do
+        obj = InjectedStruct.new
+        obj.__mocks.should_not be_nil
+      end
+
+      it "prevents calls the original method" do
+        obj = InjectedStruct.new
+        expect_raises(::Mocks::UnexpectedMessage, /test_method/) { obj.test_method }
+      end
+
+      it "can allow calling the original method" do
+        obj = InjectedStruct.new
+        stub = ::Mocks::CallOriginalStub.new(:test_method)
+        obj.__mocks.add_stub(stub)
+        obj.test_method.should eq(:original)
+      end
+
+      it "can redefine existing methods" do
+        obj = InjectedStruct.new
+        stub = value_stub(:test_method, :override)
+        obj.__mocks.add_stub(stub)
+        obj.test_method.should eq(:override)
+      end
+
+      it "defines default stubs with keyword arguments" do
+        obj = InjectedStruct.new
+        obj.kwargs.should eq(:default)
+      end
+
+      it "defines default stubs with a block" do
+        obj = InjectedStruct.new
+        obj.block.should eq(:default)
+      end
+    end
+
+    context "with a module" do
+      it "injects mock functionality" do
+        obj = InjectedModule
+        obj.__mocks.should_not be_nil
+      end
+
+      it "prevents calls the original method" do
+        obj = InjectedModule
+        expect_raises(::Mocks::UnexpectedMessage, /test_method/) { obj.test_method }
+      end
+
+      it "can allow calling the original method" do
+        obj = InjectedModule
+        stub = ::Mocks::CallOriginalStub.new(:test_method)
+        obj.__mocks.add_stub(stub)
+        obj.test_method.should eq(:original)
+      end
+
+      it "can redefine existing methods" do
+        obj = InjectedModule
+        stub = value_stub(:test_method, :override)
+        obj.__mocks.add_stub(stub)
+        obj.test_method.should eq(:override)
+      end
+
+      it "defines default stubs with keyword arguments" do
+        obj = InjectedModule
+        obj.kwargs.should eq(:default)
+      end
+
+      it "defines default stubs with a block" do
+        obj = InjectedModule
+        obj.block.should eq(:default)
       end
     end
   end

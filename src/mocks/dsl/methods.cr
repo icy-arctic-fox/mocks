@@ -60,6 +60,33 @@ module Mocks::DSL
     # ```
     Mock.def_define_mock mock
 
+    # Injects mock functionality into an existing type.
+    #
+    # This macro must be used outside of a method definition or block body, as it reopens an existing type.
+    #
+    # The first argument is the name of the type to inject into.
+    # Additional arguments can be provided to define default values.
+    # See: `Mock#inject` for details.
+    #
+    # ```
+    # class Original
+    #   def the_answer
+    #     42
+    #   end
+    #
+    #   def some_method(arg)
+    #     arg.to_s
+    #   end
+    # end
+    #
+    # mock! Original, the_answer: 5
+    #
+    # obj = Original.new
+    # obj.the_answer.should eq(5)
+    # expect_raises(UnexpectedMessage) { obj.some_method(:foo) }
+    # ```
+    Mock.def_inject_mock mock!
+
     # Constructs a stub for a method.
     #
     # The *method* is the name of the method to stub.
