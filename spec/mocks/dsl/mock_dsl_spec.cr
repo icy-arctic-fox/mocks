@@ -110,6 +110,15 @@ mock!(InjectedModule, kwargs: :default) do
   end
 end
 
+class DoubleInjected
+  def method
+    0
+  end
+end
+
+mock! DoubleInjected
+mock! DoubleInjected
+
 private def value_stub(method_name, value)
   Mocks::ValueStub.new(method_name, value)
 end
@@ -353,6 +362,14 @@ describe Mocks::DSL do
         obj = InjectedModule
         obj.block.should eq(:default)
       end
+    end
+
+    it "handles multiple injects" do
+      obj = DoubleInjected.new
+      obj.__mocks.should_not be_nil
+      obj.__mocks.add_stub(::Mocks::ValueStub.new(:method, 42))
+      obj.method.should eq(42)
+      obj.__mocks.calls.count { |call| call.method_name == :method }.should eq(1)
     end
   end
 end

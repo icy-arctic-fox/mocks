@@ -160,9 +160,12 @@ module Mocks
                             end %}
 
           {% begin %}
+            @[::Mocks::Stubbed]
             {{type_keyword.id}} {{type}}{% if type.superclass %} < {{type.superclass}}{% end %}
-              include ::Mocks::Stubbable::Automatic
-              include ::Mocks::StandardStubs
+              {% unless type.annotation(::Mocks::Stubbed) %}
+                include ::Mocks::Stubbable::Automatic
+                include ::Mocks::StandardStubs
+              {% end %}
 
               {% for name, value in stubs %}
                 stub_existing({{name}}) { {{value}} }
