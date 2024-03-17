@@ -93,7 +93,7 @@ The only difference from a `double` definition is that a base type must be speci
 
 ```crystal
 # Class to be mocked.
-class MyClass
+class ExampleClass
   def value
     # Some complex computation...
     42
@@ -101,10 +101,10 @@ class MyClass
 end
 
 # Define a mock of MyClass.
-mock MockMyClass < MyClass, value: 0
+mock MockExampleClass < ExampleClass, value: 0
 ```
 
-This defines a `MockMyClass` type that inherits from `MyClass`.
+This defines a `MockExampleClass` type that inherits from `ExampleClass`.
 The `value` method is redefined to return 0 instead of 42.
 
 Then, similar to doubles, to use a mock in a test, initialize it.
@@ -112,7 +112,7 @@ Then, similar to doubles, to use a mock in a test, initialize it.
 <!-- continue-spec -->
 ```crystal
 it "works" do
-  mock = MockMyClass.new
+  mock = MockExampleClass.new
   mock.value.should eq(0)
 end
 ```
