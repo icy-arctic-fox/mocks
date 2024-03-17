@@ -170,6 +170,51 @@ it "raises an error" do
 end
 ```
 
+### `and_call_original` Modifier
+
+The `and_call_original` modifier causes the stub to call the original implementation of the method.
+The stub effectively becomes a passthrough.
+This is useful for mocks where, by default, it prevents calling the original methods.
+
+```crystal
+private class TestClass
+  getter value = 42
+end
+
+mock MockTestClass < TestClass
+
+it "calls the original method" do
+  my_mock = MockTestClass.new
+
+  # By default, the mock's method cannot be called.
+  expect_raises(Mocks::UnexpectedMessage, /value/) { my_mock.value }
+
+  # Allow the method to be called.
+  my_mock.can receive(:value).and_call_original
+  my_mock.value.should eq(42)
+end
+```
+
+It can be combined with the [`with` modifier](#with-modifier) to call the original method for only specific arguments.
+
+```crystal
+private class TestClass
+  def stringify(value)
+    value.to_s
+  end
+end
+
+mock MockTestClass < TestClass
+
+it "calls the original method" do
+  my_mock = MockTestClass.new
+  my_mock.can receive(:stringify).and_return("foo")
+  my_mock.can receive(:stringify).with(42).and_call_original
+  my_mock.stringify(:xyz).should eq("foo")
+  my_mock.stringify(42).should eq("42")
+end
+```
+
 ### `with` Modifier
 
 The `with` modifier changes the arguments that must be matched to trigger the stub.

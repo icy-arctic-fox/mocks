@@ -125,6 +125,24 @@ Produces the following error:
 Remember to not add the `and_return` modifier when the original method returns a value.
 Without the modifier, the stub returns nil, which may cause a `TypeCast` error.
 
+A simple way to allow a method to be called is by creating a stub using the [`and_call_original` modifier](./stubs.md#and_call_original-modifier).
+
+```crystal
+private class Original
+  def some_method
+    42
+  end
+end
+
+private mock TestMock < Original
+
+it "works" do
+  mock = TestMock.new
+  mock.can receive(:some_method).and_call_original
+  mock.some_method # Works!
+end
+```
+
 ## Default stubs
 
 A mock can have default stubs assigned to it.
