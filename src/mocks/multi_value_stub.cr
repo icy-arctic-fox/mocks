@@ -9,7 +9,7 @@ module Mocks
       super(method_name, arguments)
     end
 
-    def call(args : Arguments, return_type : U.class = U, & : -> U) forall U
+    def call(args : Args, return_type : U.class = U, & : Args -> U) forall Args, U
       value = @values.size == 1 ? @values.first : @values.shift
 
       {% if T <= U %}
