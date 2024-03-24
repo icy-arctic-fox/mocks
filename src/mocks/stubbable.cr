@@ -267,7 +267,7 @@ module Mocks
             {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
           ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{method.free_vars.splat}}{% end %}
-            stubbed_method_body({{behavior}}, as: {{method.return_type || type}}{% if !method.abstract? %}, original: {{original}}{% end %}) {{block}}
+            stubbed_method_body({{behavior}}, as: {{method.return_type || type}}{% if !method.abstract? %}, original: {{original}}, captured_block_name: {{method.block_arg && method.block_arg.name || nil}}{% end %}) {{block}}
           end
         {% end %}
       {% end %}
@@ -331,7 +331,11 @@ module Mocks
     # It should be one of: `:previous_def`, `:super`, or `nil`.
     # Omitting this argument (or passing `nil`) indicates that the original method cannot be invoked.
     # In this case, *behavior* is used instead and must be one of: `:block`, `:unexpected`, or `:abstract`.
-    private macro stubbed_method_body(behavior = :block, *, as type = :infer, original = nil, &block)
+    #
+    # The *captured_block_name* argument is used to retain the name of the captured block.
+    # Without it, the compiler eagerly discards the captured block name.
+    # This changes the usage of `@def` so that the block argument name is preserved.
+    private macro stubbed_method_body(behavior = :block, *, as type = :infer, original = nil, captured_block_name = nil, &block)
       # Record call.
       %call = ::Mocks::Call.capture
       __mocks.add_call(%call)
@@ -351,7 +355,7 @@ module Mocks
       if %stub = __mocks.find_stub(%call)
         # Stub found for invocation.
         %stub.call(%call.arguments, %type) do
-          # Stub found and it yielded to default behavior.
+          # Stub yielded to default behavior.
           stubbed_method_behavior({{original || behavior}}, as: {{type}}) {{block}}
         end
       else
@@ -478,7 +482,7 @@ module Mocks
         # Append the block.
         call += "&#{captured}" if captured
         call += ")"
-        call += " { |*__args| yield *__args }" if !captured && @def.accepts_block?
+        call += " { |*__yield_args| yield *__yield_args }" if !captured && @def.accepts_block?
       %}
       {{call.id}}
     end
