@@ -267,7 +267,10 @@ module Mocks
             {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
             {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
           ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{method.free_vars.splat}}{% end %}
-            stubbed_method_body({{behavior}}, as: {{method.return_type || type}}{% if !method.abstract? %}, original: {{original}}, captured_block_name: {{method.block_arg && method.block_arg.name || nil}}{% end %}) {{block}}
+            stubbed_method_body({{behavior}}, as: {{method.return_type || type}},
+              {% if !method.abstract? %}original: {{original}},{% end %}
+              {% if method.block_arg && method.block_arg.name && method.block_arg.name.size > 0 %}captured_block_name: {{method.block_arg.name}}{% end %}
+            ) {{block}}
           end
         {% end %}
       {% end %}
