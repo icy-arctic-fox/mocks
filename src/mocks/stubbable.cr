@@ -398,6 +398,7 @@ module Mocks
     #
     # The return type of this method matches the *type* passed in.
     # Set *abstract_call* to true to change the error message to indicate an abstract method was "called".
+    @[Stubbed]
     def self.unexpected_method_call(method_name : Symbol, abstract_call : Bool, type : T.class) : T forall T
       unexpected_method_call(method_name, abstract_call, NoReturn)
       {% unless T <= NoReturn %}
@@ -409,6 +410,7 @@ module Mocks
     # Raises an error that indicates an method was called unexpectedly.
     #
     # Set *abstract_call* to true to change the error message to indicate an abstract method was "called".
+    @[Stubbed]
     def self.unexpected_method_call(method_name : Symbol, abstract_call : Bool, type : NoReturn.class) : NoReturn
       if abstract_call
         raise UnexpectedMessage.new(method_name, "Attempted to call abstract method `#{method_name}`")
