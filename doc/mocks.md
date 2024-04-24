@@ -557,3 +557,73 @@ describe Service do
   end
 end
 ```
+
+## Injecting mocks
+
+Mock functionality can be added to existing types.
+This is intended for types outside of the control of the application,
+such as other shards and the standard library.
+
+**NOTE:** Use this feature only when necessary.
+  Types will be modified and differ fundamentally (on a binary level) from non-test code.
+
+The `mock!` keyword is typically used for this feature.
+It takes the type to modify as an argument.
+
+```crystal
+class ExistingClass
+  def value
+    0
+  end
+end
+
+mock! ExistingClass
+
+it "allows stubbing existing types" do
+  obj = ExistingClass.new
+  obj.can receive(:value).and_return(42)
+  obj.value.should eq(42)
+end
+```
+
+Default stubs can be defined in the same way as [`mock`](#default-stubs).
+
+```crystal
+class AnotherClass
+  def value
+    0
+  end
+
+  def another_value
+    :xyz
+  end
+end
+
+mock!(AnotherClass, value: 42) do
+  def another_value
+    :abc
+  end
+end
+
+it "can define default stubs" do
+  obj = AnotherClass.new
+  obj.value.should eq(42)
+  obj.another_value.should eq(:abc)
+end
+```
+
+### Example of Injection
+
+Say part of the application launches a sub-process.
+For testing, that sub-process should be mocked.
+The `mock!` feature can be used on the [standard library's `Process`](https://crystal-lang.org/api/current/Process.html).
+
+```crystal
+mock! Process
+
+it "mocks launching a sub-process" do
+  Process.can receive(:run).and_return(Process::Status.new(0xff00))
+  status = Process.run("echo")
+  status.exit_status.should eq(0xff00)
+end
+```
