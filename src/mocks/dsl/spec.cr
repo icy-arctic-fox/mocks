@@ -18,6 +18,9 @@ module Mocks::Stubbable
   include DSL::CanSyntax
 end
 
+Spec.before_suite { Mocks.enable }
+Spec.after_suite { Mocks.disable }
+
 # Wrap each example with a scope.
 Spec.around_each do |example|
   Mocks::Scope.push do

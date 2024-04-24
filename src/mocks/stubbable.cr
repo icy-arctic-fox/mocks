@@ -339,6 +339,13 @@ module Mocks
     # Without it, the compiler eagerly discards the captured block name.
     # This changes the usage of `@def` so that the block argument name is preserved.
     private macro stubbed_method_body(behavior = :block, *, as type = :infer, original = nil, captured_block_name = nil, &block)
+      {% if original %}
+        # If the original method can be called, invoke it if mocking is disabled.
+        unless ::Mocks.enabled?
+          return stubbed_method_behavior({{original}}, as: {{type}}) {{block}}
+        end
+      {% end %}
+
       # Record call.
       %call = ::Mocks::Call.capture
       __mocks.add_call(%call)
