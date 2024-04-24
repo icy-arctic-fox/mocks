@@ -108,6 +108,8 @@ it "returns multiple values" do
 end
 ```
 
+Using `and_return` with no arguments changes the stub to return nil.
+
 ### Block Modifier
 
 The `receive` method can accept a block.

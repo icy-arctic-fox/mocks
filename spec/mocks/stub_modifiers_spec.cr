@@ -22,6 +22,11 @@ end
 
 describe Mocks::StubModifiers do
   describe "#and_return" do
+    it "produces a stub that returns nil" do
+      stub = create_stub.and_return
+      invoke_stub(stub) { 42.as(Int32?) }.should eq(nil)
+    end
+
     it "produces a stub that returns a static value" do
       stub = create_stub.and_return(42)
       invoke_stub(stub) { 0 }.should eq(42)

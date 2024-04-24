@@ -2,6 +2,11 @@ module Mocks
   # Modifiers used to change the behavior of a stub applied to a method.
   # This makes up part of the fluent interface for the DSL.
   module StubModifiers
+    # Modifies the stub to return nil.
+    def and_return
+      NilStub.new(method_name, arguments)
+    end
+
     # Modifies the stub to return a value.
     def and_return(value)
       ValueStub.new(method_name, value, arguments)
