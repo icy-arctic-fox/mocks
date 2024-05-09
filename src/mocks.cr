@@ -19,4 +19,12 @@ module Mocks
   def self.disable
     @@enabled = false
   end
+
+  # Returns a fake value of the specified type.
+  # This is used to trick the compiler into inferring a specific type.
+  # This macro should only be used where strictly needed,
+  # and the value should _never_ be used.
+  macro fake_value(type)
+    ::Pointer({{type}}).new(0).value
+  end
 end

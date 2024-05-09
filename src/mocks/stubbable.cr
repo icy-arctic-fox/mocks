@@ -417,7 +417,7 @@ module Mocks
       unexpected_method_call(method_name, abstract_call, NoReturn)
       {% unless T <= NoReturn %}
         # Trick compiler into thinking this is the returned type instead of `NoReturn` (from the previous line).
-        ::Pointer(T).new(0).value # This line should not be reached.
+        ::Mocks.fake_value(T) # This line should not be reached.
       {% end %}
     end
 
