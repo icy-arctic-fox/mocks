@@ -20,29 +20,29 @@ describe Mocks::ValueStub do
   describe "#call" do
     it "returns the value" do
       stub = create_stub
-      stub.call(no_args) { 0 }.should eq(42)
+      stub.call(no_args, Int32).should eq(42)
     end
 
     it "raises when return type doesn't match" do
       stub = create_stub
       expect_raises(TypeCastError, /Int32/) do
-        stub.call(no_args) { :xyz }
+        stub.call(no_args, Symbol)
       end
     end
 
     it "supports union types" do
       stub = create_stub
-      stub.call(no_args) { "foo".as(String | Int32) }.should eq(42)
+      stub.call(no_args, String | Int32).should eq(42)
     end
 
     it "supports nilable types" do
       stub = create_stub
-      stub.call(no_args) { 0.as(Int32?) }.should eq(42)
+      stub.call(no_args, Int32?).should eq(42)
     end
 
     it "ignores the value for Nil types" do
       stub = create_stub
-      stub.call(no_args) { nil }.should be_nil
+      stub.call(no_args, Nil).should be_nil
     end
   end
 

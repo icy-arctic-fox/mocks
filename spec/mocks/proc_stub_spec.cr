@@ -17,39 +17,46 @@ describe Mocks::ProcStub do
     stub.arguments.should be(args)
   end
 
+  describe "#handled?" do
+    it "is true" do
+      stub = create_stub
+      stub.handled?.should be_true
+    end
+  end
+
   describe "#call" do
     it "returns the proc's return value" do
       stub = create_stub
-      stub.call(no_args) { 0 }.should eq(42)
+      stub.call(no_args, Int32).should eq(42)
     end
 
     it "raises when return type can't be cast" do
       stub = create_stub
       expect_raises(TypeCastError, /Int32/) do
-        stub.call(no_args) { :xyz }
+        stub.call(no_args, Symbol)
       end
     end
 
     it "supports union types" do
       stub = create_stub
-      stub.call(no_args) { "foo".as(String | Int32) }.should eq(42)
+      stub.call(no_args, String | Int32).should eq(42)
     end
 
     it "supports nilable types" do
       stub = create_stub
-      stub.call(no_args) { 0.as(Int32?) }.should eq(42)
+      stub.call(no_args, Int32?).should eq(42)
     end
 
     it "ignores the value for Nil types" do
       stub = create_stub
-      stub.call(no_args) { nil }.should be_nil
+      stub.call(no_args, Nil).should be_nil
     end
 
     it "calls the proc even though the return value is ignored (nil)" do
       called = false
       stub = Mocks::ProcStub.new(:test_method) { called = true }
       called.should be_false
-      stub.call(no_args) { nil }.should be_nil
+      stub.call(no_args, Nil).should be_nil
       called.should be_true
     end
   end

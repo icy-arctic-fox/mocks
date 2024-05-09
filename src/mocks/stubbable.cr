@@ -364,8 +364,11 @@ module Mocks
 
       if %stub = __mocks.find_stub(%call)
         # Stub found for invocation.
-        %stub.call(%call.arguments, %type) do
-          # Stub yielded to default behavior.
+        if %stub.handled?
+          # Stub indicates that it should be invoked.
+          %stub.call(%call.arguments, %type)
+        else
+          # Stub indicates the default behavior (i.e. the original method) should be called.
           stubbed_method_behavior({{original || behavior}}, as: {{type}}) {{block}}
         end
       else

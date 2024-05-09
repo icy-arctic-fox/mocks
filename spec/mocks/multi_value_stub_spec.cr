@@ -17,42 +17,49 @@ describe Mocks::ValueStub do
     stub.arguments.should be(args)
   end
 
+  describe "#handled?" do
+    it "is true" do
+      stub = create_stub
+      stub.handled?.should be_true
+    end
+  end
+
   describe "#call" do
     it "returns consecutive values" do
       stub = create_stub
-      stub.call(no_args) { 0 }.should eq(1)
-      stub.call(no_args) { 0 }.should eq(2)
-      stub.call(no_args) { 0 }.should eq(3)
+      stub.call(no_args, Int32).should eq(1)
+      stub.call(no_args, Int32).should eq(2)
+      stub.call(no_args, Int32).should eq(3)
     end
 
     it "returns the last value after the others are exhausted" do
       stub = create_stub
       3.times do
-        stub.call(no_args) { 0 }
+        stub.call(no_args, Int32)
       end
-      stub.call(no_args) { 0 }.should eq(3)
+      stub.call(no_args, Int32).should eq(3)
     end
 
     it "raises when return type doesn't match" do
       stub = create_stub
       expect_raises(TypeCastError, /Int32/) do
-        stub.call(no_args) { :xyz }
+        stub.call(no_args, Symbol)
       end
     end
 
     it "supports union types" do
       stub = create_stub
-      stub.call(no_args) { "foo".as(String | Int32) }.should eq(1)
+      stub.call(no_args, String | Int32).should eq(1)
     end
 
     it "supports nilable types" do
       stub = create_stub
-      stub.call(no_args) { 0.as(Int32?) }.should eq(1)
+      stub.call(no_args, Int32?).should eq(1)
     end
 
     it "ignores the value for Nil types" do
       stub = create_stub
-      stub.call(no_args) { nil }.should be_nil
+      stub.call(no_args, Nil).should be_nil
     end
   end
 

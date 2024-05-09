@@ -9,10 +9,10 @@ module Mocks
       super(method_name, arguments)
     end
 
-    def call(args : Args, return_type : U.class = U, & : Args -> U) forall Args, U
+    def call(args : Args, return_type : U.class = Nil) forall Args, U
       raise @exception
       # This unreachable code is intentional (compiler infers return type from yield).
-      yield args # ameba:disable Lint/UnreachableCode
+      Mocks.fake_value(U) # ameba:disable Lint/UnreachableCode
     end
 
     private def with_arguments(arguments : AbstractArgumentsPattern?)

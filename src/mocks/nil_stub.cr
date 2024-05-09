@@ -4,7 +4,7 @@ require "./stub"
 module Mocks
   # Stub that does nothing and returns nil.
   class NilStub < Stub
-    def call(args : Args, return_type : U.class = U, & : Args -> U) forall Args, U
+    def call(args : Args, return_type : U.class = Nil) forall Args, U
       {% if U <= NoReturn %}
         # NoReturn <= Nil is true, an explicit check for it is required.
         raise TypeCastError.new("Attempted to return nil from stub, but method `#{method_name}` must not return")

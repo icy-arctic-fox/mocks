@@ -17,22 +17,29 @@ describe Mocks::NilStub do
     stub.arguments.should be(args)
   end
 
+  describe "#handled?" do
+    it "is true" do
+      stub = create_stub
+      stub.handled?.should be_true
+    end
+  end
+
   describe "#call" do
     it "returns nil" do
       stub = create_stub
-      stub.call(no_args) { nil }.should be_nil
+      stub.call(no_args).should be_nil
     end
 
     it "raises when return type can't be nil" do
       stub = create_stub
       expect_raises(TypeCastError, /nil/) do
-        stub.call(no_args) { 42 }
+        stub.call(no_args, Int32)
       end
     end
 
     it "supports nilable types" do
       stub = create_stub
-      stub.call(no_args) { 42.as(Int32?) }.should be_nil
+      stub.call(no_args, Int32?).should be_nil
     end
   end
 

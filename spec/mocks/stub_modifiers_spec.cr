@@ -12,34 +12,30 @@ private def create_args(arg1)
   Mocks::Arguments.new({arg1: arg1}, nil, Tuple.new, NamedTuple.new)
 end
 
-private def invoke_stub(stub, args = no_args, &)
-  stub.call(args) { yield }
-end
-
-private def invoke_stub(stub, args = no_args)
-  invoke_stub(stub, args) { nil }
+private def invoke_stub(stub, return_type = Nil, args = no_args)
+  stub.call(args, return_type)
 end
 
 describe Mocks::StubModifiers do
   describe "#and_return" do
     it "produces a stub that returns nil" do
       stub = create_stub.and_return
-      invoke_stub(stub) { 42.as(Int32?) }.should eq(nil)
+      invoke_stub(stub, Int32?).should eq(nil)
     end
 
     it "produces a stub that returns a static value" do
       stub = create_stub.and_return(42)
-      invoke_stub(stub) { 0 }.should eq(42)
+      invoke_stub(stub, Int32).should eq(42)
     end
 
     it "produces a stub that returns multiple values" do
       stub = create_stub.and_return(1, 3, 5, 7, 13)
-      invoke_stub(stub) { 0 }.should eq(1)
-      invoke_stub(stub) { 0 }.should eq(3)
-      invoke_stub(stub) { 0 }.should eq(5)
-      invoke_stub(stub) { 0 }.should eq(7)
-      invoke_stub(stub) { 0 }.should eq(13)
-      invoke_stub(stub) { 0 }.should eq(13)
+      invoke_stub(stub, Int32).should eq(1)
+      invoke_stub(stub, Int32).should eq(3)
+      invoke_stub(stub, Int32).should eq(5)
+      invoke_stub(stub, Int32).should eq(7)
+      invoke_stub(stub, Int32).should eq(13)
+      invoke_stub(stub, Int32).should eq(13)
     end
   end
 
@@ -82,7 +78,7 @@ describe Mocks::StubModifiers do
   describe "#and_call_original" do
     it "produces a stub that calls the original method" do
       stub = create_stub.and_call_original
-      invoke_stub(stub) { 42 }.should eq(42)
+      stub.handled?.should be_false
     end
   end
 
@@ -97,7 +93,7 @@ describe Mocks::StubModifiers do
   describe "#with (block)" do
     it "produces a stub that matches arguments and calls a block" do
       stub = create_stub.with(42) { "Test" }
-      invoke_stub(stub) { "" }.should eq("Test")
+      invoke_stub(stub, String).should eq("Test")
       stub.arguments.to_s.should eq("(42)")
     end
   end

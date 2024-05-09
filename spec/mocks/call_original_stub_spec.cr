@@ -17,32 +17,19 @@ describe Mocks::ProcStub do
     stub.arguments.should be(args)
   end
 
+  describe "#handled?" do
+    it "is false" do
+      stub = create_stub
+      stub.handled?.should be_false
+    end
+  end
+
   describe "#call" do
-    it "returns the block's return value" do
+    it "throws an error" do
       stub = create_stub
-      stub.call(no_args) { 42 }.should eq(42)
-    end
-
-    it "supports union types" do
-      stub = create_stub
-      stub.call(no_args) { "foo".as(String | Int32) }.should eq("foo")
-    end
-
-    it "supports nilable types" do
-      stub = create_stub
-      stub.call(no_args) { 42.as(Int32?) }.should eq(42)
-    end
-
-    it "ignores the value for Nil types" do
-      stub = create_stub
-      stub.call(no_args) { nil }.should be_nil
-    end
-
-    it "yields even though the return value is ignored (nil)" do
-      called = false
-      stub = ::Mocks::CallOriginalStub.new(:test_method)
-      stub.call(no_args) { called = true; nil }.should be_nil
-      called.should be_true
+      expect_raises(Exception) do
+        stub.call(no_args)
+      end
     end
   end
 

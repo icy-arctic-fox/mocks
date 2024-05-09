@@ -17,23 +17,30 @@ describe Mocks::ExceptionStub do
     stub.arguments.should be(args)
   end
 
+  describe "#handled?" do
+    it "is true" do
+      stub = create_stub
+      stub.handled?.should be_true
+    end
+  end
+
   describe "#call" do
     it "raises an exception" do
       exception = RuntimeError.new("Test exception")
       stub = create_stub(exception)
       expect_raises(RuntimeError, "Test exception") do
-        stub.call(no_args) { 42 }
+        stub.call(no_args)
       end
     end
 
     it "compiles to the expected type" do
       stub = create_stub
-      typeof(stub.call(no_args) { 42 }).should eq(Int32)
+      typeof(stub.call(no_args, Int32)).should eq(Int32)
     end
 
     it "supports nilable types" do
       stub = create_stub
-      typeof(stub.call(no_args) { 42.as(Int32?) }).should eq(Int32?)
+      typeof(stub.call(no_args, Int32?)).should eq(Int32?)
     end
   end
 

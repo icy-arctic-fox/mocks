@@ -22,11 +22,14 @@ module Mocks
     # Invokes the stub.
     # *args* are the arguments passed to the method call.
     # The *return_type* indicates the type expected to be returned by the stub.
-    # A block must be passed that invokes the original method or fallback behavior.
-    # The type returned by the block must match *return_type*.
-    # The block will be given the arguments as a single argument.
-    # It is the block's responsibility to unpack the arguments if needed.
-    abstract def call(args : Args, return_type : U.class = U, & : Args -> U) forall Args, U
+    # The type returned by this method must match *return_type*.
+    abstract def call(args : Args, return_type : U.class = Nil) forall Args, U
+
+    # Indicates whether the stub can handle a method call.
+    # Returns false if a stubbable object should use its default behavior (i.e. the original method).
+    def handled?
+      true
+    end
 
     # Constructs the string representation of the stub.
     def to_s(io : IO) : Nil

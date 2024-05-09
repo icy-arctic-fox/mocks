@@ -7,7 +7,7 @@ module Mocks
       super(method_name, arguments)
     end
 
-    def call(args : Args, return_type : U.class = U, & : Args -> U) forall Args, U
+    def call(args : Args, return_type : U.class = Nil) forall Args, U
       {% if T <= U %}
         @value
       {% elsif U == Nil %}
