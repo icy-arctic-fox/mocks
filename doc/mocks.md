@@ -457,7 +457,7 @@ and implement its abstract methods ([`#each`](https://crystal-lang.org/api/curre
 <!-- continue-spec -->
 ```crystal
 private mock MockEnumerable < Enumerable(String) do
-  def each(& : String -> )
+  def each(& : String ->) : Nil
     yield "one"
     yield "two"
     yield "three"
@@ -487,7 +487,7 @@ This type of mock is similar to:
 class MockEnumerable
   include Enumerable(String)
 
-  def each(& : String -> )
+  def each(& : String ->) : Nil
     yield "one"
     yield "two"
     yield "three"
