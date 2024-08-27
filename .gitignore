@@ -10,3 +10,6 @@
 
 # Ignore specs generated from docs
 spec/doc/
+
+# Ignore JUnit output
+output.xml
