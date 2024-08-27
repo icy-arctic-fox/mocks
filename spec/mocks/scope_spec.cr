@@ -95,8 +95,12 @@ describe Mocks::Scope do
 
   context "doubles cannot be used in an after_all hook" do
     dbl : TestDouble? = nil
+    ran = false
 
     after_all do
+      # The double will be nil if examples are skipped (dry-run).
+      # `after_all` hooks are run even in dry-run (bug?).
+      next unless ran && dbl
       expect_raises(Exception, /scope/) do
         d = dbl.not_nil!
         d.value.should eq(1)
@@ -106,6 +110,7 @@ describe Mocks::Scope do
     it "(setup)" do
       d = dbl = TestDouble.new
       d.__mocks.add_stub(new_stub)
+      ran = true
     end
   end
 
