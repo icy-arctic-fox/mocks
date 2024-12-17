@@ -2,47 +2,59 @@ name: Crystal CI
 
 on:
   push:
-    branches: ["main"]
   pull_request:
-    branches: ["main"]
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * 6"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    container:
-      image: crystallang/crystal
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install dependencies
-        run: shards install
-      - name: Extract snippets
-        run: spec/generate_specs_for_docs.cr
-      - name: Run tests
-        run: crystal spec
-
   lint:
+    name: Lint
     runs-on: ubuntu-latest
-    container:
-      image: crystallang/crystal
     steps:
-      - uses: actions/checkout@v3
-      - name: Install dependencies
+      - name: Download source code
+        uses: actions/checkout@v4
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: latest
+      - name: Install shards
         run: shards install
-      - name: Check Formatting
+      - name: Format
         run: crystal tool format --check
       - name: Lint
-        run: bin/ameba
+        run: bin/ameba --fail-level warning
 
-  nightly:
-    continue-on-error: true
-    runs-on: ubuntu-latest
-    container:
-      image: crystallang/crystal:nightly
+  test:
+    name: Test
+    strategy:
+      fail-fast: false
+      matrix:
+        crystal: # Test on the latest and previous 2 versions.
+          - latest
+          - nightly
+          - "1.13"
+          - "1.12"
+        os:
+          - ubuntu-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Install dependencies
-        run: shards install
+      - name: Download source code
+        uses: actions/checkout@v4
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: ${{ matrix.crystal }}
+      - name: Cache shards
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/shards
+          key: ${{ runner.os }}-shards-${{ hashFiles('shard.yml') }}
+          restore-keys: ${{ runner.os }}-shards-
+      - name: Install shards
+        run: shards update --ignore-crystal-version
       - name: Extract snippets
         run: spec/generate_specs_for_docs.cr
       - name: Run tests
-        run: crystal spec
+        run: crystal spec --order=random --error-on-warnings
