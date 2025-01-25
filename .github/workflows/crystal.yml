@@ -33,8 +33,8 @@ jobs:
         crystal: # Test on the latest and previous 2 versions.
           - latest
           - nightly
+          - "1.14"
           - "1.13"
-          - "1.12"
         os:
           - ubuntu-latest
           - macos-latest
