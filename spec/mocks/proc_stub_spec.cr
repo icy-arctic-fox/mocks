@@ -11,7 +11,7 @@ end
 describe Mocks::ProcStub do
   it "sets the attributes" do
     args = Mocks::ArgumentsPattern.build(42)
-    stub = Mocks::ProcStub.new(:test_method, ->{ :xyz }, args)
+    stub = Mocks::ProcStub.new(:test_method, -> { :xyz }, args)
 
     stub.method_name.should eq(:test_method)
     stub.arguments.should be(args)
