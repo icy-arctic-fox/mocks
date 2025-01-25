@@ -436,7 +436,7 @@ Abstract methods must be stubbed or an error will be raised.
 ### Testing against mixin modules
 
 One way to use a mock module is for type restrictions that utilized a module as a mixin.
-To give a concrete example, say a method requires an [`Enumerable`](https://crystal-lang.org/api/current/Enumerable.html) object.
+To give a concrete example, say a method requires an [`Enumerable`](https://crystal-lang.org/api/latest/Enumerable.html) object.
 
 ```crystal
 def build_list(elements : Enumerable) : String
@@ -451,8 +451,8 @@ def build_list(elements : Enumerable) : String
 end
 ```
 
-The mock would include [`Enumerable`](https://crystal-lang.org/api/current/Enumerable.html)
-and implement its abstract methods ([`#each`](https://crystal-lang.org/api/current/Enumerable.html#each%28%26%3AT-%3E%29-instance-method)).
+The mock would include [`Enumerable`](https://crystal-lang.org/api/latest/Enumerable.html)
+and implement its abstract methods ([`#each`](https://crystal-lang.org/api/latest/Enumerable.html#each%28%26%3AT-%3E%29-instance-method)).
 
 <!-- continue-spec -->
 ```crystal
@@ -616,7 +616,7 @@ end
 
 Say part of the application launches a sub-process.
 For testing, that sub-process should be mocked.
-The `mock!` feature can be used on the [standard library's `Process`](https://crystal-lang.org/api/current/Process.html).
+The `mock!` feature can be used on the [standard library's `Process`](https://crystal-lang.org/api/latest/Process.html).
 
 ```crystal
 mock! Process
