@@ -623,7 +623,7 @@ mock! Process
 
 it "mocks launching a sub-process" do
   Process.can receive(:run).and_return(Process::Status.new(0xff00))
-  status = Process.run("echo")
-  status.exit_status.should eq(0xff00)
+  outcome = Process.run("echo")
+  outcome.system_exit_status.should eq(0xff00)
 end
 ```
