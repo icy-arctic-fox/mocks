@@ -200,9 +200,9 @@ module Mocks
            variants.each do |(type, receiver)|
              type.methods.each do |method|
                # Skip methods overridden by a sub-type to prevent unnecessary redefinitions.
-               unless definitions.any? do |d|
-                        r = !!d[:receiver]
-                        m = d[:method]
+               unless definitions.any? do |definition|
+                        r = !!definition[:receiver]
+                        m = definition[:method]
                         # Ensure instance and class methods with the same signature don't collide.
                         r == !!receiver &&
                         # Method objects can't be directly compared.
@@ -236,8 +236,8 @@ module Mocks
          end
 
          # Filter out methods that should be skipped, are incompatible, or unsafe to stub.
-         definitions = definitions.reject do |d|
-           method = d[:method]
+         definitions = definitions.reject do |definition|
+           method = definition[:method]
            ::Mocks::Stubbable::UNSAFE_METHODS.includes?(method.name.symbolize) ||
              method.name.starts_with?("__") ||
              method.annotation(Primitive) || method.annotation(::Mocks::Stubbed)
@@ -246,12 +246,12 @@ module Mocks
          if name
            # Only redefine methods with the specified name.
            definitions = if name.is_a?(Call) && name.receiver
-                           definitions.select do |d|
-                             d[:method].name == name.name && d[:receiver]
+                           definitions.select do |definition|
+                             definition[:method].name == name.name && d[:receiver]
                            end
                          else
-                           definitions.select do |d|
-                             d[:method].name == name.id
+                           definitions.select do |definition|
+                             definition[:method].name == name.id
                            end
                          end
          end %}

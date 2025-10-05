@@ -42,11 +42,11 @@ module Mocks
     end
 
     # Checks if the stub can be used for a method call.
-    def ===(call : Call) : Bool
-      return false unless method_name == call.method_name
+    def ===(other : Call) : Bool
+      return false unless method_name == other.method_name
       return true unless args = @arguments # Match any arguments.
 
-      args === call.arguments
+      args === other.arguments
     end
   end
 end
