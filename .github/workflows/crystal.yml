@@ -31,10 +31,10 @@ jobs:
       fail-fast: false
       matrix:
         crystal: # Test on the latest and previous 2 versions.
-          - latest
           - nightly
-          - "1.14"
-          - "1.13"
+          - latest # 1.17
+          - "1.16"
+          - "1.15"
         os:
           - ubuntu-latest
           - macos-latest
