@@ -1,3 +1,13 @@
+Documentation/DocumentationAdmonition:
+  Admonitions:
+    - TODO
+    - FIXME
+    - BUG
+    - OPTIMIZE
+  Enabled: true
+  Severity: Convention
+# TODO: Address these issues and re-enable the check.
+
 # Double and mock definitions aren't recognized as macros.
 # These "useless" variable assignments are very much used.
 Lint/UselessAssign:
@@ -12,3 +22,7 @@ Lint/NotNil:
   Excluded:
     - spec/mocks/scope_spec.cr
   Enabled: true
+
+# Some files under spec/ are used as helpers or test fixtures.
+Lint/SpecFilename:
+  Enabled: false
