@@ -11,7 +11,7 @@ module Mocks
   # NOTE: This approach does not work for mutable values, and their use is generally discouraged.
   #   This also implies that two separate values with the same content will be tracked as the same object.
   #
-  # See: https://crystal-lang.org/reference/1.7/syntax_and_semantics/structs.html
+  # See: https://crystal-lang.org/reference/latest/syntax_and_semantics/structs.html
   class Registry
     # Entry keys consist of two elements - the type ID and it's location in memory.
     # For value-types, its byte-representation is stored in a pool and that location is used.

@@ -23,7 +23,7 @@ end
 
 A double can be defined as private to the file it's contained in by adding the `private` visibility modifier.
 This is *highly recommended* for specs since doubles with the same name will collide.
-See [Private top-level types](https://crystal-lang.org/reference/1.10/syntax_and_semantics/visibility.html#private-top-level-types) from the Crystal docs.
+See [Private top-level types](https://crystal-lang.org/reference/latest/syntax_and_semantics/visibility.html#private-top-level-types) from the Crystal docs.
 
 ```crystal
 private double MyDouble

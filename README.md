@@ -2,7 +2,7 @@
 
 A utility library providing mock functionality in [Crystal](https://crystal-lang.org).
 Intended for testing, but can be used anywhere.
-Integrates seamlessly with Crystal's default [Spec](https://crystal-lang.org/reference/1.10/guides/testing.html) library.
+Integrates seamlessly with Crystal's default [Spec](https://crystal-lang.org/reference/latest/guides/testing.html) library.
 Inspired by [RSpec's mocks](https://rspec.info/features/3-12/rspec-mocks/).
 
 ## Installation
@@ -50,7 +50,7 @@ However, stubs can be defined and used anywhere, even after initializing a mock 
 
 ### Spec
 
-The following instructions work for Crystal's Spec [Spec](https://crystal-lang.org/reference/1.10/guides/testing.html) library.
+The following instructions work for Crystal's Spec [Spec](https://crystal-lang.org/reference/latest/guides/testing.html) library.
 
 Add the following to your `spec_helper.cr`:
 
@@ -258,7 +258,7 @@ Produces the error:
 
     Error: can't extend non-abstract struct MyStruct
 
-Crystal does not allow [extending concrete structs](https://crystal-lang.org/reference/1.10/syntax_and_semantics/structs.html#inheritance).
+Crystal does not allow [extending concrete structs](https://crystal-lang.org/reference/latest/syntax_and_semantics/structs.html#inheritance).
 There isn't a workaround at this time.
 See issue [#2](https://github.com/icy-arctic-fox/mocks/issues/2) for details.
 
