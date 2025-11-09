@@ -62,7 +62,10 @@ end
 A mock type redefines all methods from its original type to support stubs.
 Unlike [doubles](./doubles.md#stubbing-doubles), no methods need to be defined in advance to use them.
 Mocks are strict by default.
-Aside from a few standard methods, all methods in the mock will raise an `Mocks::UnexpectedMessage` error if they're called.
+All non-private methods, aside from a few, will raise an `Mocks::UnexpectedMessage` error if they're called.
+
+**NOTE:** Some standard methods, such as `to_s` are allowed.
+For a full list, see [standard_stubs.cr](../src/mocks/standard_stubs.cr).
 
 <!-- no-spec -->
 ```crystal
@@ -74,7 +77,7 @@ end
 
 private mock TestMock < Original
 
-it "works" do
+it "does not work" do
   mock = TestMock.new
   mock.some_method # Error!
 end

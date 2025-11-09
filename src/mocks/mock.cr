@@ -36,6 +36,7 @@ module Mocks
                 class {{type}}
                   include {{parent_name}}
               {% else %}
+                @[::Mocks::DefaultBehavior(:private)]
                 {{type_keyword.id}} {{type}} < {{parent_name}}
               {% end %}
                 include ::Mocks::Stubbable::Automatic
@@ -161,6 +162,7 @@ module Mocks
 
           {% begin %}
             @[::Mocks::Stubbed]
+            @[::Mocks::DefaultBehavior(:private)]
             {{type_keyword.id}} {{type}}{% if type.superclass %} < {{type.superclass}}{% end %}
               {% unless type.annotation(::Mocks::Stubbed) %}
                 include ::Mocks::Stubbable::Automatic
@@ -182,7 +184,8 @@ module Mocks
     # All methods of the type become stubbable.
     #
     # WARNING: Injecting mock functionality into a type will affect all instances of that type.
-    #   Most methods on the type will raise `UnexpectedMessage` unless they are stubbed.
+    #   Most public methods on the type will raise `UnexpectedMessage` unless they are stubbed.
+    #   Private methods will not be affected but can still be stubbed.
     #
     # A simple mock of an existing type can be defined with:
     # ```

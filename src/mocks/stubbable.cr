@@ -126,7 +126,8 @@ module Mocks
 
       {% else %}
         # Stub all methods matching the specified name.
-        stub_existing {{method}}, {{(anno = @type.annotation(::Mocks::DefaultBehavior)) && anno[0] == :original}}
+        stub_existing {{method}}, {{(anno = @type.annotation(::Mocks::DefaultBehavior)) &&
+                                      (anno[0] == :private ? :private : anno[0] == :original)}}
       {% end %}
     end
 
@@ -136,7 +137,8 @@ module Mocks
     # Only methods with a specific name can be redefined by providing a *name*.
     #
     # If *original* is true, then the method's original implementation is called when there are no stubs defined.
-    # This is false By default, which raises `UnexpectedMessage` instead.
+    # This is false by default, which raises `UnexpectedMessage` instead.
+    # Private methods can be allowed to be called by setting *original* to `:private`.
     #
     # A block can be provided, which gives the default implementation.
     private macro stub_existing(name = nil, original = false, &block)
@@ -156,6 +158,8 @@ module Mocks
                         :block
                       elsif method.abstract?
                         :abstract
+                      elsif original == :private
+                        method.visibility == :private ? :previous_def : :unexpected
                       elsif original
                         :previous_def
                       else
@@ -175,6 +179,8 @@ module Mocks
          definitions += @type.class.methods.map do |method|
            behavior = if block
                         :block
+                      elsif original == :private
+                        method.visibility == :private ? :previous_def : :unexpected
                       elsif original
                         :previous_def
                       else
@@ -218,6 +224,8 @@ module Mocks
                               :block
                             elsif method.abstract?
                               :abstract
+                            elsif original == :private
+                              method.visibility == :private ? :super : :unexpected
                             elsif original
                               :super
                             else

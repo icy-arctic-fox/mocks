@@ -7,6 +7,7 @@ module Mocks
   # which is a symbol identifying the behavior.
   #
   # - `:original` - Call the original method.
+  # - `:private` - Call the original method if it is private, otherwise raise an `UnexpectedMessage` error.
   # - `:unexpected` - Raise an `UnexpectedMessage` error (default).
   annotation DefaultBehavior
   end

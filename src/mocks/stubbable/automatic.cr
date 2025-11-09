@@ -15,11 +15,8 @@ module Mocks
       extend ::Mocks::Stubbable
 
       macro finished
-        {% if (anno = @type.annotation(::Mocks::DefaultBehavior)) && anno[0] == :original %}
-          stub_existing nil, true
-        {% else %}
-          stub_existing
-        {% end %}
+        stub_existing nil, {{(anno = @type.annotation(::Mocks::DefaultBehavior)) &&
+                               (anno[0] == :private ? :private : anno[0] == :original)}}
       end
 
       # Automatically apply to all sub-types.
