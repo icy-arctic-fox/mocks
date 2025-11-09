@@ -247,7 +247,7 @@ module Mocks
            # Only redefine methods with the specified name.
            definitions = if name.is_a?(Call) && name.receiver
                            definitions.select do |definition|
-                             definition[:method].name == name.name && d[:receiver]
+                             definition[:method].name == name.name && definition[:receiver]
                            end
                          else
                            definitions.select do |definition|
