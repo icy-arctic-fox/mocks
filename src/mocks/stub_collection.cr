@@ -12,7 +12,7 @@ module Mocks
     # Applies the stubs in the collection to a registry proxy.
     def apply(proxy) : Nil
       {% for name in T.keys %}
-        proxy.add_stub(ValueStub.new({{name.symbolize}}, @stubs[{{name.symbolize}}]))
+        proxy.add_stub(ValueStub.new({{ name.symbolize }}, @stubs[{{ name.symbolize }}]))
       {% end %}
     end
   end

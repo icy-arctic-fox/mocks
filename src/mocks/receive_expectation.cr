@@ -69,7 +69,7 @@ module Mocks
     end
 
     private def with_stub(& : Stub -> Stub)
-      {{@type.name(generic_args: false)}}.new(yield @stub)
+      {{ @type.name(generic_args: false) }}.new(yield @stub)
     end
 
     private def with_count(count)

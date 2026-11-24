@@ -18,7 +18,7 @@ module Mocks
     delegate __mocks, to: @object
 
     stub_existing do
-      delegate_current_call({{"@object." + @def.name.stringify}})
+      delegate_current_call({{ "@object." + @def.name.stringify }})
     end
 
     def initialize(@object : T)
@@ -38,7 +38,7 @@ module Mocks
           # Call original method if it exists.
           {% if T.has_method?(@def.name.stringify) ||
                   @type.ancestors.any? &.has_method?(@def.name.stringify) %}
-            delegate_current_call({{"@object." + @def.name.stringify}})
+            delegate_current_call({{ "@object." + @def.name.stringify }})
           {% else %}
             self
           {% end %}

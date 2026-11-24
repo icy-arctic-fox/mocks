@@ -480,7 +480,7 @@ describe Mocks::Arguments do
 
       it "uses the 'inspect' format" do
         arguments = create_test_args({arg: "foo"})
-        arguments.to_s.should eq(%[("foo")])
+        arguments.to_s.should eq(%(("foo")))
       end
     end
 
@@ -492,7 +492,7 @@ describe Mocks::Arguments do
 
       it "uses the 'inspect' format" do
         arguments = create_test_args({arg: "foo"}, splat: {:x})
-        arguments.to_s.should eq(%[("foo", :x)])
+        arguments.to_s.should eq(%(("foo", :x)))
       end
     end
 
@@ -504,7 +504,7 @@ describe Mocks::Arguments do
 
       it "uses the 'inspect' format" do
         arguments = create_test_args(splat: {"foo"})
-        arguments.to_s.should eq(%[("foo")])
+        arguments.to_s.should eq(%(("foo")))
       end
     end
 
@@ -516,7 +516,7 @@ describe Mocks::Arguments do
 
       it "uses the 'inspect' format" do
         arguments = create_test_args(kwargs: {extra: "value"})
-        arguments.to_s.should eq(%[(extra: "value")])
+        arguments.to_s.should eq(%((extra: "value")))
       end
     end
 
@@ -528,7 +528,7 @@ describe Mocks::Arguments do
 
       it "uses the 'inspect' format" do
         arguments = create_test_args({arg1: "foo"}, kwargs: {extra: :xyz})
-        arguments.to_s.should eq(%[("foo", extra: :xyz)])
+        arguments.to_s.should eq(%(("foo", extra: :xyz)))
       end
     end
 
@@ -540,7 +540,7 @@ describe Mocks::Arguments do
 
       it "uses the 'inspect' format" do
         arguments = create_test_args(splat: {"foo"}, kwargs: {extra: :xyz})
-        arguments.to_s.should eq(%[("foo", extra: :xyz)])
+        arguments.to_s.should eq(%(("foo", extra: :xyz)))
       end
     end
 
@@ -552,7 +552,7 @@ describe Mocks::Arguments do
 
       it "uses the 'inspect' format" do
         arguments = create_test_args({arg1: "foo"}, splat: {:xyz}, kwargs: {extra: nil})
-        arguments.to_s.should eq(%[("foo", :xyz, extra: nil)])
+        arguments.to_s.should eq(%(("foo", :xyz, extra: nil)))
       end
     end
   end

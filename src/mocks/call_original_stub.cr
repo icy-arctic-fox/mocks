@@ -13,7 +13,7 @@ module Mocks
     end
 
     private def with_arguments(arguments : AbstractArgumentsPattern?)
-      {{@type.name}}.new(method_name, arguments)
+      {{ @type.name }}.new(method_name, arguments)
     end
   end
 end

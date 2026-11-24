@@ -38,7 +38,7 @@ module Mocks
       # Avoid producing a stub where each value is a union (don't use `#each`).
       # This is done by capturing the NamedTuple's type (and keys) via Methods.
       {% for key in Methods.keys %}
-        proxy.add_stub(ValueStub.new({{key.symbolize}}, @values[{{key.symbolize}}]))
+        proxy.add_stub(ValueStub.new({{ key.symbolize }}, @values[{{ key.symbolize }}]))
       {% end %}
     end
 
@@ -78,11 +78,11 @@ module Mocks
       {% verbatim do %}
         {% if Methods.keys.includes?(@def.name) %}
           stubbed_method_body(as: :infer) do
-            @values[{{@def.name.symbolize}}]
+            @values[{{ @def.name.symbolize }}]
           end
         {% else %}
           return self if @null_object
-          raise UnexpectedMessage.new({{@def.name.symbolize}})
+          raise UnexpectedMessage.new({{ @def.name.symbolize }})
         {% end %}
       {% end %}
     end

@@ -107,27 +107,27 @@ module Mocks
 
       {% if method.is_a?(Def) %}
         # Default implementation.
-        {% unless method.abstract? %}{{visibility.id if visibility != :public}} {{method}}{% end %}
+        {% unless method.abstract? %}{{ visibility.id if visibility != :public }} {{ method }}{% end %}
 
         # Stub implementation.
         # FIXME: Reuse method signature generation code.
         {% begin %}
           @[::Mocks::Stubbed]
-          {{visibility.id if visibility != :public}} def {% if method.receiver %}{{method.receiver}}.{% end %}{{method.name}}({% for arg, i in method.args %}
-            {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
-            {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
-          ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{method.free_vars.splat}}{% end %}
-            stubbed_method_body({{method.abstract? ? :abstract : :previous_def}}, as: {{method.return_type || :infer}})
+          {{ visibility.id if visibility != :public }} def {% if method.receiver %}{{ method.receiver }}.{% end %}{{ method.name }}({% for arg, i in method.args %}
+            {% if i == method.splat_index %}*{% end %}{{ arg }}, {% end %}{% if method.double_splat %}**{{ method.double_splat }}, {% end %}
+            {% if method.block_arg %}&{{ method.block_arg }}{% elsif method.accepts_block? %}&{% end %}
+          ){% if method.return_type %} : {{ method.return_type }}{% end %}{% unless method.free_vars.empty? %} forall {{ method.free_vars.splat }}{% end %}
+            stubbed_method_body({{ method.abstract? ? :abstract : :previous_def }}, as: {{ method.return_type || :infer }})
           end
         {% end %}
 
       {% elsif method.is_a?(TypeDeclaration) || method.is_a?(Assign) %}
-        stub_any_args {{method}}
+        stub_any_args {{ method }}
 
       {% else %}
         # Stub all methods matching the specified name.
-        stub_existing {{method}}, {{(anno = @type.annotation(::Mocks::DefaultBehavior)) &&
-                                      (anno[0] == :private ? :private : anno[0] == :original)}}
+        stub_existing {{ method }}, {{(anno = @type.annotation(::Mocks::DefaultBehavior)) &&
+                                        (anno[0] == :private ? :private : anno[0] == :original)}}
       {% end %}
     end
 
@@ -271,14 +271,14 @@ module Mocks
            visibility = method.visibility %}
         {% begin %}
           @[::Mocks::Stubbed]
-          {{visibility.id if visibility != :public}} def {{"self.".id if receiver}}{{method.name}}({% for arg, i in method.args %}
-            {% if i == method.splat_index %}*{% end %}{{arg}}, {% end %}{% if method.double_splat %}**{{method.double_splat}}, {% end %}
-            {% if method.block_arg %}&{{method.block_arg}}{% elsif method.accepts_block? %}&{% end %}
-          ){% if method.return_type %} : {{method.return_type}}{% end %}{% unless method.free_vars.empty? %} forall {{method.free_vars.splat}}{% end %}
-            stubbed_method_body({{behavior}}, as: {{method.return_type || type}},
-              {% if !method.abstract? %}original: {{original}},{% end %}
-              {% if method.block_arg && method.block_arg.name && method.block_arg.name.size > 0 %}captured_block_name: {{method.block_arg.name}}{% end %}
-            ) {{block}}
+          {{ visibility.id if visibility != :public }} def {{ "self.".id if receiver }}{{ method.name }}({% for arg, i in method.args %}
+            {% if i == method.splat_index %}*{% end %}{{ arg }}, {% end %}{% if method.double_splat %}**{{ method.double_splat }}, {% end %}
+            {% if method.block_arg %}&{{ method.block_arg }}{% elsif method.accepts_block? %}&{% end %}
+          ){% if method.return_type %} : {{ method.return_type }}{% end %}{% unless method.free_vars.empty? %} forall {{ method.free_vars.splat }}{% end %}
+            stubbed_method_body({{ behavior }}, as: {{ method.return_type || type }},
+              {% if !method.abstract? %}original: {{ original }},{% end %}
+              {% if method.block_arg && method.block_arg.name && method.block_arg.name.size > 0 %}captured_block_name: {{ method.block_arg.name }}{% end %}
+            ) {{ block }}
           end
         {% end %}
       {% end %}
@@ -311,20 +311,20 @@ module Mocks
            raise "Unexpected stub syntax"
          end %}
       @[::Mocks::Stubbed]
-      def {{name}}(*args, **kwargs){% if type != :infer %} : {{type}}{% end %}
+      def {{ name }}(*args, **kwargs){% if type != :infer %} : {{ type }}{% end %}
         {% if value.is_a?(Nop) %}
-          stubbed_method_body(:unexpected, as: {{type}})
+          stubbed_method_body(:unexpected, as: {{ type }})
         {% else %}
-          stubbed_method_body(as: {{type}}) { {{value}} }
+          stubbed_method_body(as: {{ type }}) { {{ value }} }
         {% end %}
       end
 
       @[::Mocks::Stubbed]
-      def {{name}}(*args, **kwargs, &){% if type != :infer %} : {{type}}{% end %}
+      def {{ name }}(*args, **kwargs, &){% if type != :infer %} : {{ type }}{% end %}
         {% if value.is_a?(Nop) %}
-          stubbed_method_body(:unexpected, as: {{type}})
+          stubbed_method_body(:unexpected, as: {{ type }})
         {% else %}
-          stubbed_method_body(as: {{type}}) { {{value}} }
+          stubbed_method_body(as: {{ type }}) { {{ value }} }
         {% end %}
       end
     end
@@ -350,7 +350,7 @@ module Mocks
       {% if original %}
         # If the original method can be called, invoke it if mocking is disabled.
         unless ::Mocks.enabled?
-          return stubbed_method_behavior({{original}}, as: {{type}}) {{block}}
+          return stubbed_method_behavior({{ original }}, as: {{ type }}) {{ block }}
         end
       {% end %}
 
@@ -359,13 +359,13 @@ module Mocks
       __mocks.add_call(%call)
 
       %type = {% if type == :previous_def || type == :super %}
-                typeof(adjusted_previous_def({{type}}))
+                typeof(adjusted_previous_def({{ type }}))
               {% elsif type != :infer %}
-                {{type.id}}
+                {{ type.id }}
               {% elsif behavior == :block %} # From here on, type == :infer
-                typeof({{yield}})
+                typeof({{ yield }})
               {% elsif behavior == :previous_def || behavior == :super %}
-                typeof(adjusted_previous_def({{behavior}}))
+                typeof(adjusted_previous_def({{ behavior }}))
               {% else %}
                 ::Nil # behavior == :unexpected || :abstract
               {% end %}
@@ -377,11 +377,11 @@ module Mocks
           %stub.call(%call.arguments, %type)
         else
           # Stub indicates the default behavior (i.e. the original method) should be called.
-          stubbed_method_behavior({{original || behavior}}, as: {{type}}) {{block}}
+          stubbed_method_behavior({{ original || behavior }}, as: {{ type }}) {{ block }}
         end
       else
         # No stub found, use default behavior.
-        stubbed_method_behavior({{behavior}}, as: {{type}}) {{block}}
+        stubbed_method_behavior({{ behavior }}, as: {{ type }}) {{ block }}
       end
     end
 
@@ -402,18 +402,18 @@ module Mocks
     # This is typically used with *behavior* set to `:unexpected`.
     private macro stubbed_method_behavior(behavior = :block, *, as type = :infer)
       {% if behavior == :block %}
-        {{yield}}
+        {{ yield }}
       {% elsif behavior == :previous_def || behavior == :super %}
-        adjusted_previous_def({{behavior}})
+        adjusted_previous_def({{ behavior }})
       {% elsif behavior == :unexpected || behavior == :abstract %}
         {% if type == :previous_def || type == :super %}
-          %type = typeof(adjusted_previous_def({{type}}))
+          %type = typeof(adjusted_previous_def({{ type }}))
         {% elsif type != :infer %}
-          %type = {{type.id}}
+          %type = {{ type.id }}
         {% else %}
           %type = ::NoReturn
         {% end %}
-        ::Mocks::Stubbable.unexpected_method_call({{@def.name.symbolize}}, {{behavior == :abstract}}, %type)
+        ::Mocks::Stubbable.unexpected_method_call({{ @def.name.symbolize }}, {{ behavior == :abstract }}, %type)
       {% else %}
         {% raise "Unknown stubbed method body behavior: #{behavior}" %}
       {% end %}
@@ -453,9 +453,9 @@ module Mocks
     # See: https://github.com/crystal-lang/crystal/issues/13176
     private macro adjusted_previous_def(keyword = :previous_def)
       {% if @def.accepts_block? || @def.splat_index || @def.double_splat %}
-        delegate_current_call({{keyword}})
+        delegate_current_call({{ keyword }})
       {% else %}
-        {{keyword.id}}
+        {{ keyword.id }}
       {% end %}
     end
 
@@ -496,8 +496,6 @@ module Mocks
         # Otherwise, use `yield` to forward the block.
         captured = if @def.block_arg && @def.block_arg.name && @def.block_arg.name.size > 0
                      @def.block_arg.name
-                   else
-                     nil
                    end
 
         # Append the block.
@@ -505,7 +503,7 @@ module Mocks
         call += ")"
         call += " { |*__yield_args| yield *__yield_args }" if !captured && @def.accepts_block?
       %}
-      {{call.id}}
+      {{ call.id }}
     end
   end
 end

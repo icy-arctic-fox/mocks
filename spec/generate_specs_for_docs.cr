@@ -32,19 +32,19 @@ end
 
 def wrap_snippet_with_location(snippet, file, line = 1, char = 1)
   <<-END_SNIPPET
-  #<loc:push>#<loc:"#{file}",#{line},#{char}>
-  #{snippet}
-  #<loc:pop>
-  END_SNIPPET
+    #<loc:push>#<loc:"#{file}",#{line},#{char}>
+    #{snippet}
+    #<loc:pop>
+    END_SNIPPET
 end
 
 def fake_spectator(snippet)
   <<-END_SNIPPET
-  require "../fake_spectator"
-  include FakeSpectator
+    require "../fake_spectator"
+    include FakeSpectator
 
-  #{snippet}
-  END_SNIPPET
+    #{snippet}
+    END_SNIPPET
 end
 
 files.each do |file|

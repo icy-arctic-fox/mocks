@@ -86,22 +86,22 @@ module Mocks
           # Check positional arguments.
           {% for key, i in Args.keys %}
             {% if named_positional_keys.includes?(key) %}
-              return false unless compare(@named[{{key.symbolize}}], other.args[{{key.symbolize}}])
+              return false unless compare(@named[{{ key.symbolize }}], other.args[{{ key.symbolize }}])
             {% elsif i < Positional.size %}
-              return false unless compare(@positional[{{i}}], other.args[{{key.symbolize}}])
+              return false unless compare(@positional[{{ i }}], other.args[{{ key.symbolize }}])
             {% end %}
           {% end %}
 
           {% if Splat != Nil %}
             # Check splat arguments.
             {% for i in (0...Splat.size) %}
-              return false unless compare(@positional[{{i + splat_offset}}], other.splat[{{i}}])
+              return false unless compare(@positional[{{ i + splat_offset }}], other.splat[{{ i }}])
             {% end %}
           {% end %}
 
           # Check keyword arguments.
           {% for key in keyword_argument_keys %}
-            return false unless compare(@named[{{key.symbolize}}], other.kwargs[{{key.symbolize}}])
+            return false unless compare(@named[{{ key.symbolize }}], other.kwargs[{{ key.symbolize }}])
           {% end %}
 
           # Comparison of all arguments passed.

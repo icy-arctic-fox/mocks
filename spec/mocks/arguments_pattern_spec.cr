@@ -62,7 +62,7 @@ describe Mocks::ArgumentsPattern do
 
       it "uses the 'inspect' format" do
         pattern = Mocks::ArgumentsPattern.build("foo", nil)
-        pattern.to_s.should eq(%[("foo", nil)])
+        pattern.to_s.should eq(%(("foo", nil)))
       end
     end
 
@@ -74,7 +74,7 @@ describe Mocks::ArgumentsPattern do
 
       it "uses the 'inspect' format" do
         pattern = Mocks::ArgumentsPattern.build(value: "foo", nil: nil)
-        pattern.to_s.should eq(%[(value: "foo", nil: nil)])
+        pattern.to_s.should eq(%((value: "foo", nil: nil)))
       end
     end
 
@@ -86,7 +86,7 @@ describe Mocks::ArgumentsPattern do
 
       it "uses the 'inspect' format" do
         pattern = Mocks::ArgumentsPattern.build("foo", :xyz, 42, value: "bar", nil: nil)
-        pattern.to_s.should eq(%[("foo", :xyz, 42, value: "bar", nil: nil)])
+        pattern.to_s.should eq(%(("foo", :xyz, 42, value: "bar", nil: nil)))
       end
     end
   end
@@ -389,7 +389,7 @@ describe Mocks::ArgumentsPattern do
 
       it "returns false for a pattern with matching arguments, but more of them" do
         arguments = create_test_args("foo", 42, :xyz)
-        pattern = Mocks::ArgumentsPattern.build(arg1: "foo", arg2: 42, arg3: :xyz, arg4: %[bar])
+        pattern = Mocks::ArgumentsPattern.build(arg1: "foo", arg2: 42, arg3: :xyz, arg4: %(bar))
 
         (pattern === arguments).should be_false
       end
@@ -491,7 +491,7 @@ describe Mocks::ArgumentsPattern do
 
       it "returns false for a pattern with matching arguments, but more of them" do
         arguments = create_test_args(a: "foo", b: 42, c: :xyz)
-        pattern = Mocks::ArgumentsPattern.build(a: "foo", b: 42, c: :xyz, d: %[bar])
+        pattern = Mocks::ArgumentsPattern.build(a: "foo", b: 42, c: :xyz, d: %(bar))
 
         (pattern === arguments).should be_false
       end

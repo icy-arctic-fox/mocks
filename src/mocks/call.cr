@@ -50,7 +50,7 @@ module Mocks
     # Creates a method call containing from the current invocation.
     macro capture
       %args = ::Mocks::Arguments.capture
-      {{@type.name(generic_args: false)}}.new({{@def.name.symbolize}}, %args)
+      {{ @type.name(generic_args: false) }}.new({{ @def.name.symbolize }}, %args)
     end
 
     def match?(stub : Stub) : Bool

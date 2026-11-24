@@ -25,6 +25,6 @@ module Mocks
   # This macro should only be used where strictly needed,
   # and the value should _never_ be used.
   macro fake_value(type)
-    ::Pointer({{type}}).new(0).value
+    ::Pointer({{ type }}).new(0).value
   end
 end

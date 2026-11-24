@@ -69,19 +69,19 @@ describe Mocks::LazyDouble do
   it "allows calling standard methods by default" do
     double = Mocks::LazyDouble.new
 
-    (double == double).should eq(true), "`double == double` was not true"
-    (double == nil).should eq(false), "`double == nil` was not false"
-    (double == "foo").should eq(false), "`double == \"foo\"` was not false"
+    (double == double).should be_true, "`double == double` was not true"
+    (double == nil).should be_false, "`double == nil` was not false"
+    (double == "foo").should be_false, "`double == \"foo\"` was not false"
 
-    (double === double).should eq(true), "`double === double` was not true"
-    (double === nil).should eq(false), "`double === nil` was not false"
-    (double === "foo").should eq(false), "`double === \"foo\" was not false"
+    (double === double).should be_true, "`double === double` was not true"
+    (double === nil).should be_false, "`double === nil` was not false"
+    (double === "foo").should be_false, "`double === \"foo\" was not false"
 
     double.to_s.should contain("Mocks::LazyDouble"), "`double.to_s` should contain its type name"
     double.inspect.should contain(double.class.name), "`double.inspect` should contain its type name"
 
-    double.same?(double).should eq(true), "`double.same?(mock)` was not true"
-    double.same?(nil).should eq(false), "`double.same?(nil)` was not false"
-    double.same?("foo").should eq(false), "`double.same?(\"foo\")` was not false"
+    double.same?(double).should be_true, "`double.same?(mock)` was not true"
+    double.same?(nil).should be_false, "`double.same?(nil)` was not false"
+    double.same?("foo").should be_false, "`double.same?(\"foo\")` was not false"
   end
 end

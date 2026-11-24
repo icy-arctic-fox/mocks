@@ -8,7 +8,7 @@ module Mocks
     # This produces the standard `mock` keyword
     # that accepts default stubs from the keyword arguments and block body.
     macro def_define_mock(name)
-      macro {{name.id}}(type, **stubs, &block)
+      macro {{ name.id }}(type, **stubs, &block)
         {% verbatim do %}
           {% if type.is_a?(Call) && type.name == :<.id %}
             {% parent_name = type.args.first
@@ -33,20 +33,20 @@ module Mocks
             {% begin %}
               {% if type_keyword == :module %}
                 @[::Mocks::DefaultBehavior(:original)]
-                class {{type}}
-                  include {{parent_name}}
+                class {{ type }}
+                  include {{ parent_name }}
               {% else %}
                 @[::Mocks::DefaultBehavior(:private)]
-                {{type_keyword.id}} {{type}} < {{parent_name}}
+                {{ type_keyword.id }} {{ type }} < {{ parent_name }}
               {% end %}
                 include ::Mocks::Stubbable::Automatic
                 include ::Mocks::StandardStubs
 
                 {% for name, value in stubs %}
-                  stub_existing({{name}}) { {{value}} }
+                  stub_existing({{ name }}) { {{ value }} }
                 {% end %}
 
-                {{block.body if block}}
+                {{ block.body if block }}
               end
             {% end %}
 
@@ -147,7 +147,7 @@ module Mocks
     # This produces the standard `mock!` keyword
     # that accepts default stubs from the keyword arguments and block body.
     macro def_inject_mock(name)
-      macro {{name.id}}(type, **stubs, &block)
+      macro {{ name.id }}(type, **stubs, &block)
         {% verbatim do %}
           {% type = parse_type(type.id.stringify).resolve
              type_keyword = if type.class?
@@ -163,17 +163,17 @@ module Mocks
           {% begin %}
             @[::Mocks::Stubbed]
             @[::Mocks::DefaultBehavior(:private)]
-            {{type_keyword.id}} {{type}}{% if type.superclass %} < {{type.superclass}}{% end %}
+            {{ type_keyword.id }} {{ type }}{% if type.superclass %} < {{ type.superclass }}{% end %}
               {% unless type.annotation(::Mocks::Stubbed) %}
                 include ::Mocks::Stubbable::Automatic
                 include ::Mocks::StandardStubs
               {% end %}
 
               {% for name, value in stubs %}
-                stub_existing({{name}}) { {{value}} }
+                stub_existing({{ name }}) { {{ value }} }
               {% end %}
 
-              {{block.body if block}}
+              {{ block.body if block }}
             end
           {% end %}
         {% end %}

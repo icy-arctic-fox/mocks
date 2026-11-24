@@ -20,7 +20,7 @@ describe Mocks::StubModifiers do
   describe "#and_return" do
     it "produces a stub that returns nil" do
       stub = create_stub.and_return
-      invoke_stub(stub, Int32?).should eq(nil)
+      invoke_stub(stub, Int32?).should be_nil
     end
 
     it "produces a stub that returns a static value" do

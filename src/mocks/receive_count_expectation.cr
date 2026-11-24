@@ -126,7 +126,7 @@ module Mocks
 
     private def with_stub(& : Stub -> Stub)
       stub = yield @stub
-      {{@type.name(generic_args: false)}}.new(stub, @count)
+      {{ @type.name(generic_args: false) }}.new(stub, @count)
     end
   end
 end

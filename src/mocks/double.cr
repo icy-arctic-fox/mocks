@@ -16,18 +16,18 @@ module Mocks
     # This produces the standard `double` keyword
     # that accepts default stubs from the keyword arguments and block body.
     macro def_define_double(name, *, type = nil)
-      macro {{name.id}}(name, *stubs, **named_stubs, &block)
-        class \{{name.id}} < {{(type || @type.name).id}}
+      macro {{ name.id }}(name, *stubs, **named_stubs, &block)
+        class \{{name.id}} < {{ (type || @type.name).id }}
           {% verbatim do %}
             {% for stub in stubs %}
-              stub_any_args {{stub}}
+              stub_any_args {{ stub }}
             {% end %}
 
             {% for name, value in named_stubs %}
-              stub_any_args {{name.id.symbolize}}, {{value}}
+              stub_any_args {{ name.id.symbolize }}, {{ value }}
             {% end %}
 
-            {{block.body if block}}
+            {{ block.body if block }}
           {% end %}
         end
       end
@@ -122,7 +122,7 @@ module Mocks
       # This is done by capturing the NamedTuple's type (and keys) via T.
       # A layer of indirection is necessary since the syntax `**kwargs : **T` isn't valid.
       {% for key in T.keys %}
-        proxy.add_stub(ValueStub.new({{key.symbolize}}, value_stubs[{{key.symbolize}}]))
+        proxy.add_stub(ValueStub.new({{ key.symbolize }}, value_stubs[{{ key.symbolize }}]))
       {% end %}
     end
 
