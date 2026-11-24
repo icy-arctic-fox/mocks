@@ -10,7 +10,7 @@ Documentation/DocumentationAdmonition:
 
 # Double and mock definitions aren't recognized as macros.
 # These "useless" variable assignments are very much used.
-Lint/UselessAssign:
+Lint/AssignmentInCallArgument:
   Description: Disallows useless variable assignments
   Excluded:
     - spec/**/*.cr
