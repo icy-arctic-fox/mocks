@@ -47,7 +47,7 @@ describe Mocks::Scope do
     exception : Exception? = nil
 
     begin
-      d = dbl = TestDouble.new
+      d = TestDouble.new
       d.__mocks.add_stub(new_stub)
     rescue e
       exception = e

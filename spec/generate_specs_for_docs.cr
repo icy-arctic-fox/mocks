@@ -76,6 +76,5 @@ files.each do |file|
     dir_name = File.dirname(file_name)
     Dir.mkdir_p(dir_name) unless Dir.exists?(dir_name)
     write_spec_file(file_name, snippet)
-    i += 1
   end
 end
