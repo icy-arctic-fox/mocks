@@ -4,6 +4,6 @@ version: 0.1.0
 authors:
   - Michael Miller <icy.arctic.fox@gmail.com>
 
-crystal: ">= 1.7.2, < 1.21.0"
+crystal: ">= 1.7.2, < 1.23.0"
 
 license: MIT
