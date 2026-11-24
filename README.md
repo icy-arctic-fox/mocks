@@ -133,7 +133,7 @@ it "works" do
   double.value.should eq(42)
 
   # Redefine the behavior of `#value`.
-  double.can receive(:value).and_return(0) 
+  double.can receive(:value).and_return(0)
 
   # New stub is invoked here.
   double.value.should eq(0)
