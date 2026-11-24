@@ -624,7 +624,7 @@ The `mock!` feature can be used on the [standard library's `Process`](https://cr
 ```crystal
 mock! Process
 
-it "mocks launching a sub-process" do
+pending "mocks launching a sub-process" do
   Process.can receive(:run).and_return(Process::Status.new(0xff00))
   result = Process.run("echo")
   result.exit_code.should eq(0xff)
