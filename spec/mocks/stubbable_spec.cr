@@ -58,7 +58,7 @@ private class StubbableClass
     :existing
   end
 
-  stub self.existing_method_syntax
+  stub existing_method_syntax
 
   stub private def self.visibility_syntax(arg)
     arg
